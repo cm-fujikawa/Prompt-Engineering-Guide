@@ -1,0 +1,179 @@
+{
+  "proper_nouns": [
+    "ChatGPT",
+    "GPT",
+    "GPT-4",
+    "GPT-3",
+    "Claude",
+    "Claude 3",
+    "Gemini",
+    "Gemini Advanced",
+    "Gemini Pro",
+    "Gemini Flash",
+    "Gemma",
+    "LLaMA",
+    "Llama",
+    "Code Llama",
+    "Mistral",
+    "Mixtral",
+    "Flan",
+    "OLMo",
+    "Grok",
+    "Groq",
+    "Phi",
+    "Sora",
+    "OpenAI",
+    "Google",
+    "Meta",
+    "Anthropic",
+    "GitHub",
+    "Hugging Face",
+    "Python",
+    "JavaScript",
+    "TypeScript",
+    "React",
+    "Node.js",
+    "ThoughtSculpt",
+    "Infini-attention",
+    "Infini-Attention"
+  ],
+  "tech_terms": {
+    "Prompt Engineering": "プロンプトエンジニアリング",
+    "prompt engineering": "プロンプトエンジニアリング",
+    "Prompting Techniques": "プロンプトテクニック",
+    "prompting techniques": "プロンプトテクニック",
+    "AI Agents": "AIエージェント",
+    "AI Agent": "AIエージェント",
+    "LLM": "LLM",
+    "LLMs": "LLM",
+    "Large Language Model": "大規模言語モデル",
+    "large language model": "大規模言語モデル",
+    "LLM Collection": "LLMコレクション",
+    "LLM Research Findings": "LLM研究成果",
+
+    "RAG": "RAG",
+    "Retrieval Augmented Generation": "RAG",
+
+    "Chain of Thought": "CoT",
+    "chain of thought": "CoT",
+    "Chain-of-Thought": "CoT",
+    "chain-of-thought": "CoT",
+    "Chain-of-Thought Prompting": "CoTプロンプト",
+    "CoT": "CoT",
+    "CoT Prompting": "CoTプロンプト",
+
+    "Tree of Thought": "ToT",
+    "Tree of Thoughts": "ToT",
+    "tree of thought": "ToT",
+    "tree of thoughts": "ToT",
+    "ToT": "ToT",
+
+    "Graph of Thought": "GoT",
+    "graph of thought": "GoT",
+    "GoT": "GoT",
+
+    "Skeleton of Thought": "SoT",
+    "skeleton of thought": "SoT",
+    "SoT": "SoT",
+
+    "Few-Shot": "Few-Shot",
+    "few-shot": "Few-Shot",
+    "Few-shot": "Few-Shot",
+    "Few-Shot Prompting": "Few-Shotプロンプト",
+    "Few-shot Prompting": "Few-Shotプロンプト",
+    "few-shot prompting": "Few-Shotプロンプト",
+
+    "Zero-Shot": "Zero-Shot",
+    "zero-shot": "Zero-Shot",
+    "Zero-shot": "Zero-Shot",
+    "Zero-Shot Prompting": "Zero-Shotプロンプト",
+    "Zero-shot Prompting": "Zero-Shotプロンプト",
+    "zero-shot prompting": "Zero-Shotプロンプト",
+
+    "Meta Prompting": "メタプロンプト",
+    "meta prompting": "メタプロンプト",
+
+    "ReAct": "ReAct",
+    "ReAct Prompting": "ReActプロンプト",
+
+    "Reflexion": "Reflexion",
+    "reflexion": "Reflexion",
+
+    "Self-Consistency": "Self-Consistency",
+    "self-consistency": "Self-Consistency",
+
+    "Generated Knowledge": "Generated Knowledge",
+    "generated knowledge": "Generated Knowledge",
+    "Generate Knowledge": "Generated Knowledge",
+    "generate knowledge": "Generated Knowledge",
+    "Generated Knowledge Prompting": "Generated Knowledgeプロンプト",
+    "Generate Knowledge Prompting": "Generated Knowledgeプロンプト",
+
+    "Prompt Chaining": "プロンプトチェーン",
+    "prompt chaining": "プロンプトチェーン",
+
+    "ART": "ART",
+    "Automatic Reasoning and Tool-use": "ART",
+
+    "APE": "APE",
+    "Automatic Prompt Engineer": "APE",
+
+    "Active-Prompt": "Active-Prompt",
+    "Active Prompt": "Active-Prompt",
+
+    "DSP": "DSP",
+    "Directional Stimulus Prompting": "DSP",
+
+    "PAL": "PAL",
+    "Program-aided Language Models": "PAL",
+    "Program-Aided Language Models": "PAL",
+    "program-aided language models": "PAL",
+
+    "Multimodal CoT": "Multimodal CoT",
+    "multimodal CoT": "Multimodal CoT",
+
+    "Graph Prompting": "Graph Prompting",
+    "graph prompting": "Graph Prompting",
+
+    "LangChain": "LangChain",
+
+    "Prompt Injection": "プロンプトインジェクション",
+    "prompt injection": "プロンプトインジェクション",
+
+    "Prompt Leaking": "プロンプトリーキング",
+    "prompt leaking": "プロンプトリーキング",
+
+    "Jailbreaking": "ジェイルブレイク",
+    "jailbreaking": "ジェイルブレイク",
+
+    "Hallucination": "ハルシネーション",
+    "hallucination": "ハルシネーション",
+
+    "Fine-tuning": "ファインチューニング",
+    "fine-tuning": "ファインチューニング",
+
+    "In-Context Learning": "In-Context Learning",
+    "in-context learning": "In-Context Learning"
+  },
+  "do_not_translate": [
+    "page",
+    "menu",
+    "separator",
+    "About",
+    "Intro to AI Agents",
+    "Build RAG Systems",
+    "Building Advanced AI Agents",
+    "LLM Settings",
+    "OpenAI Deep Research",
+    "LLM Agents",
+    "RAG for LLMs",
+    "LLM Reasoning",
+    "RAG Faithfulness",
+    "LLM In-Context Recall",
+    "RAG Reduces Hallucination",
+    "LLM Tokenization",
+    "LM-Guided CoT",
+    "Fine-tuning GPT-4o"
+  ]
+}
+
