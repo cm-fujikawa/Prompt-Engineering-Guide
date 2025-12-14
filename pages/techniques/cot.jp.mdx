@@ -1,90 +1,124 @@
-# Chain-of-Thoughtプロンプティング
+# CoTプロンプト
 
+import { Callout } from 'nextra/components'
 import {Screenshot} from 'components/screenshot'
 import COT from '../../img/cot.png'
 import ZEROCOT from '../../img/zero-cot.png'
+import AUTOCOT from '../../img/auto-cot.png'
 
-
-## Chain-of-Thought (CoT) プロンプティング
+## 思考連鎖 (CoT) プロンプト
 
 <Screenshot src={COT} alt="COT" />
 
-[Wei et al. (2022)](https://arxiv.org/abs/2201.11903)で紹介されたchain-of-thought (CoT)プロンプティングは、中間的な推論ステップを介して複雑な推論能力を可能にします。few-shot promptingと組み合わせることで、推論が必要なより複雑なタスクでより良い結果を得ることができます。
+画像出典:[Wei et al. (2022)](https://arxiv.org/abs/2201.11903)
 
-*プロンプト:*
+で紹介されました[Wei et al. (2022)](https://arxiv.org/abs/2201.11903)、思考連鎖 (CoT) プロンプトにより、中間の推論ステップを通じて複雑な推論機能が有効になります。これを少数のプロンプトと組み合わせると、応答する前に推論が必要なより複雑なタスクでより良い結果が得られます。
+
+*プロンプト：*
+
 ```
-このグループの奇数を合計すると偶数になります。: 4、8、9、15、12、2、1。
-A: 奇数を全て加えると(9, 15, 1)25になります。答えはFalseです。
+The odd numbers in this group add up to an even number: 4, 8, 9, 15, 12, 2, 1.
+A: Adding all the odd numbers (9, 15, 1) gives 25. The answer is False.
 
-このグループの奇数を合計すると偶数になります。: 17、10、19、4、8、12、24。
-A: 奇数を全て加えると(17, 19)36になります。答えはTrueです。
+The odd numbers in this group add up to an even number: 17,  10, 19, 4, 8, 12, 24.
+A: Adding all the odd numbers (17, 19) gives 36. The answer is True.
 
-このグループの奇数を合計すると偶数になります。: 16、11、14、4、8、13、24。
-A: 奇数を全て加えると(11, 13)24になります。答えはTrueです。
+The odd numbers in this group add up to an even number: 16,  11, 14, 4, 8, 13, 24.
+A: Adding all the odd numbers (11, 13) gives 24. The answer is True.
 
-このグループの奇数を合計すると偶数になります。: 17、9、10、12、13、4、2。
-A: 奇数を全て加えると(17, 9, 13)39になります。答えはFalseです。
+The odd numbers in this group add up to an even number: 17,  9, 10, 12, 13, 4, 2.
+A: Adding all the odd numbers (17, 9, 13) gives 39. The answer is False.
 
-このグループの奇数を合計すると偶数になります。: 15、32、5、13、82、7、1。
+The odd numbers in this group add up to an even number: 15, 32, 5, 13, 82, 7, 1. 
 A:
 ```
 
-*出力:*
+*出力：*
+
 ```
-奇数を全て加えると(15, 5, 13, 7, 1)41になります。答えはFalseです。
+Adding all the odd numbers (15, 5, 13, 7, 1) gives 41. The answer is False.
 ```
 
-素晴らしい！推論ステップが提供された場合、完璧な結果が得られます。実際、より少ない例を提供するだけで、つまり1つの例だけでこのタスクを解決することができます。
+おお！推論ステップを提供すると、完璧な結果が得られます。実際、このタスクは、さらに少ない例を提供することで解決できます。つまり、1 つの例だけで十分と思われます。
 
-*プロンプト:*
+*プロンプト：*
+
 ```
-このグループの奇数を合計すると偶数になります。: 4、8、9、15、12、2、1。
-A: 奇数を全て加えると(9, 15, 1)25になります。答えはFalseです。
+The odd numbers in this group add up to an even number: 4, 8, 9, 15, 12, 2, 1.
+A: Adding all the odd numbers (9, 15, 1) gives 25. The answer is False.
 
-このグループの奇数を合計すると偶数になります。: 15、32、5、13、82、7、1。
+The odd numbers in this group add up to an even number: 15, 32, 5, 13, 82, 7, 1. 
 A:
 ```
 
-*出力:*
+*出力：*
+
 ```
-奇数を全て加えると(15, 5, 13, 7, 1)41になります。答えはFalseです。
+Adding all the odd numbers (15, 5, 13, 7, 1) gives 41. The answer is False.
 ```
 
-著者たちは、これが十分に大きな言語モデルで生じる新興能力であると主張しています。
+著者らは、これは十分に大きな言語モデルによって生じる新たな能力であると主張していることに留意してください。
+
+<Callout type= "info" emoji="🎓">
+新しい AI コースで、思考連鎖プロンプトと高度なプロンプト手法について詳しく学びましょう。[今すぐ参加してください！](https://dair-ai.thinkific.com/)コード PROMPTING20 を使用すると、さらに 20% オフになります。
+</Callout>
 
 ## Zero-shot COT Prompting
 
 <Screenshot src={ZEROCOT} alt="Zero-shot COT" />
 
-画像の出典：[Kojima et al. (2022)](https://arxiv.org/abs/2205.11916)
+画像出典:[Kojima et al. (2022)](https://arxiv.org/abs/2205.11916)
 
-より最近提唱されたアイデアの1つは、[zero-shot CoT](https://arxiv.org/abs/2205.11916) (Kojima et al. 2022)のアイデアです。これは、元のプロンプトに「ステップバイステップで考えてみましょう」という文言を追加することを含みます。単純な問題を試して、モデルがどのように機能するかを見てみましょう。
+最近出てきたアイデアの 1 つは、[ゼロショットCoT](https://arxiv.org/abs/2205.11916) (Kojima et al. 2022) that essentially involves adding "Let's think step by step" to the original prompt. Let's try a simple problem and see how the model performs:
 
-*プロンプト:*
-```
-私は市場に行って10個のリンゴを買いました。隣人に2つ、修理工に2つ渡しました。それから5つのリンゴを買って1つ食べました。残りは何個ですか？
-```
+*プロンプト：*
 
-*出力:*
 ```
-11個のリンゴ
+I went to the market and bought 10 apples. I gave 2 apples to the neighbor and 2 to the repairman. I then went and bought 5 more apples and ate 1. How many apples did I remain with?
 ```
 
-答えは不正解です！それでは、特別なプロンプトで試してみましょう。
+*出力：*
 
-*プロンプト:*
 ```
-私は市場に行って10個のリンゴを買いました。隣人に2つ、修理工に2つ渡しました。それから5つのリンゴを買って1つ食べました。残りは何個ですか？
-
-ステップバイステップで考えてみましょう。
+11 apples
 ```
 
-*出力:*
+答えは不正解です！次に、特別なプロンプトを試してみましょう。
+
+*プロンプト：*
+
 ```
-最初に、10個のリンゴから始めました。
-隣人と修理工に合わせて、リンゴを2つずつ渡し、残りは6個になりました。
-次に、5つのリンゴを買い、11個になりました。
-最後に、1つのリンゴを食べたため、残りは10個になります。
+I went to the market and bought 10 apples. I gave 2 apples to the neighbor and 2 to the repairman. I then went and bought 5 more apples and ate 1. How many apples did I remain with?
+
+Let's think step by step.
 ```
 
-この単純なプロンプトがこのタスクで効果的であることは驚くべきことです。これは、プロンプトに使用できる例があまりない場合に特に有用です。
+*出力：*
+
+```
+First, you started with 10 apples.
+You gave away 2 apples to the neighbor and 2 to the repairman, so you had 6 apples left.
+Then you bought 5 more apples, so now you had 11 apples.
+Finally, you ate 1 apple, so you would remain with 10 apples.
+```
+
+このシンプルなプロンプトがこのタスクに効果的であることは印象的です。これは、プロンプトで使用する例があまりない場合に特に便利です。
+
+## 自動思考連鎖 (Auto-CoT)
+
+デモンストレーションを使って思考の連鎖を促すプロセスを適用する場合、そのプロセスには効果的で多様な例を手作りすることが含まれます。この手動の作業により、次善の解決策が得られる可能性があります。[Zhang et al. (2022)](https://arxiv.org/abs/2210.03493)「ステップバイステップで考えてみましょう」プロンプトを備えた LLM を活用して、デモンストレーション用の推論チェーンを 1 つずつ生成することで、手作業を排除するアプローチを提案します。この自動プロセスでも、生成されたチェーンに間違いが発生する可能性があります。間違いの影響を軽減するには、デモンストレーションの多様性が重要です。この研究では、多様性のある質問をサンプリングし、デモンストレーションを構築するための推論チェーンを生成する Auto-CoT を提案しています。
+
+Auto-CoT は 2 つの主要な段階で構成されます。
+
+- ステージ 1):**質問のクラスタリング**: 指定されたデータセットの質問をいくつかのクラスターに分割します
+- ステージ 2):**デモンストレーションサンプリング**: 各クラスターから代表的な質問を選択し、シンプルなヒューリスティックを備えた Zero-Shot-CoT を使用してその推論チェーンを生成します。
+
+単純なヒューリスティックは、質問の長さ (例: 60 トークン) と理論的根拠のステップ数 (例: 5 つの推論ステップ) です。これにより、モデルはシンプルかつ正確なデモンストレーションを使用するようになります。
+
+このプロセスを以下に示します。
+
+<Screenshot src={AUTOCOT} alt="AUTOCOT" />
+
+画像出典:[Zhang et al. (2022)](https://arxiv.org/abs/2210.03493)
+
+Auto-CoT 用のコードが利用可能です[ここ](https://github.com/amazon-science/auto-cot).

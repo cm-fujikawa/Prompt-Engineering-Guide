@@ -1,3 +1,176 @@
 # LLM Agents
 
-This page needs a translation! Feel free to contribute a translation by clicking the `Edit this page` button on the right.
+import {Cards, Card} from 'nextra-theme-docs'
+import { Callout } from 'nextra/components'
+import {FilesIcon} from 'components/icons'
+
+LLM ベースのエージェント (以下、略して LLM エージェントとも呼ばれます) には、LLM とプランニングやメモリなどの主要なモジュールを組み合わせたアーキテクチャを使用して、複雑なタスクを実行できる LLM アプリケーションが含まれます。 LLM エージェントを構築する場合、LLM は、タスクまたはユーザー要求を完了するために必要な操作のフローを制御するメインコントローラーまたは「頭脳」として機能します。 LLM エージェントには、計画、メモリ、ツールの使用などの主要なモジュールが必要な場合があります。
+
+LLM エージェントの有用性をさらに高めるために、次の質問に答えるのに役立つシステムの構築に興味があるとします。
+
+> 2023 年の米国の 1 日の平均カロリー摂取量はいくらですか?
+
+上記の質問は、質問に直接答えるために必要な知識をすでに持っている LLM を使用して答えることができる可能性があります。 LLM が質問に答えるための関連知識を持っていない場合は、LLM が健康関連の情報やレポートにアクセスできる単純な RAG システムを使用することができます。ここで、次のようなより複雑な質問をシステムに与えてみましょう。
+
+> 米国では過去 10 年間で成人の 1 日の平均カロリー摂取量の傾向はどのように変化しましたか、またこれは肥満率にどのような影響を与える可能性がありますか?さらに、この期間の肥満率の傾向をグラフで示してもらえますか?
+
+このような質問に答えるには、LLM だけを使用するだけでは十分ではありません。 LLM と外部ナレッジ ベースを組み合わせて RAG システムを形成することもできますが、これだけではおそらく上記の複雑なクエリに答えるには十分ではありません。これは、上記の複雑な質問では、LLM がタスクをサブパートに分割する必要があり、ツールと操作フローを使用して対処できるため、望ましい最終応答につながります。考えられる解決策は、検索 API、健康関連出版物、公的/民間の健康データベースにアクセスして、カロリー摂取量と肥満に関する関連情報を提供する LLM エージェントを構築することです。
+
+さらに、LLM は、関連データを取得して肥満の傾向を理解するのに役立つ便利なグラフを作成するのに役立つ「コード インタープリター」ツールにアクセスする必要があります。これらは、仮想 LLM エージェントの考えられる高レベルのコンポーネントですが、タスクに対処する計画の作成や、エージェントが操作、観察、全体的な進行状況のフローの状態を追跡するのに役立つメモリ モジュールへの潜在的なアクセスに対処するための計画の作成など、重要な考慮事項がまだあります。
+
+<Callout type= "info" emoji="🎓">
+新しい AI コースで、LLM ベースのエージェントと高度なプロンプト手法について詳しく学びましょう。[今すぐ参加してください！](https://dair-ai.thinkific.com/)
+
+コード PROMPTING20 を使用すると、さらに 20% オフになります。
+</Callout>
+
+## LLM Agent Framework
+
+!["LLM Agent Framework"](../../img/agents/agent-framework.png)
+
+一般に、LLM エージェント フレームワークは次のコア コンポーネントで構成されます。
+
+- ユーザーリクエスト - ユーザーの質問またはリクエスト
+- エージェント/ブレイン - コーディネーターとして機能するエージェント コア
+- 計画 - エージェントが将来のアクションを計画するのを支援します。
+- メモリ - エージェントの過去の行動を管理します
+
+### エージェント
+
+汎用機能を備えた大規模言語モデル (LLM) は、システムの主要な頭脳、エージェント モジュール、またはコーディネーターとして機能します。このコンポーネントは、エージェントの動作方法とアクセスできるツール (ツールの詳細とともに) に関する重要な詳細を含むプロンプト テンプレートを使用してアクティブ化されます。
+
+While not mandatory, an agent can be profiled or be assigned a persona to define its role. This profiling information is typically written in the prompt which can include specific details like role details, personality, social information, and other demographic information. According to \[Wang et al. 2023], the strategies to define an agent profile include handcrafting, LLM-generated or data-driven.
+
+### 企画
+
+#### フィードバックのない計画
+
+計画モジュールは、ユーザーのリクエストに答えるためにエージェントが個別に解決する必要なステップまたはサブタスクを細分化するのに役立ちます。このステップは、エージェントが問題についてより適切に推論し、確実に解決策を見つけられるようにするために重要です。計画モジュールは LLM を活用して、ユーザーの質問に対処するのに役立つサブタスクを含む詳細な計画を分解します。タスク分解の一般的な手法には次のようなものがあります。[CoT](https://www.promptingguide.ai/techniques/cot)そして[ToT](https://www.promptingguide.ai/techniques/tot)これらは、それぞれ単一パス推論とマルチパス推論に分類できます。以下は、で定式化されたさまざまな戦略を比較した図です。[Wang et al., 2023](https://arxiv.org/abs/2308.11432):
+
+!["LLM Agent Planning"](../../img/agents/task-decomposition.png)
+
+#### フィードバックをもとに計画を立てる
+
+上記の計画モジュールにはフィードバックが含まれていないため、複雑なタスクを解決するための長期的な計画を達成することが困難になります。この課題に対処するには、モデルが過去のアクションや観察に基づいて実行計画を繰り返し反映し、改良できるメカニズムを活用できます。目標は、過去の間違いを修正および改善し、最終結果の品質を向上させることです。これは、試行錯誤がタスクを完了するための鍵となる複雑な現実世界の環境やタスクでは特に重要です。この反省または批判メカニズムの 2 つの一般的な方法は次のとおりです。[ReAct](https://www.promptingguide.ai/techniques/react)そして[Reflexion](https://arxiv.org/abs/2303.11366).
+
+例として、ReAct は、一連のステップ (N 回繰り返す) の間にインターリーブすることで、LLM が複雑なタスクを解決できるようにすることを目的として、推論と動作を組み合わせます。`Thought`, `Action`、 そして`Observation`。 ReAct は、観察という形で環境からフィードバックを受け取ります。他の種類のフィードバックには、人間およびモデルのフィードバックが含まれる場合があります。以下の図は、ReAct の例と、質問応答の実行に含まれるさまざまな手順を示しています。
+
+!["ReAct Agent"](../../img/react.png)
+
+ReAct について詳しくは、こちらをご覧ください:
+
+<Cards>
+  <Card icon={<FilesIcon />} title="ReAct Prompting" href="https://www.promptingguide.ai/techniques/react" />
+</Cards>
+
+### メモリ
+
+メモリ モジュールは、エージェントとユーザー間のすべての対話を含む、過去の思考、行動、環境からの観察など、エージェントの内部ログを保存するのに役立ちます。 LLM エージェントの文献で報告されている主なメモリ タイプは 2 つあります。
+
+- **短期記憶**- エージェントの現在の状況に関するコンテキスト情報が含まれます。これは通常、コンテキスト内学習によって実現されます。これは、コンテキスト ウィンドウの制約により、学習が短くて有限であることを意味します。
+- **長期記憶**- 長期間保持し、思い出す必要があるエージェントの過去の行動や思考が含まれます。これは多くの場合、高速かつスケーラブルな検索を通じてアクセスできる外部ベクトル ストアを利用して、必要に応じてエージェントに関連情報を提供します。
+
+ハイブリッド記憶は、短期記憶と長期記憶の両方を統合して、エージェントの長期推論と経験の蓄積の能力を向上させます。
+
+エージェントを構築する際には、さまざまなメモリ形式を考慮する必要があります。代表的なメモリ形式には、自然言語、埋め込み、データベース、構造化リストなどが含まれます。これらは、Ghost in the Minecraft ([GITM](https://arxiv.org/abs/2305.17144)) キーと値の構造を利用し、キーは自然言語で表され、値は埋め込みベクトルで表されます。
+
+計画モジュールと記憶モジュールの両方により、エージェントは動的な環境で動作し、過去の行動を効果的に思い出して将来の行動を計画できるようになります。
+
+### ツール
+
+ツールは、LLM エージェントが Wikipedia 検索 API、コード インタープリター、数学エンジンなどの外部環境と対話できるようにするツールのセットに対応します。ツールには、データベース、知識ベース、外部モデルも含まれる場合があります。エージェントが外部ツールと対話するとき、エージェントはサブタスクを完了してユーザー要求を満たすために観察または必要な情報を取得するのを支援するワークフローを介してタスクを実行します。最初の健康関連のクエリでは、コード インタープリターは、コードを実行し、ユーザーが要求した必要なグラフ情報を生成するツールの例です。
+
+LLM はツールをさまざまな方法で活用します。
+
+- [MRKL](https://arxiv.org/abs/2205.00445)は、LLM またはシンボリック (計算機または天気 API) のエキスパート モジュールと LLM を組み合わせるフレームワークです。
+- [ツールフォーマー](https://arxiv.org/abs/2302.04761)外部ツール API を使用するように LLM を微調整します。
+- [関数呼び出し](https://www.promptingguide.ai/applications/function_calling)- 一連のツール API を定義し、それをリクエストの一部としてモデルに提供することを含むツール使用機能で LLM を強化します。
+- [HuggingGPT](https://arxiv.org/abs/2303.17580)- LLM をタスク プランナーとして活用し、さまざまな既存の AI モデル (記述に基づいて) を接続して AI タスクを解決する、LLM を利用したエージェント。
+
+!["HuggingGPT"](../../img/agents/hugginggpt.png)
+
+## LLM Agent Applications
+
+!["ChemCrow"](../../img/agents/chemcrow.png)
+*The ChemCrow agent designed to complete tasks across organic synthesis, drug discovery, and materials design. Figure source: Bran et al., 2023*
+
+このセクションでは、LLM ベースのエージェントがその複雑な推論能力と常識理解能力により効果的に適用されているドメインの例とケーススタディに焦点を当てます。
+
+### Notable LLM-based Agents
+
+- [Ma et al. (2023)](https://arxiv.org/abs/2307.15810)精神的健康をサポートするための会話型エージェントの有効性を分析し、このエージェントはユーザーが不安に対処するのを助けることができるが、場合によっては有害なコンテンツを生成する可能性があることを発見しました。
+- [ホートン (2023)](https://arxiv.org/abs/2301.07543)LLM ベースのエージェントに、シミュレーションされたシナリオで人間の経済的行動を調査するための才能、好み、性格を与えます。
+- [生成エージェント](https://arxiv.org/abs/2304.03442)そして[エージェントシムズ](https://arxiv.org/abs/2308.04026)どちらも、複数のエージェントを構築することで、仮想都市における人間の日常生活をシミュレートすることを目的としています。
+- [盲目的な判断](https://arxiv.org/abs/2301.05327)複数の言語モデルを採用して、複数の裁判官の意思決定プロセスをシミュレートします。現実世界の最高裁判所の判決をランダムよりも正確に予測します。
+- [Ziems et al. (2023)](https://arxiv.org/abs/2305.03514)は、要約の生成、スクリプト作成、キーワードの抽出などのタスクで研究者を支援できるエージェントを紹介します。
+- [ケムクロウ](https://arxiv.org/abs/2304.05376)は、化学関連データベースを利用して、防虫剤、3 つの有機触媒の合成、および新規発色団の誘導発見を自律的に計画および実行する LLM 化学エージェントです。
+- \[Boiko et al. (2023)] combines multiple LLMs for automating the design, planning, and execution of scientific experiments.
+- [数学エージェント]()研究者が数学的問題を探索、発見、解決、証明できるよう支援します。[エデュチャット](https://arxiv.org/abs/2308.02773)そして[コードヘルプ](https://arxiv.org/abs/2308.06921)以下は、教育用に設計された LLM エージェントの他の 2 つの注目すべき例です。
+- [Mehta et al. (2023)](https://arxiv.org/abs/2304.10750)人間の建築家が AI エージェントと対話して 3D シミュレーション環境で構造を構築できるようにする対話型フレームワークを提案します。
+- [チャット開発](https://arxiv.org/abs/2307.07924), [ツールLLM](https://arxiv.org/abs/2307.16789), [MetaGPT](https://arxiv.org/abs/2308.00352)これらは、AI エージェントがコーディング、デバッグ、テストを自動化し、その他のソフトウェア エンジニアリング タスクを支援する可能性を示している注目すべき例です。
+- [D-ボット](https://arxiv.org/abs/2308.05481)データベース保守の経験を​​継続的に取得し、データベースの診断と最適化のアドバイスを提供する、LLM ベースのデータベース管理者。
+- [IELLM](https://arxiv.org/abs/2304.14354)LLM を適用して石油・ガス業界の課題に対処します。
+- [Dasgupta et al. 2023](https://arxiv.org/abs/2302.00763)は、具体化された推論とタスク計画のための統合エージェント システムを提供します。
+- [OS-Copilot](https://arxiv.org/abs/2402.07456)Web、コード端末、ファイル、マルチメディア、さまざまなサードパーティ アプリケーションなど、オペレーティング システム (OS) の包括的な要素とインターフェイスできるジェネラリスト エージェントを構築するためのフレームワーク。
+
+### LLM Agent Tools
+
+!["AutoGen"](../../img/agents/autogen.png)
+*AutoGen 機能。図のソース: https://microsoft.github.io/autogen*
+
+以下は、LLM エージェントの構築に使用されるツールとフレームワークの注目すべき例です。
+
+- [LangChain](https://python.langchain.com/docs/get_started/introduction): 言語モデルを利用したアプリケーションとエージェントを開発するためのフレームワーク。
+- [AutoGPT](https://github.com/Significant-Gravitas/AutoGPT): AI エージェントを構築するためのツールを提供します。
+- [ラングロイド](https://github.com/langroid/langroid): マルチエージェント プログラミングを使用して LLM アプリケーションの構築を簡素化します。エージェントは第一級市民として、メッセージを通じてタスクで共同作業します。
+- [自動生成](https://microsoft.github.io/autogen/): タスクを解決するために相互に会話できる複数のエージェントを使用した LLM アプリケーションの開発を可能にするフレームワーク。
+- [オープンエージェント](https://github.com/xlang-ai/OpenAgents): 言語エージェントを実際に使用およびホストするためのオープン プラットフォーム。
+- [LlamaIndex](https://www.llamaindex.ai/)- カスタム データ ソースを大規模な言語モデルに接続するためのフレームワーク。
+- [GPT Engineer](https://github.com/gpt-engineer-org/gpt-engineer): コード生成を自動化して開発タスクを完了します。
+- [DemoGPT](https://github.com/melih-unsal/DemoGPT): インタラクティブな Streamlit アプリを作成する自律型 AI エージェント。
+- [GPT Researcher](https://github.com/assafelovic/gpt-researcher): さまざまなタスクに関する包括的なオンライン調査のために設計された自律エージェント。
+- [エージェントバース](https://github.com/OpenBMB/AgentVerse): さまざまなアプリケーションでの複数の LLM ベースのエージェントの展開を容易にするように設計されています。
+- [エージェント](https://github.com/aiwaves-cn/agents): 自律言語エージェントを構築するためのオープンソース ライブラリ/フレームワーク。このライブラリは、長期および短期記憶、ツールの使用法、Web ナビゲーション、マルチエージェント通信などの機能、および人間とエージェントの対話やシンボリック制御などの新しい機能をサポートしています。
+- [BMツール](https://github.com/OpenBMB/BMTools): ツールを使用して言語モデルを拡張し、コミュニティがツールを構築および共有するためのプラットフォームとして機能します。
+- [クルーAI](https://www.crewai.io/): エンジニア向けに再考された AI エージェント フレームワークは、エージェントと自動化を簡単に構築できる強力な機能を提供します。
+- [Phidata](https://github.com/phidatahq/phidata): 関数呼び出しを使用して AI アシスタントを構築するためのツールキット。
+
+## LLM Agent Evaluation
+
+![""](../../img/agents/agentbench.png)
+*AgentBench benchmark to evaluate LLM-as-Agent on real-world challenges and 8 different environments. Figure source: Liu et al. 2023*
+
+Similar to evaluating LLM themselves, evaluating LLM agents is a challenging task. According to Wang et al., (2023), common evaluation methods include:
+
+- **人間による注釈**: 正直さ、有用性、関与、公平性など、アプリケーションで重要なさまざまな側面にわたって LLM 結果を直接スコアリングする人間の評価者が含まれます。
+- **チューリングテスト**: 人間の評価者は、実際の人間とエージェントの結果を比較するように求められます。ここで、区別できない結果は、エージェントが人間と同様のパフォーマンスを達成できることを意味します。
+- **メトリクス**: これらは、エージェントの品質を反映する慎重に設計された指標です。注目すべき指標には、タスクの成功指標、人間の類似性指標、効率性指標などがあります。
+- **プロトコル**: メトリクスの使用方法を決定する一般的な評価プロトコルに対応します。例には、現実世界のシミュレーション、社会的評価、マルチタスク評価、ソフトウェア テストなどがあります。
+- **ベンチマーク**: LLM エージェントを評価するために、いくつかのベンチマークが設計されています。注目すべき例としては、[アルフワールド](https://alfworld.github.io/), [IGLU](https://arxiv.org/abs/2304.10750), [タチクマ](https://arxiv.org/abs/2307.12573), [エージェントベンチ](https://github.com/THUDM/AgentBench), [ソケット](https://arxiv.org/abs/2305.14938), [エージェントシムズ](https://arxiv.org/abs/2308.04026), [ツールベンチ](https://arxiv.org/abs/2305.16504), [ウェブショップ](https://arxiv.org/abs/2207.01206), [モバイル環境](https://github.com/stefanbschneider/mobile-env), [ウェブアリーナ](https://github.com/web-arena-x/webarena), [ゲントベンチ](https://arxiv.org/abs/2308.04030), [ロコベンチ](https://project-roco.github.io/), [エモーションベンチ](https://project-roco.github.io/), [PEB](https://arxiv.org/abs/2308.06782), [クレムベンチ](https://arxiv.org/abs/2305.13455)、 そして[E2E](https://arxiv.org/abs/2308.04624).
+
+## 課題
+
+LLM エージェントはまだ初期段階にあるため、構築時には多くの課題と制限が残ります。
+
+- **ロールプレイング機能**: LLM ベースのエージェントは通常、ドメイン内のタスクを効果的に完了するために役割を適応させる必要があります。 LLM が十分に特徴づけられない役割については、珍しい役割や心理的キャラクターを表すデータに基づいて LLM を微調整することが可能です。
+- **長期計画と有限のコンテキストの長さ**: 長い歴史にわたる計画は依然として課題であり、エージェントが回復できないエラーが発生する可能性があります。 LLM はサポートできるコンテキストの長さも制限されているため、短期記憶の活用など、エージェントの機能を制限する制約が発生する可能性があります。
+- **一般化された人間の調整**：標準的な LLM にも共通する、多様な人間の価値観を持ったエージェントを調整することも困難です。潜在的な解決策には、高度なプロンプト戦略を設計することによって LLM を再調整する可能性が含まれます。
+- **迅速な堅牢性と信頼性**: LLM エージェントには、メモリや計画などのさまざまなモジュールを強化するように設計されたいくつかのプロンプトが含​​まれる場合があります。 LLM では、プロンプトがわずかに変更されただけでも信頼性の問題が発生するのが一般的です。 LLM エージェントにはプロンプト フレームワーク全体が関与しているため、堅牢性の問題が発生しやすくなります。考えられる解決策には、試行錯誤によるプロンプト要素の作成、プロンプトの自動最適化/調整、GPT を使用したプロンプトの自動生成などが含まれます。 LLM に関するもう 1 つの一般的な問題は、LLM エージェントでもよく見られる幻覚です。これらのエージェントは、幻覚や事実の問題につながる矛盾した情報を導入する可能性のある外部コンポーネントとのインターフェースを自然言語に依存しています。
+- **知識の境界**: 幻覚や事実の問題につながる可能性のある知識の不一致の問題と同様に、シミュレーションの有効性に大きな影響を与える可能性がある LLM の知識範囲を制御することは困難です。具体的には、LLM の内部知識によってバイアスが生じたり、ユーザーの未知の知識が利用されたりして、特定の環境で動作する際のエージェントの動作に影響を与える可能性があります。
+- **効率**: LLM エージェントには、LLM によって処理される大量のリクエストが含まれており、LLM の推論速度に大きく依存するため、エージェントのアクションの効率に影響を与える可能性があります。複数のエージェントを導入する場合、コストも問題になります。
+
+## 参考文献
+
+- [LLM Powered Autonomous Agents](https://lilianweng.github.io/posts/2023-06-23-agent/)
+- [MRKL システム: 大規模な言語モデル、外部知識源、離散推論を組み合わせたモジュール式の神経記号アーキテクチャ](https://arxiv.org/abs/2205.00445)
+- [大規模言語モデルベースの自律エージェントに関する調査](https://arxiv.org/abs/2308.11432)
+- [大規模言語モデルベースのエージェントの台頭と可能性: 調査](https://arxiv.org/abs/2309.07864)
+- [大規模言語モデルに基づくマルチエージェント: 進歩と課題の調査](https://arxiv.org/abs/2402.01680)
+- [言語エージェントの認知アーキテクチャ](https://arxiv.org/abs/2309.02427)
+- [Introduction to LLM Agents](https://developer.nvidia.com/blog/introduction-to-llm-agents/)
+- [ラングチェーンエージェント](https://python.langchain.com/docs/use_cases/tool_use/agents)
+- [最初の LLM エージェント アプリケーションを構築する](https://developer.nvidia.com/blog/building-your-first-llm-agent-application/)
+- [実稼働用の LLM アプリケーションの構築](https://huyenchip.com/2023/04/11/llm-engineering.html#control_flow_with_llm_agents)
+- [Awesome LLM agents](https://github.com/kaushikb11/awesome-llm-agents)
+- [Awesome LLM-Powered Agent](https://github.com/hyp1231/awesome-llm-powered-agent#awesome-llm-powered-agent)
+- [LangChain を使用した機能、ツール、エージェント](https://www.deeplearning.ai/short-courses/functions-tools-agents-langchain/)

@@ -1,3 +1,60 @@
-# OLMo 
+# OLMo
 
-This page needs a translation! Feel free to contribute a translation by clicking the `Edit this page` button on the right side.
+このガイドでは、プロンプトや使用例など、Open Language Mode (OLMo) の概要を説明します。このガイドには、OLMo に関連するヒント、アプリケーション、制限事項、論文、追加の読み物も含まれています。
+
+## Introduction to OLMo
+
+アレン AI 研究所は、[解放された](https://blog.allenai.org/olmo-open-language-model-87ccfc95f580)OLMo と呼ばれる新しいオープン言語モデルとフレームワーク。この取り組みは、言語モデルの研究を総合的に加速するために、データ、トレーニング コード、モデル、評価コードへの完全なアクセスを提供することを目的としています。
+
+最初のリリースには、7B パラメーター スケールの 4 つのバリアントと 1B スケールの 1 つのモデルが含まれており、すべて少なくとも 2T トークンでトレーニングされています。これは、今後の 65B OLMo モデルも含まれる多くのリリースの最初のものです。
+
+!["OLMo Models"](../../img/olmo/olmo-models.png)
+
+リリースには以下が含まれます。
+
+- を含む完全なトレーニング データ[コード](https://github.com/allenai/dolma)データを生成するのは
+- フルモデルの重量、[トレーニングコード](https://github.com/allenai/OLMo)、ログ、メトリクス、推論コード
+- モデルごとに複数のチェックポイント
+- [評価コード](https://github.com/allenai/OLMo-Eval)
+- コードの微調整
+
+すべてのコード、重み、中間チェックポイントは、[Apache 2.0 ライセンス](https://github.com/allenai/OLMo#Apache-2.0-1-ov-file).
+
+## OLMo-7B
+
+OLMo-7B モデルと OLMo-1B モデルは両方とも、デコーダ専用のトランス アーキテクチャを採用しています。これは、PaLM や Llama などの他のモデルからの改良を踏襲しています。
+
+- 偏見はありません
+- ノンパラメトリック層ノルム
+- SwiGLUアクティベーション機能
+- 回転位置埋め込み (RoPE)
+- 50,280の語彙
+
+## ドルマ データセット
+
+このリリースには、と呼ばれる事前トレーニング データセットのリリースも含まれています。[ドルマ](https://github.com/allenai/dolma)-- 7 つの異なるデータ ソースから取得した 50 億のドキュメントにわたる 3 兆トークンの多様なマルチソース コーパス。 Dolma の作成には、言語フィルタリング、品質フィルタリング、コンテンツ フィルタリング、重複排除、マルチソース混合、トークン化などの手順が含まれます。
+
+!["Dolma Dataset"](../../img/olmo/dolma-dataset.png)
+
+トレーニング データセットには、Dolma からの 2T トークン サンプルが含まれています。トークンは特別なコードを追加した後に連結されます。`EOS`各ドキュメントの末尾にトークンを追加します。トレーニング インスタンスには、2048 個のトークンの連続したチャンクのグループが含まれており、これらもシャッフルされます。
+
+トレーニングの詳細とモデルをトレーニングするためのハードウェア仕様については、論文を参照してください。
+
+## 結果
+
+モデルは、以下を使用して下流タスクで評価されます。[キャットウォーク](https://github.com/allenai/catwalk)。 OLMo モデルは、Falcon や Llama 2 などの他のいくつかの公開モデルと比較されます。特に、モデルは、モデルの常識的推論能力を測定することを目的とした一連のタスクで評価されます。ダウンストリームの評価スイートには、次のようなデータセットが含まれています。`piqa`そして`hellaswag`。著者らは、ランク分類を使用してゼロショット評価を実行し (つまり、完了は可能性によってランク付けされます)、精度が報告されます。 OLMo-7B は 2 つのエンドタスクで他のすべてのモデルを上回り、8/9 のエンドタスクではトップ 3 を維持します。結果の概要を以下のグラフに示します。
+
+!["OLMo Results"](../../img/olmo/olmo-results.png)
+
+## Prompting Guide for OLMo
+
+近日公開...
+
+***
+
+数字の出典:[OLMo: 言語モデルの科学を加速する](https://allenai.org/olmo/olmo-paper.pdf)
+
+## 参考文献
+
+- [OLMo: Open Language Model](https://blog.allenai.org/olmo-open-language-model-87ccfc95f580)
+- [OLMo: 言語モデルの科学を加速する](https://allenai.org/olmo/olmo-paper.pdf)

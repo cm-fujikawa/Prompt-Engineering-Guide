@@ -1,0 +1,251 @@
+# なぜコンテキストエンジニアリングなのか?
+
+import { Callout } from 'nextra/components'
+
+[コンテキストエンジニアリング](https://www.promptingguide.ai/guides/context-engineering-guide)信頼性が高く効果的な AI エージェントを構築するための重要な実践です。このガイドでは、ディープ リサーチ エージェントを構築する実際の例を通じて、コンテキスト エンジニアリングの重要性を探ります。
+
+コンテキスト エンジニアリングには、望ましい結果を達成するために AI エージェントの動作を導くプロンプト、指示、制約を慎重に作成および調整することが含まれます。
+
+<Callout type="info" emoji="📚">
+このコンテンツは新しいコースに基づいています[「n8n を使用した効果的な AI エージェントの構築」](https://dair-ai.thinkific.com/courses/agents-with-n8n)、エージェント システムの設計と実装に関する包括的な洞察、ダウンロード可能なテンプレート、プロンプト、高度なヒントを提供します。
+</Callout>
+
+## コンテキストエンジニアリングとは何ですか?
+
+[コンテキストエンジニアリング](https://www.promptingguide.ai/guides/context-engineering-guide)AI エージェントに提供されるコンテキスト情報を設計、テストし、反復処理して、AI エージェントの動作を形成し、タスクのパフォーマンスを向上させるプロセスです。単一の LLM コールの単純なプロンプト エンジニアリングとは異なり、エージェントのコンテキスト エンジニアリングには以下が含まれます (ただし、これらに限定されません)。
+
+- **システムプロンプト**エージェントの動作と機能を定義する
+- **タスクの制約**意思決定を導くもの
+- **ツールの説明**利用可能な機能/ツールをいつ、どのように使用するかを明確にする
+- **メモリ管理**複数のステップにわたる状態を追跡するため
+- **エラー処理**堅牢な実行のためのパターン
+
+## ディープリサーチエージェントの構築: ケーススタディ
+
+Web 検索を実行してレポートを生成する最小限の詳細調査エージェントの例を通じて、コンテキスト エンジニアリングの原則を探ってみましょう。
+
+![Agent Workflow](../../img/agents/simple-dr-agent.png)
+
+### コンテキストエンジニアリングへの挑戦
+
+このエージェント システムの最初のバージョンを構築するとき、最初の実装では、慎重なコンテキスト エンジニアリングを必要とするいくつかの動作上の問題が明らかになりました。
+
+#### 問題 1: 不完全なタスクの実行
+
+**問題**: エージェント ワークフローを実行する場合、オーケストレーター エージェントは多くの場合、3 つの検索タスクを作成しますが、そのうちの 2 つの検索のみを実行し、明示的な理由なしに 3 番目のタスクをスキップします。
+
+**根本的な原因**: エージェントのシステム プロンプトには、タスク完了要件に関する明示的な制約がありませんでした。エージェントはどの検索が必要かについて推測を行ったため、一貫性のない動作が発生しました。
+
+**解決**: 2 つのアプローチが可能です。
+
+1. **柔軟なアプローチ**(現在): どの検索が必要かをエージェントが決定できるようにしますが、スキップされたタスクについては明示的な理由が必要です
+2. **厳格なアプローチ**: 計画されたすべてのタスクに対して検索の実行を必要とする明示的な制約を追加します。
+
+システムプロンプトの拡張例:
+
+```text
+You are a deep research agent responsible for executing comprehensive research tasks.
+
+TASK EXECUTION RULES:
+- For each search task you create, you MUST either:
+  1. Execute a web search and document findings, OR
+  2. Explicitly state why the search is unnecessary and mark it as completed with justification
+
+- Do NOT skip tasks silently or make assumptions about task redundancy
+- If you determine tasks overlap, consolidate them BEFORE execution
+- Update task status in the spreadsheet after each action
+```
+
+#### 問題 2: デバッグの可視性の欠如
+
+**問題**: 適切なログ記録と状態追跡がなければ、エージェントが特定の決定を下した理由を理解するのは困難でした。
+
+**解決**: この例では、次のフィールドを含むスプレッドシートまたはテキスト ファイル (簡略化のため) を使用してタスク管理システムを実装すると役立ちます。
+
+- Task ID
+- 検索クエリ
+- ステータス (todo、進行中、完了)
+- 結果の概要
+- タイムスタンプ
+
+この可視性により、次のことが可能になります。
+
+- エージェントの決定のリアルタイムデバッグ
+- タスクの実行フローの理解
+- 行動パターンの特定
+- 反復的な改善のためのデータ
+
+### コンテキストエンジニアリングのベストプラクティス
+
+このケーススタディに基づいて、効果的なコンテキスト エンジニアリングのための重要な原則を次に示します。
+
+#### 1. 即座のあいまいさを排除する
+
+**悪い例:**
+
+```text
+Perform research on the given topic.
+```
+
+**良い例:**
+
+```text
+Perform research on the given topic by:
+1. Breaking down the query into 3-5 specific search subtasks
+2. Executing a web search for EACH subtask using the search_tool
+3. Documenting findings for each search in the task tracker
+4. Synthesizing all findings into a comprehensive report
+```
+
+#### 2. 期待を明示する
+
+エージェントがあなたが何を望んでいるのかを知っているとは思わないでください。以下について明確にしてください。
+
+- 必須のアクションとオプションのアクション
+- 品質基準
+- 出力フォーマット
+- 意思決定基準
+
+#### 3. 可観測性の実装
+
+エージェント システムにデバッグ メカニズムを構築します。
+
+- エージェントのすべての決定と推論を記録する
+- 外部ストレージの状態変化を追跡する
+- ツールの呼び出しとその結果を記録する
+- エラーとエッジケースをキャプチャする
+
+<Callout type="warning" emoji="⚠️">
+エージェント システムの実行には常に細心の注意を払ってください。奇妙な動作や特殊なケースは、コンテキスト エンジニアリングの取り組みを改善する機会となります。
+</Callout>
+
+#### 4. 動作に基づいて反復する
+
+コンテキスト エンジニアリングは反復的なプロセスです。
+
+1. **展開する**初期コンテキストを持つエージェント
+2. **観察する**本番環境での実際の動作
+3. **識別する**期待される動作からの逸脱
+4. **リファイン**システムのプロンプトと制約
+5. **テスト**改善を検証する
+6. **繰り返す**
+
+#### 5. 柔軟性と制約のバランスを取る
+
+次の間のトレードオフを考慮してください。
+
+- **厳しい制約**: 予測可能だが適応性は低い
+- **柔軟なガイドライン**: 適応性は高いが、一貫性がなくなる可能性があります
+
+ユースケースの要件に基づいて選択してください。
+
+## 高度なコンテキスト エンジニアリング技術
+
+### 階層化されたコンテキスト アーキテクチャ
+
+コンテキスト エンジニアリングは、AI エージェントの構築プロセスのすべての段階に適用されます。 AI エージェントによっては、コンテキストを階層構造として考えると役立つ場合があります。基本的なエージェント システムでは、コンテキストを階層レイヤーに編成できます。
+
+1. **システム層**: コアエージェントのアイデンティティと機能
+2. **タスク層**: 現在のタスクの具体的な指示
+3. **ツールレイヤー**: 各ツールの説明と使用ガイドライン
+4. **メモリ層**: 関連する歴史的背景と教訓
+
+### 動的なコンテキストの調整
+
+もう 1 つのアプローチは、タスクの複雑さ、利用可能なリソース、以前の実行履歴、エラー パターンに基づいてコンテキストを動的に調整することです。この例に基づいて、以下に基づいてコンテキストを調整できます。
+
+- タスクの複雑さ
+- 利用可能なリソース
+- 過去の実行履歴
+- エラーパターン
+
+### コンテキストの検証
+
+評価は、コンテキスト エンジニアリング技術が AI エージェントに対して適切に機能していることを確認するための鍵となります。デプロイメントの前に、コンテキスト設計を検証します。
+
+- **完全**: 重要なシナリオはすべてカバーされていますか?
+- **明瞭さ**：それは明確ですか？
+- **一貫性**: さまざまな部分が揃っていますか?
+- **テスト容易性**：動作を確認してもらえますか？
+
+## コンテキスト エンジニアリングの一般的な落とし穴
+
+AI エージェントを構築する際に避けるべき、コンテキスト エンジニアリングの一般的な落とし穴を以下に示します。
+
+### 1. 過剰な制約
+
+**問題**：ルールが多すぎると、エージェントの柔軟性が低下し、エッジケースに対処できなくなります。
+
+**例**:
+
+```text
+NEVER skip a search task.
+ALWAYS perform exactly 3 searches.
+NEVER combine similar queries.
+```
+
+**より良いアプローチ**:
+
+```text
+Aim to perform searches for all planned tasks. If you determine that tasks are redundant, consolidate them before execution and document your reasoning.
+```
+
+### 2. 過小仕様
+
+**問題**: 曖昧な指示は予測できない動作を引き起こします。
+
+**例**:
+
+```text
+Do some research and create a report.
+```
+
+**より良いアプローチ**:
+
+```text
+Execute research by:
+1. Analyzing the user query to identify key information needs
+2. Creating 3-5 specific search tasks covering different aspects
+3. Executing searches using the search_tool for each task
+4. Synthesizing findings into a structured report with sections for:
+   - Executive summary
+   - Key findings per search task
+   - Conclusions and insights
+```
+
+### 3. エラーケースの無視
+
+**問題**: コンテキストは、問題が発生した場合の動作を指定しません。
+
+**解決**: 場合によっては、AI エージェントにエラー処理命令を追加すると役立ちます。
+
+```text
+ERROR HANDLING:
+- If a search fails, retry once with a rephrased query
+- If retry fails, document the failure and continue with remaining tasks
+- If more than 50% of searches fail, alert the user and request guidance
+- Never stop execution completely without user notification
+```
+
+## コンテキストエンジニアリングの成功を測定する
+
+以下のメトリクスを追跡して、コンテキスト エンジニアリングの有効性を評価します。
+
+1. **タスク完了率**: 正常に完了したタスクの割合
+2. **行動の一貫性**: 同様の入力におけるエージェントの動作の類似性
+3. **エラー率**: 障​​害と予期しない動作の頻度
+4. **ユーザー満足度**: 出力の品質と有用性
+5. **デバッグ時間**: 問題を特定して修正するのに必要な時間
+
+コンテキスト エンジニアリングを 1 回限りのアクティビティとして扱うのではなく、以下を必要とする継続的な実践として扱うことが重要です。
+
+- **系統的な観察**エージェントの行動の
+- **慎重な分析**失敗とエッジケースの
+- **反復的な改良**命令と制約の
+- **厳格なテスト**変化の
+
+これらの原則については、今後のガイドでさらに詳しく説明する予定です。これらの原則を適用すると、信頼性が高く、予測可能で、複雑なタスクを効果的に解決できる AI エージェント システムを構築できます。
+
+<Callout type="info" emoji="🎓">
+包括的なコースで、本番環境に対応した AI エージェントを構築する方法を学びましょう。[今すぐ参加してください！](https://dair-ai.thinkific.com/courses/agents-with-n8n)コード PROMPTING20 を使用すると、さらに 20% オフになります。
+</Callout>

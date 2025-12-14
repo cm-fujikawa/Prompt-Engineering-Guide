@@ -1,3 +1,119 @@
-# Prompt Function
+# プロンプト機能
 
-Needs translation! Feel free to contribute a translation by clicking the `Edit this page` button on the right side.
+## 導入
+
+GPT の対話インターフェイスとプログラミング言語のシェルを比較すると、カプセル化プロンプトは関数を形成していると考えることができます。この関数には一意の名前があり、入力テキストでこの名前を呼び出すと、設定された内部ルールに基づいて結果が生成されます。簡単に言うと、GPT との連携を容易にする名前を付けて再利用可能なプロンプトを構築します。これは、GPT が私たちに代わって特定のタスクを実行できる便利なツールのようなものです。私たちは入力を与えるだけで、必要な出力を受け取ることができます。
+
+プロンプトを関数にカプセル化することで、一連の関数を作成してワークフローを確立できます。各関数は特定のステップまたはタスクを表し、特定の順序で組み合わせると、複雑なプロセスを自動化したり、問題をより効率的に解決したりできます。このアプローチにより、GPT とのより構造化された合理的な対話が可能になり、最終的にその機能が強化され、幅広いタスクを実行するための強力なツールになります。
+
+したがって、関数を使用する前に、その関数について GPT に知らせる必要があります。以下は関数を定義するプロンプトです。
+
+*プロンプト：*
+
+> このプロンプトを次のように呼び出してみましょう**メタプロンプト**.\
+> このプロンプトは GPT3.5 でテストされており、GPT4 ではさらに優れたパフォーマンスを発揮します。
+
+```
+Hello, ChatGPT! I hope you are doing well. I am reaching out to you for assistance with a specific function. I understand that you have the capability to process information and perform various tasks based on the instructions provided. In order to help you understand my request more easily, I will be using a template to describe the function, input, and instructions on what to do with the input. Please find the details below:
+
+function_name: [Function Name]
+input: [Input]
+rule: [Instructions on how to process the input]
+
+I kindly request you to provide the output for this function, based on the details I have provided. Your assistance is greatly appreciated. Thank you!
+I will replace the text inside the brackets with the relevant information for the function I want you to perform. This detailed introduction should help you understand my request more efficiently and provide the desired output. The format is function_name(input) If you understand, just answer one word with ok.
+
+```
+
+## 例
+
+### 英語学習アシスタント
+
+たとえば、英語の勉強に GPT を使用したいとします。一連の関数を作成することでプロセスを簡素化できます。
+
+この例は GPT3.5 でテストされており、GPT4 ではさらに優れたパフォーマンスを発揮します。
+
+#### 機能説明
+
+を貼り付ける必要があります**メタプロンプト**GPT のセクションの上で定義されたもの
+
+次に関数を作成します`trans_word`.\
+この関数は、GPT に中国語を英語に翻訳するよう促します。
+
+*プロンプト：*
+
+```
+function_name: [trans_word]
+input: ["text"]
+rule: [I want you to act as an English translator, spelling corrector and improver. I will provide you with input forms including "text" in any language and you will detect the language, translate it and answer in the corrected of my text, in English.]
+```
+
+テキストを展開する関数を作成します。
+
+*プロンプト：*
+
+```
+function_name: [expand_word]
+input: ["text"]
+rule: [Please serve as a Chatterbox, spelling corrector, and language enhancer. I will provide you with input forms including "text" in any language, and output the original language.I want you to Keep the meaning same, but make them more literary.]
+```
+
+テキストを修正する関数を作成します。
+
+*プロンプト：*
+
+```
+function_name: [fix_english]
+input: ["text"]
+rule: [Please serve as an English master, spelling corrector, and language enhancer. I will provide you with input forms including "text", I want you to improve the text's vocabulary and sentences with more natural and elegent. Keep the meaning same.]
+```
+
+最後に、関数を独立して実行することも、複数の関数をチェーンして実行することもできます。
+
+*プロンプト：*
+
+```
+trans_word('婆罗摩火山处于享有“千岛之国”美称的印度尼西亚. 多岛之国印尼有4500座之多的火山, 世界著名的十大活火山有三座在这里.')
+fix_english('Finally, you can run the function independently or chain them together.')
+fix_english(expand_word(trans_word('婆罗摩火山处于享有“千岛之国”美称的印度尼西亚. 多岛之国印尼有4500座之多的火山, 世界著名的十大活火山有三座在这里.')))
+```
+
+この形式で関数を表現すると、各関数の名前、入力、および入力を処理するルールが明確にわかります。ワークフローの各ステップの機能と目的を理解するための体系的な方法を提供します。
+
+*ヒント:*&#x43;hatGPT に過剰な情報を出力させたくない場合は、関数のルールを定義した後に文を追加するだけです。
+
+```
+DO NOT SAY THINGS ELSE OK, UNLESS YOU DONT UNDERSTAND THE FUNCTION
+```
+
+### 複数パラメータ機能
+
+5 つの入力パラメータを取得してパスワードを生成し、生成されたパスワードを出力する関数を作成してみましょう。
+
+*プロンプト：*
+
+```
+function_name: [pg]
+input: ["length", "capitalized", "lowercase", "numbers", "special"]
+rule: [I want you to act as a password generator for individuals in need of a secure password. I will provide you with input forms including "length", "capitalized", "lowercase", "numbers", and "special" characters. Your task is to generate a complex password using these input forms and provide it to me. Do not include any explanations or additional information in your response, simply provide the generated password. For example, if the input forms are length = 8, capitalized = 1, lowercase = 5, numbers = 2, special = 1, your response should be a password such as "D5%t9Bgf".]
+```
+
+```
+pg(length = 10, capitalized = 1, lowercase = 5, numbers = 2, special = 1)
+pg(10,1,5,2,1)
+```
+
+### 考え
+
+現在、GPT のプログラミングに取り組んでいる次のようなプロジェクトがすでにたくさんあります。
+
+- [GitHub Copilot](https://github.com/features/copilot)
+- [Microsoft AI](https://www.microsoft.com/en-us/ai)
+- [chatgpt プラグイン](https://openai.com/blog/chatgpt-plugins)
+- [LangChain](https://github.com/hwchase17/langchain)
+- [マービン](https://github.com/PrefectHQ/marvin)
+
+ただし、これらのプロジェクトは、製品顧客、または Python またはその他のプログラミング言語でコードを作成できるユーザー向けに設計されています。
+平均的なユーザーの場合は、この簡単なテンプレートを毎日の作業に使用し、数回繰り返してください。メモ アプリケーションを使用して関数を文書化し、ライブラリに更新することもできます。
+あるいは、いくつかのオープンソース ChatGPT ツール (たとえば、[ChatGPT-Next-Web](https://github.com/Yidadaa/ChatGPT-Next-Web), [チャットボックス](https://github.com/Bin-Huang/chatbox), [PromptAppGPT](https://github.com/mleoking/PromptAppGPT)、 そして[ChatGPT-Desktop](https://github.com/lencx/ChatGPT)、使用できます。現在、ChatGPT-Next-Web では、新しいチャットを初期化する前にいくつかのショットを追加できます。また、PromptAppGPT は、プロンプト テンプレートに基づく Web アプリケーションのローコード開発をサポートしており、誰でも数行のプロンプトで AutoGPT のようなアプリケーションを開発できるようにします。
+この機能を使用して関数を追加し、使用できるようになります。

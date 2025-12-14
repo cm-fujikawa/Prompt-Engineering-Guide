@@ -1,3 +1,142 @@
 # Gemini 1.5 Pro
 
-This page needs a translation! Feel free to contribute a translation by clicking the `Edit this page` button on the right side.
+Google は、コンピューティング効率の高いマルチモーダルな専門家混合モデルである Gemini 1.5 Pro を発表しました。この AI モデルは、長い形式のコンテンツの想起や推論などの機能に焦点を当てています。 Gemini 1.5 Pro は、何時間ものビデオやオーディオを含む、数百万のトークンを含む可能性がある長いドキュメントを推論できます。 Gemini 1.5 Pro は、長いドキュメントの QA、長いビデオの QA、および長いコンテキストの ASR における最先端のパフォーマンスを向上させます。 Gemini 1.5 Pro は、標準ベンチマーク全体で Gemini 1.0 Ultra と同等またはそれを上回り、少なくとも 1,000 万トークンまでほぼ完璧な取得 (99% 以上) を達成します。これは、他のロング コンテキスト LLM と比較して大幅な進歩です。
+
+このリリースの一環として、Google は、Google AI Studio で試用できる新しい実験的な 100 万トークン コンテキスト ウィンドウ モデルも紹介しています。コンテキストで言えば、200K は、利用可能な LLM の中でこれまでで最大のコンテキスト ウィンドウです。 Gemini 1.5 Pro は、100 万のコンテキスト ウィンドウを備え、大きな PDF 上の Q\&A、コード リポジトリ、さらには Google AI Studio のプロンプトとしての長いビデオなど、あらゆる種類のユースケースを解放することを目指しています。同じ入力シーケンスでのオーディオ、ビジュアル、テキスト、およびコード入力の組み合わせをサポートします。
+
+## 建築
+
+Gemini 1.5 Pro は、Gemini 1.0 のマルチモーダル機能に基づいて構築された、まばらな専門家混合 (MoE) Transformer ベースのモデルです。 MoE の利点は、アクティブ化されるパラメーターの数を一定に保ちながら、モデルの合計パラメーターを増加できることです。あまり詳細は記載されていませんが、[テクニカルレポート](https://storage.googleapis.com/deepmind-media/gemini/gemini_v1_5_report.pdf)、しかし、Gemini 1.5 Pro では、トレーニング コンピューティングの使用量が大幅に減り、サービスの効率が向上し、長いコンテキストの理解 (最大 1,000 万トークン) を可能にするアーキテクチャの変更が含まれていることが報告されています。モデルは、さまざまなモダリティやマルチモーダル データで調整された命令を含むデータで事前トレーニングされ、人間の好みデータに基づいてさらに調整されます。
+
+## 結果
+
+Gemini 1.5 Pro は、テキスト、ビデオ、オーディオなどのあらゆるモダリティで、最大 100 万個のトークンのほぼ完璧な「ニードル」リコールを実現します。 Gemini 1.5 Pro のコンテキスト ウィンドウのサポートを大局的に見ると、Gemini 1.5 Pro は以下に拡張する場合にリコール パフォーマンスを処理および維持できます。
+
+- 約 22 時間の録音
+- 1440 ページの本 10 冊
+- コードベース全体
+- 1 fps で 3 時間のビデオ
+
+!["Gemini 1.5 Pro Retrieval Results"](../../img/gemini/gemini-retrieval.png)
+
+Gemini 1.5 Pro は、数学、科学、推論、多言語性、ビデオ理解、およびコードにおいて顕著なパフォーマンスを示し、ほとんどのベンチマークで Gemini 1.0 Pro を上回っています。以下は、さまざまな Gemini モデルの結果をまとめた表です。また、Gemini 1.5 Pro は、使用するトレーニング コンピューティングが大幅に少ないにもかかわらず、ベンチマークの半分で Gemini 1.0 Ultra を上回っています。
+
+!["Gemini 1.5 Pro Results"](../../img/gemini/gemini-pro-results.png)
+
+## 能力
+
+残りのサブセクションでは、大量のデータの分析からロングコンテキストのマルチモーダル推論に至るまで、Gemini 1.5 Pro で可能なさまざまな機能に焦点を当てます。機能の一部は、論文、コミュニティ、および私たちの実験で報告されています。
+
+### 長い文書の分析
+
+Gemini 1.5 Pro のドキュメントの処理と分析能力を実証するために、非常に基本的な質問に答えるタスクから始めます。 Google AI Studio の Gemini 1.5 Pro モデルは最大 100 万個のトークンをサポートしているため、PDF 全体をアップロードできます。以下の例は、単一の PDF が簡単なプロンプトとともにアップロードされたことを示しています。`What is the paper about?`:
+
+!["Gemini 1.5 Pro Results"](../../img/gemini/galactica.png)
+
+モデルの応答は、許容可能な概要を提供するため、正確かつ簡潔です。[ギャラクティカの紙](https://arxiv.org/abs/2211.09085)。上の例では、Google AI Studio 内でフリーフォーム プロンプトを使用していますが、チャット形式を使用して、アップロードされた PDF を操作することもできます。これは、提供されたドキュメントから回答を得たい質問がたくさんある場合に便利な機能です。
+
+!["Gemini 1.5 Pro Chat"](../../img/gemini/galactica-chat.png)
+
+長いコンテキスト ウィンドウを活用するために、2 つの PDF をアップロードし、両方の PDF にまたがる質問をしてみましょう。
+
+!["Gemini 1.5 Pro Results"](../../img/gemini/galactica-2.png)
+
+反応は妥当であり、興味深いのは最初の論文から抽出された情報です。[LLM に関する調査報告書](https://arxiv.org/abs/2303.18223)、テーブルから来ます。 「アーキテクチャ」情報も正しいようです。ただし、「パフォーマンス」セクションは最初の論文には含まれていないため、ここには属しません。このタスクでは、プロンプトを配置することが重要でした。`Please list the facts mentioned in the first paper about the large language model introduced in the second paper.`上部に次のようなタグを付けて紙にラベルを付けます。`Paper 1`そして`Paper 2`。この実験に関連するもう 1 つのフォローアップ タスクは、一連の論文とその要約方法の指示をアップロードして、関連する作業セクションを作成することです。もう 1 つの楽しい方法は、モデルに新しい LLM 論文を調査に組み込むように依頼することです。
+
+### ビデオの理解
+
+Gemini 1.5 Pro はマルチモーダル機能を基礎からトレーニングしており、ビデオ理解機能も実証しています。次のいずれかを使用していくつかのプロンプトをテストしました。[Andrej Karpathy による LLM に関する最近の講義](https://www.youtube.com/watch?v=zjkBMFhNj_g\&ab_channel=AndrejKarpathy).
+
+この短いデモでは、`Chat prompt`そしてカルパシーの講義を収めたYouTubeビデオをアップロードした。最初の質問は`What is the lecture about?`。ここにはあまり派手なことはありませんが、講義を正確に要約しているため、応答は許容範囲です。
+
+!["Gemini 1.5 Pro Chat"](../../img/gemini/chat-1.png)
+
+モデルに実行を促す 2 番目のタスクは、講義の簡潔な概要 (1 ページの長さ) を提供することです。応答は次のとおりです (簡潔にするために編集しました)。
+
+```markdown
+## Large Language Models: A New Operating System?
+Introduction:
+
+- LLMs are trained on massive amounts of text data and can generate human-quality text.
+- They are becoming increasingly powerful and are being used for a wide range of tasks, such as writing, translation, and coding.
+
+How LLMs Work:
+
+- LLMs are neural networks that predict the next word in a sequence.
+- They learn by iteratively adjusting their parameters to make better predictions.
+- While we can measure their performance, we don't fully understand how the billions of parameters collaborate to achieve it.
+
+Training LLMs:
+
+- Requires massive amounts of data and computing power.
+- Can be thought of as "compressing the internet" into a single file.
+- For example, training LLaMA 2 70B required 6,000 GPUs for 12 days and cost ~$2 million.
+
+LLM Security:
+
+- LLM security is a new and rapidly evolving field.
+- Some key security risks include:
+    - Jailbreaking: bypassing safety mechanisms to generate harmful content.
+    - Prompt injection: injecting malicious code into prompts to control the LLM's output.
+    - Data poisoning / Backdoor attacks: inserting crafted text into the training data to influence the LLM's behavior.
+...
+```
+
+要約は非常に簡潔であり、重要なポイントとともに講義の概要を適切に表しています。出力全体の精度を評価したわけではありませんが、モデルが次のような情報を出力するのを見るのは興味深いことです。`"training LLaMA 2 70B required 6,000 GPUs for 12 days and cost ~$2 million."`
+
+特定の詳細が重要な場合は、さまざまな理由でモデルが時々「幻覚」を示したり、間違った情報を取得したりする可能性があることに留意してください。たとえば、モデルにプロンプ​​トを出したとき`What are the FLOPs reported for Llama 2 in the lecture?`それはこう答えた`The lecture reports that training Llama 2 70B required approximately 1 trillion FLOPs.`それは正確ではありません。正しい応答は次のとおりです`~1e24 FLOPs`。技術レポートには、ビデオに関する特定の質問をされたときに、これらの長いコンテキスト モデルが失敗する多くの例が含まれています。
+
+次のタスクでは、ビデオからテーブル情報を抽出します。この例は、プロンプトと応答を示しています。モデルがテーブルを生成し、いくつかの詳細は正しく、いくつかは間違っていることがわかります。たとえば、テーブルの列は正しいが、行ラベルの 1 つが間違っているとします (つまり、`Concept Resolution`あるべきです`Coref Resolution`）。これらの抽出タスクのいくつかを他のテーブルやテキスト ボックスなどのさまざまな要素でテストしたところ、同様の不一致が見つかりました。
+
+技術レポートに記載されている興味深い例は、特定のシーンまたはタイムスタンプに基づいてビデオから詳細を取得するモデルの機能です。最初の例では、モデルに特定のセクションがどこから始まるかを答えるように指示しました。
+
+プロンプト：
+
+```
+At what timestamp does the LLM OS section start?
+```
+
+出力：
+
+```
+The LLM OS section starts at 42:17.
+```
+
+応答は正しいです。
+
+次の例では、モデルにスライド内のグラフについて説明してもらいます。
+
+プロンプト：
+
+```
+Can you explain the chart (on the right-hand side) on the self-improvement slide?
+```
+
+出力：
+
+```
+The chart shows the performance of AlphaGo Zero over time, as measured by its Elo rating. The Elo rating is a measure of a player's skill in a game, with higher ratings indicating stronger players. The chart shows that AlphaGo Zero's performance improved rapidly over the course of 40 days, eventually surpassing the performance of all other versions of AlphaGo, including the version that defeated the world champion Go player Lee Sedol. This improvement was achieved entirely through self-play, with no human intervention or historical data.
+```
+
+このモデルは、提供された情報をうまく利用して、グラフの結果を説明しているようです。以下は、対応するスライドのスナップショットです。
+
+!["AlphaGo Zero"](../../img/gemini/chart.png)
+
+### コード推論
+
+Gemini 1.5 Pro は、長いコンテキストの推論により、コードベースに関する質問に答えることができます。 Google AI Studio を使用すると、Gemini 1.5 Pro では最大 100 万個のトークンが許可されるため、コードベース全体をアップロードして、さまざまな質問やコード関連のタスクを促すことができます。技術レポートでは、モデルにコンテキスト内の JAX コードベース全体 (約 746,000 トークン) が与えられ、コアの自動微分メソッドの場所を特定するように求められる例が示されています。
+
+!["Gemini 1.5 Pro Jax"](../../img/gemini/jax.png)
+
+### 英語からカラマンへの翻訳
+
+Gemini 1.5 Pro には、世界中で 200 人未満の話者が話している言語であるカラマン語の文法マニュアル (500 ページの言語文書、辞書、および約 400 の並列文) が提供され、同じコンテンツを学習している人のレベルで英語をカラマン語に翻訳できます。これは、長いコンテキストを通じて実現される Gemini 1.5 Pro のインコンテキスト学習能力を示しています。
+
+!["Gemini 1.5 Pro Multilinguality"](../../img/gemini/kalamang.png)
+
+数字の出典:[Gemini 1.5: 数百万のコンテキストトークンにわたるマルチモーダルな理解を解き放つ](https://storage.googleapis.com/deepmind-media/gemini/gemini_v1_5_report.pdf)
+
+## 参考文献
+
+- [Gemini 1.5: 数百万のコンテキストトークンにわたるマルチモーダルな理解を解き放つ](https://storage.googleapis.com/deepmind-media/gemini/gemini_v1_5_report.pdf)
+- [Gemini 1.5: 次世代モデル、Google AI Studio でプライベート プレビューが利用可能になりました](https://developers.googleblog.com/2024/02/gemini-15-available-for-private-preview-in-google-ai-studio.html)

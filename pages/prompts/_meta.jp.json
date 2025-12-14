@@ -1,15 +1,14 @@
 {
-    "classification": "Classification",
-    "coding": "Coding",
-    "creativity": "Creativity",
-    "evaluation": "Evaluation",
-    "information-extraction": "Information Extraction",
-    "image-generation": "Image Generation",
-    "mathematics": "Mathematics",
-    "question-answering": "Question Answering",
-    "reasoning": "Reasoning",
-    "text-summarization": "Text Summarization",
-    "truthfulness": "Truthfulness",
-    "adversarial-prompting": "Adversarial Prompting"
+  "classification": "分類",
+  "coding": "コーディング",
+  "creativity": "創造性",
+  "evaluation": "評価",
+  "information-extraction": "情報抽出",
+  "image-generation": "画像生成",
+  "mathematics": "数学",
+  "question-answering": "質問への回答",
+  "reasoning": "推論",
+  "text-summarization": "テキストの要約",
+  "truthfulness": "真実性",
+  "adversarial-prompting": "敵対的なプロンプト"
 }
-  

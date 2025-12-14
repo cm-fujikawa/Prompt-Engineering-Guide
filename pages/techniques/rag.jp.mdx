@@ -1,25 +1,45 @@
-# 検索により強化された生成 (RAG)
+# Retrieval Augmented Generation (RAG)
 
-import { Screenshot } from "components/screenshot";
-import RAG from "../../img/rag.png";
+import {Cards, Card} from 'nextra-theme-docs'
+import {TerminalIcon} from 'components/icons'
+import {CodeIcon} from 'components/icons'
+import {Screenshot} from 'components/screenshot'
+import RAG from '../../img/rag.png'
+import { Callout } from 'nextra/components'
 
-汎用の言語モデルは、感情分析や名前付きエンティティ認識など、いくつかの一般的なタスクを達成するためにファインチューニングすることができます。これらのタスクは一般的に、追加の背景知識を必要としません。
+汎用言語モデルを微調整して、感情分析や固有表現認識などのいくつかの一般的なタスクを実行できます。これらのタスクには通常、追加の背景知識は必要ありません。
 
-より複雑で知識集約的なタスクの場合、タスクを完遂するために外部の知識ソースにアクセスする言語モデルベースのシステムを構築することができます。これによって、より事実との整合性を向上させ、生成される回答の信頼性が向上し、「幻覚(hallucination)」の問題を軽減することができます。
+より複雑で知識集約的なタスクの場合は、外部の知識ソースにアクセスしてタスクを完了する言語モデルベースのシステムを構築できます。これにより、より事実との一貫性が可能になり、生成された応答の信頼性が向上し、「幻覚」の問題を軽減するのに役立ちます。
 
-Meta AI の研究者は、このような知識集約型のタスクに対処するために、[RAG（Retrieval Augmented Generation）](https://ai.meta.com/blog/retrieval-augmented-generation-streamlining-the-creation-of-intelligent-natural-language-processing-models/)と呼ばれる手法を考案しました。RAG は情報検索コンポーネントとテキスト生成モデルを組み合わせたものです RAG はファインチューニングが可能で、モデル全体の再トレーニングを必要とせず、効率的な方法で内部の知識を変更することができます。
+メタ AI 研究者は、と呼ばれる手法を導入しました。[Retrieval Augmented Generation (RAG)](https://ai.facebook.com/blog/retrieval-augmented-generation-streamlining-the-creation-of-intelligent-natural-language-processing-models/)このような知識集約的なタスクに対処します。 RAG は、情報検索コンポーネントとテキスト ジェネレーター モデルを組み合わせます。 RAG は微調整でき、その内部知識は効率的な方法で、モデル全体の再トレーニングを必要とせずに変更できます。
 
-RAG は入力を受け取り、ソース（例えばウィキペディア）が与えられた関連/証拠立てる文書の集合を検索します。文書は文脈として元の入力プロンプトと連結され、最終的な出力を生成するテキストジェネレータに供給されます。これにより RAG は、事実が時間とともに変化するような状況にも適応できます。LLM のパラメトリック知識は静的であるため、これは非常に有用です。RAG は言語モデルが再学習を回避することを可能にし、検索ベースの(文章)生成によって信頼性の高い出力を生成するための最新情報へのアクセスを可能にします。
+RAG は入力を受け取り、ソース (Wikipedia など) が指定された一連の関連/サポート文書を取得します。ドキュメントは、元の入力プロンプトとコンテキストとして連結され、最終出力を生成するテキスト ジェネレーターに供給されます。これにより、RAG は時間の経過とともに事実が変化する可能性がある状況に適応できるようになります。 LLM のパラメトリック知識は静的であるため、これは非常に役立ちます。 RAG を使用すると、言語モデルが再トレーニングをバイパスできるようになり、検索ベースの生成を通じて信頼性の高い出力を生成するための最新情報にアクセスできるようになります。
 
-Lewis ら（2021）は、RAG のための汎用的なファインチューニングのレシピを提案しました。事前に訓練された seq2seq モデルがパラメトリックメモリとして使用され、ウィキペディアの密なベクトルインデックスが（ニューラルで事前に訓練された retriever を使用してアクセスされた）ノンパラメトリックメモリとして使用されます。以下は、このアプローチがどのように機能するかの概要です：
+Lewis et al., (2021) proposed a general-purpose fine-tuning recipe for RAG. A pre-trained seq2seq model is used as the parametric memory and a dense vector index of Wikipedia is used as non-parametric memory (accessed using a neural pre-trained retriever). Below is a overview of how the approach works:
 
 <Screenshot src={RAG} alt="RAG" />
-Image Source: [Lewis ら (2021)](https://arxiv.org/pdf/2005.11401.pdf)
 
-RAG は、[Natural Questions](https://ai.google.com/research/NaturalQuestions)、[WebQuestions](https://paperswithcode.com/dataset/webquestions)、CuratedTrec などのいくつかのベンチマークで強力なパフォーマンスを発揮します。RAG は、MS-MARCO や Jeopardy の問題でテストされた場合、より事実に基づいた、具体的で多様な回答を生成します。RAG はまた、FEVER の事実検証の結果を向上させます。
+画像出典:[ルイスら。 (2021年)](https://arxiv.org/pdf/2005.11401.pdf)
 
-これは、知識集約的なタスクにおける言語モデルの出力を強化するための実行可能なオプションとしての RAG の可能性を示しています。
+RAG は、次のようないくつかのベンチマークで優れたパフォーマンスを示します。[自然な質問](https://ai.google.com/research/NaturalQuestions), [ウェブ質問](https://paperswithcode.com/dataset/webquestions)、CuratedTrec。 RAG は、MS-MARCO および Jeopardy の質問についてテストすると、より事実に基づいた、具体的で多様な回答を生成します。 RAG は、FEVER 事実検証の結果も改善します。
 
-最近では、このような retriever のアプローチがより一般的になり、ChatGPT のような一般的な LLM と組み合わせることで、能力と事実との整合性を向上させています。
+これは、知識集約型タスクにおける言語モデルの出力を強化するための実行可能なオプションとして RAG の可能性を示しています。
 
-LangChain のドキュメントには、[ソースを使って質問に答えるための retriever と LLM の簡単な使用例](https://python.langchain.com/docs/use_cases/question_answering/how_to/vector_db_qa)が掲載されています。
+最近では、これらの取得者ベースのアプローチがより一般的になり、機能と事実の一貫性を向上させるために ChatGPT などの人気のある LLM と組み合わせられています。
+
+<Callout type= "info" emoji="🎓">
+新しい AI コースで、RAG と関連するプロンプト テクニックについて詳しく学びましょう。[今すぐ参加してください！](https://dair-ai.thinkific.com/)コード PROMPTING20 を使用すると、さらに 20% オフになります。
+</Callout>
+
+## RAG ユースケース: わかりやすい ML 論文タイトルの生成
+
+以下に、オープンソース LLM を使用して、短く簡潔な機械学習論文のタイトルを生成する RAG システムを構築するノートブック チュートリアルを用意しました。
+
+<Cards>
+  <Card icon={<CodeIcon />} title="Getting Started with RAG" href="https://github.com/dair-ai/Prompt-Engineering-Guide/blob/main/notebooks/pe-rag.ipynb" />
+</Cards>
+
+## 参考文献
+
+- [大規模言語モデルの検索拡張生成: 調査](https://arxiv.org/abs/2312.10997) (Dec 2023)
+- [検索拡張生成: インテリジェントな自然言語処理モデルの作成を合理化](https://ai.meta.com/blog/retrieval-augmented-generation-streamlining-the-creation-of-intelligent-natural-language-processing-models/) (Sep 2020)

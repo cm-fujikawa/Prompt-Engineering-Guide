@@ -1,3 +1,248 @@
-# Gemini Prompting Guide
+# Getting Started with Gemini
 
-This page needs a translation! Feel free to contribute a translation by clicking the `Edit this page` button on the right side.
+import { Callout, FileTree } from 'nextra-theme-docs'
+import {Screenshot} from 'components/screenshot'
+import GEMINI1 from '../../img/gemini/gemini-1.png'
+import GEMINI2 from '../../img/gemini/gemini-architecture.png'
+import GEMINI3 from '../../img/gemini/gemini-result.png'
+import GEMINI4 from '../../img/gemini/gemini-2.png'
+import GEMINI5 from '../../img/gemini/gemini-3.png'
+import GEMINI6 from '../../img/gemini/gemini-6.png'
+import GEMINI7 from '../../img/gemini/gemini-7.png'
+import GEMINI8 from '../../img/gemini/gemini-8.png'
+import GEMINI9 from '../../img/gemini/pe-guide.png'
+import GEMINI10 from '../../img/gemini/prompt-webqa-1.png'
+import GEMINI11 from '../../img/gemini/prompt-webqa-2.png'
+import GEMINI12 from '../../img/gemini/gemini-few-shot.png'
+import GEMINI13 from '../../img/gemini/gemini-few-shot-2.png'
+
+このガイドでは、Gemini モデルの概要と、それらを効果的にプロンプ​​トおよび使用する方法について説明します。このガイドには、Gemini モデルに関連する機能、ヒント、アプリケーション、制限事項、論文、追加の読み物も含まれています。
+
+## Introduction to Gemini
+
+Gemini は、Google Deepmind の最新の最も高性能な AI モデルです。マルチモーダル機能を最初から備えて構築されており、テキスト、画像、ビデオ、オーディオ、コードにわたる印象的なクロスモーダル推論を紹介できます。
+
+Gemini には 3 つのサイズがあります。
+
+- **ウルトラ**- モデル シリーズの中で最も高性能で、非常に複雑なタスクに適しています。
+- **プロ**- 幅広いタスクにわたって拡張するための最良のモデルと考えられています
+- **ナノ**- デバイス上のメモリに制約のあるタスクとユースケースのための効率的なモデル。これらには、大規模な Gemini モデルから抽出され、4 ビットに量子化された 1.8B (Nano-1) および 3.25B (Nano-2) パラメーター モデルが含まれています。
+
+付属書によると[テクニカルレポート](https://storage.googleapis.com/deepmind-media/gemini/gemini_1_report.pdf), Gemini は、言語、コーディング、推論、マルチモーダル推論などのタスクをカバーする 32 ベンチマークのうち 30 で最先端の技術を進歩させています。
+
+人間の専門家によるパフォーマンスを達成した最初のモデルです。[MMLU](https://paperswithcode.com/dataset/mmlu)(人気のある試験ベンチマーク)、20 のマルチモーダル ベンチマークで最先端の性能を発揮します。 Gemini Ultra は MMLU で 90.0%、[MMMU benchmark](https://mmmu-benchmark.github.io/)大学レベルの主題知識と推論が必要です。
+
+Gemini モデルは、32k のコンテキスト長をサポートするようにトレーニングされ、効率的なアテンション メカニズムを備えた Transformer デコーダの最上位で構築されています (例:[マルチクエリの注意](https://arxiv.org/abs/1911.02150)）。オーディオおよびビジュアル入力とインターリーブされたテキスト入力をサポートし、テキストおよび画像出力を生成できます。
+
+<Screenshot src={GEMINI2} alt="GEMINI2" />
+
+モデルは、Web ドキュメント、書籍、コード データ (画像、音声、ビデオ データなど) などのマルチモーダル データと多言語データの両方でトレーニングされます。モデルはすべてのモダリティにわたって共同トレーニングされ、強力なクロスモーダル推論機能、さらには各ドメインでの強力な機能を示します。
+
+## Gemini Experimental Results
+
+Gemini Ultra は、次のようなアプローチと組み合わせることで最高の精度を実現します。[思考連鎖 (CoT) プロンプト](https://www.promptingguide.ai/techniques/cot)そして[Self-Consistency](https://www.promptingguide.ai/techniques/consistency)これはモデルの不確実性に対処するのに役立ちます。
+
+テクニカル レポートで報告されているように、Gemini Ultra は、MMLU でのパフォーマンスを、グリーディ サンプリングの 84.0% から、32 個のサンプルを使用した不確実性ルート思考連鎖アプローチ (CoT と多数決を含む) を使用した 90.0% まで向上させますが、32 個の思考連鎖サンプルのみを使用した場合は 85.0% までわずかに向上します。同様に、CoT と自己無矛盾性は、GSM8K 小学生数学ベンチマークで 94.4% の精度を達成しています。さらに、Gemini Ultra は 74.4% を正しく実装しています。[HumanEval](https://paperswithcode.com/dataset/humaneval)コード補完の問題。以下は、Gemini の結果と、モデルが他の注目すべきモデルとどのように比較されるかをまとめた表です。
+
+<Screenshot src={GEMINI3} alt="GEMINI3" />
+
+Gemini Nano モデルは、事実 (検索関連タスク)、推論、STEM、コーディング、マルチモーダルおよび多言語タスクでも優れたパフォーマンスを示します。
+
+標準的な多言語機能に加えて、Gemini は多言語の数学や要約ベンチマークでも優れたパフォーマンスを示します。[MGSM](https://paperswithcode.com/dataset/mgsm)そして[XLSum](https://paperswithcode.com/dataset/xl-sum)、 それぞれ。
+
+Gemini モデルは 32K のシーケンス長でトレーニングされており、コンテキスト長全体でクエリを実行すると、98% の精度で正しい値を取得することがわかります。これは、ドキュメントの検索やビデオの理解などの新しいユースケースをサポートする重要な機能です。
+
+命令に合わせて調整された Gemini モデルは、命令への従うこと、創造的な執筆、安全性などの重要な能力に関して人間の評価者によって一貫して好まれています。
+
+## Gemini Multimodal Reasoning Capabilities
+
+Gemini はネイティブにマルチモーダルにトレーニングされており、言語モデルの推論機能とモダリティ間の機能を組み合わせる能力を示します。機能には、表、チャート、図からの情報抽出が含まれますが、これらに限定されません。その他の興味深い機能には、入力からのきめ細かい詳細の識別、空間と時間にわたるコンテキストの集約、さまざまなモダリティにわたる情報の組み合わせなどがあります。
+
+Gemini は、高レベルの物体認識、きめ細かい転写、チャートの理解、マルチモーダル推論などの画像理解タスク全体にわたって、既存のアプローチを常に上回っています。画像の理解および生成機能の一部は、多様なグローバル言語セットにも転送されます (例: ヒンディー語やルーマニア語などの言語を使用した画像説明の生成)。
+
+### テキストの要約
+
+Gemini はマルチモーダル システムとしてトレーニングされていますが、GPT-3.5、Claude、Llama などの最新の大規模言語モデルに存在する機能の多くを備えています。以下は、Gemini Pro を使用した単純なテキスト要約タスクの例です。私たちが使用しているのは[Google AI Studio](https://ai.google.dev)この例では温度値が 0 です。
+
+プロンプト：
+
+```
+Your task is to summarize an abstract into one sentence. 
+
+Avoid technical jargon and explain it in the simplest of words.
+
+Abstract: Antibiotics are a type of medication used to treat bacterial infections. They work by either killing the bacteria or preventing them from reproducing, allowing the body’s immune system to fight off the infection. Antibiotics are usually taken orally in the form of pills, capsules, or liquid solutions, or sometimes administered intravenously. They are not effective against viral infections, and using them inappropriately can lead to antibiotic resistance.
+```
+
+Gemini Pro Output:
+
+```
+Antibiotics are medicines used to kill or stop the growth of bacteria causing infections, but they don't work against viruses.
+```
+
+これは、Google AI Studio 内でタスクとモデルの応答 (強調表示) がどのように表示されるかを示すスクリーンショットです。
+
+<Screenshot src={GEMINI8} alt="GEMINI8" />
+
+### 情報抽出
+
+以下は、テキストを分析して必要な情報を抽出するタスクの別の例です。これはゼロショット プロンプトを使用しているため、結果は完璧ではありませんが、モデルは比較的良好にパフォーマンスしていることに注意してください。
+
+プロンプト：
+
+```
+Your task is to extract model names from machine learning paper abstracts. Your response is an array of the model names in the format [\"model_name\"]. If you don't find model names in the abstract or you are not sure, return [\"NA\"]
+
+Abstract: Large Language Models (LLMs), such as ChatGPT and GPT-4, have revolutionized natural language processing research and demonstrated potential in Artificial General Intelligence (AGI). However, the expensive training and deployment of LLMs present challenges to transparent and open academic research. To address these issues, this project open-sources the Chinese LLaMA and Alpaca…
+```
+
+Gemini Pro Output:
+
+```
+[\"LLMs\", \"ChatGPT\", \"GPT-4\", \"Chinese LLaMA\", \"Alpaca\"]
+```
+
+### 視覚的な質問への回答
+
+視覚的な質問応答には、入力として渡された画像についてモデルに質問することが含まれます。 Gemini モデルは、チャート、自然画像、ミーム、その他多くの種類の画像に対する画像理解のための、さまざまなマルチモーダル推論機能を示します。以下の例では、モデル (Google AI Studio 経由でアクセスされる Gemini Pro Vision) にテキストの指示と、このプロンプト エンジニアリング ガイドのスナップショットを表す画像を提供します。
+
+モデルは「Web サイトのタイトルは "Prompt Engineering Guide" です。」と応答します。与えられた質問に基づくと、これが正しい答えのように思えます。
+
+<Screenshot src={GEMINI10} alt="GEMINI10" />
+
+以下は、異なる入力質問を使用した別の例です。 Google AI Studio では、`{{}} Test input`上記のオプション。次に、テストしているプロンプトを下の表に追加できます。
+
+<Screenshot src={GEMINI11} alt="GEMINI11" />
+
+独自の画像をアップロードしたり、質問したりして、お気軽に試してみてください。 Gemini Ultra は、この種のタスクではるかに優れたパフォーマンスを発揮できると報告されています。これは、モデルが利用可能になったときにさらに実験する予定です。
+
+### 確認と修正
+
+Gemini モデルは、優れたクロスモーダル推論能力を示します。たとえば、下の図は、教師が描いた物理問題の解決策を示しています (左)。次に、ジェミニは質問について推論し、生徒が解答のどこを間違えたのか説明するように求められます。モデルには、問題を解決し、数学部分に LaTeX を使用するように指示されます。応答 (右) は、問題と解決策を詳細に説明するモデルによって提供される解決策です。
+
+<Screenshot src={GEMINI1} alt="GEMINI1" />
+
+### 図の並べ替え
+
+以下は、サブプロットを再配置するための matplotlib コードを生成する Gemini のマルチモーダル推論機能を示す技術レポートからのもう 1 つの興味深い例です。マルチモーダル プロンプトが左上に、生成されたコードが右側に、レンダリングされたコードが左下に表示されます。このモデルは、認識、コード生成、サブプロットの位置に関する抽象推論、サブプロットを目的の位置に再配置するための指示に従うなどのタスクを解決するために、いくつかの機能を活用しています。
+
+<Screenshot src={GEMINI4} alt="GEMINI4" />
+
+### ビデオの理解
+
+Gemini Ultra は、さまざまな数ショットのビデオ キャプション タスクやゼロショット ビデオの質問応答で最先端の結果を達成します。以下の例は、モデルにビデオとテキストの指示が入力として提供されることを示しています。ビデオを分析して状況を推論し、適切な答えを提供したり、この場合はその人がどのように技術を向上させることができるかについての推奨事項を提供したりできます。
+
+<Screenshot src={GEMINI5} alt="GEMINI5" />
+
+### 画像の理解
+
+Gemini Ultra は、数ショットのプロンプトを受け取り、画像を生成することもできます。たとえば、以下の例に示すように、ユーザーが 2 つの色に関する情報と画像の提案を提供する、インターリーブされた画像とテキストの一例を表示することができます。次に、モデルはプロンプトの最終的な指示を受け取り、表示された色といくつかのアイデアで応答します。
+
+<Screenshot src={GEMINI6} alt="GEMINI6" />
+
+### モダリティの組み合わせ
+
+Gemini モデルは、一連の音声と画像をネイティブに処理する機能も示しています。この例から、モデルが一連の音声と画像を使用してプロンプトを表示できることがわかります。その後、モデルは各インタラクションのコンテキストを取得したテキスト応答を送り返すことができます。
+
+<Screenshot src={GEMINI7} alt="GEMINI7" />
+
+### Gemini Generalist Coding Agent
+
+Gemini は、と呼ばれるジェネラリスト エージェントの構築にも使用されます。[アルファコード 2](https://storage.googleapis.com/deepmind-media/AlphaCode2/AlphaCode2_Tech_Report.pdf)推論機能と検索およびツールの使用を組み合わせて、競技プログラミングの問題を解決します。 AlphaCode 2 は、Codeforces 競技プログラミング プラットフォームの参加者の上位 15% 以内にランクされています。
+
+## Gemini での数回のプロンプト
+
+フューショット プロンプトは、必要な出力の種類をモデルに示すのに役立つプロンプト アプローチです。これは、特定の形式 (JSON オブジェクトなど) やスタイルで出力する場合など、さまざまなシナリオで役立ちます。 Google AI Studio もインターフェースでこれを有効にします。以下は、Gemini モデルで少数ショット プロンプトを使用する方法の例です。
+
+私たちは、Gemini を使用して単純な感情分類器を構築することに興味があります。最初のステップは、「新規作成」または「+」をクリックして「構造化プロンプト」を作成することです。数回のプロンプトでは、指示 (タスクの説明) と提供した例が結合されます。以下の図は、モデルに渡す命令 (上) と例を示しています。 INPUT テキストと OUTPUT テキストを設定して、よりわかりやすいインジケーターを付けることができます。以下の例では、「Text:」を入力として、「Emotion:」を入力インジケーターと出力インジケーターとしてそれぞれ使用しています。
+
+<Screenshot src={GEMINI12} alt="GEMINI12" />
+
+結合されたプロンプト全体は次のとおりです。
+
+```
+Your task is to classify a piece of text, delimited by triple backticks, into the following emotion labels: ["anger", "fear", "joy", "love", "sadness", "surprise"]. Just output the label as a lowercase string.
+Text: I feel very angry today
+Emotion: anger
+Text: Feeling thrilled by the good news today.
+Emotion: joy
+Text: I am actually feeling good today.
+Emotion:
+```
+
+その後、「プロンプトをテストする」セクションに入力を追加して、プロンプトをテストできます。 「今日は本当に調子がいいです」を使っています。例を入力として使用すると、「実行」をクリックした後、モデルは「joy」ラベルを正しく出力します。以下の図の例を参照してください。
+
+<Screenshot src={GEMINI13} alt="GEMINI13" />
+
+## 図書館の利用状況
+
+以下は、Gemini API を使用して Gemini Pro モデルをプロンプトする方法を示す簡単な例です。をインストールする必要があります`google-generativeai`ライブラリを作成し、Google AI Studio から API キーを取得します。以下の例は、上のセクションで使用したものと同じ情報抽出タスクを実行するコードです。
+
+```python
+"""
+At the command line, only need to run once to install the package via pip:
+
+$ pip install google-generativeai
+"""
+
+import google.generativeai as genai
+
+genai.configure(api_key="YOUR_API_KEY")
+
+# Set up the model
+generation_config = {
+  "temperature": 0,
+  "top_p": 1,
+  "top_k": 1,
+  "max_output_tokens": 2048,
+}
+
+safety_settings = [
+  {
+    "category": "HARM_CATEGORY_HARASSMENT",
+    "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+  },
+  {
+    "category": "HARM_CATEGORY_HATE_SPEECH",
+    "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+  },
+  {
+    "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+    "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+  },
+  {
+    "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+    "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+  }
+]
+
+model = genai.GenerativeModel(model_name="gemini-pro",
+                              generation_config=generation_config,
+                              safety_settings=safety_settings)
+
+prompt_parts = [
+  "Your task is to extract model names from machine learning paper abstracts. Your response is an array of the model names in the format [\\\"model_name\\\"]. If you don't find model names in the abstract or you are not sure, return [\\\"NA\\\"]\n\nAbstract: Large Language Models (LLMs), such as ChatGPT and GPT-4, have revolutionized natural language processing research and demonstrated potential in Artificial General Intelligence (AGI). However, the expensive training and deployment of LLMs present challenges to transparent and open academic research. To address these issues, this project open-sources the Chinese LLaMA and Alpaca…",
+]
+
+response = model.generate_content(prompt_parts)
+print(response.text)
+```
+
+出力は前と同じです。
+
+```
+[\"LLMs\", \"ChatGPT\", \"GPT-4\", \"Chinese LLaMA\", \"Alpaca\"]
+```
+
+## 参考文献
+
+- [Gemini のご紹介: 当社最大かつ最も有能な AI モデル](https://blog.google/technology/ai/google-gemini-ai/#sundar-note)
+- [作り方: マルチモーダルなプロンプトを通じてジェミニと対話する](https://developers.googleblog.com/2023/12/how-its-made-gemini-multimodal-prompting.html)
+- [双子座時代へようこそ](https://deepmind.google/technologies/gemini/#introduction)
+- [迅速な設計戦略](https://ai.google.dev/docs/prompt_best_practices)
+- [Gemini: 高度な機能を備えたマルチモーダル モデルのファミリー - テクニカル レポート](https://storage.googleapis.com/deepmind-media/gemini/gemini_1_report.pdf)
+- [高速トランスデコーディング: 必要なのは 1 つの書き込みヘッドだけです](https://arxiv.org/abs/1911.02150)
+- [Google AI Studio quickstart](https://ai.google.dev/tutorials/ai-studio_quickstart)
+- [マルチモーダルプロンプト](https://ai.google.dev/docs/multimodal_concepts)
+- [Gemini 対 GPT-4V: 定性的なケースによる視覚言語モデルの予備的な比較と組み合わせ](https://arxiv.org/abs/2312.15011v1)
+- [GPT-4Vへの挑戦者?視覚的専門知識におけるジェミニの初期の探索](https://arxiv.org/abs/2312.12436v2)

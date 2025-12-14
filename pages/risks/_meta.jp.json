@@ -1,6 +1,5 @@
 {
-    "adversarial": "敵対的Prompting",
-    "factuality": "事実性",
-    "biases": "バイアス"
+  "adversarial": "敵対的なプロンプト",
+  "factuality": "事実",
+  "biases": "偏見"
 }
-  

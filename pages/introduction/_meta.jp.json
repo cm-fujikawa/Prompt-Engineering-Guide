@@ -1,8 +1,7 @@
 {
-    "settings": "LLM設定",
-    "basics": "基本的なプロンプティング",
-    "elements": "プロンプトの要素",
-    "tips": "プロンプトをデザインする一般的なTips",
-    "examples": "プロンプトの例"
+  "settings": "LLM Settings",
+  "basics": "プロンプトの基本",
+  "elements": "プロンプト要素",
+  "tips": "プロンプトをデザインするための一般的なヒント",
+  "examples": "プロンプトの例"
 }
-  

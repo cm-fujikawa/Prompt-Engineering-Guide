@@ -1,0 +1,49 @@
+# Gemini 1.5 フラッシュによるコンテキスト キャッシュ
+
+import {Cards, Card, Callout} from 'nextra-theme-docs'
+import {CodeIcon} from 'components/icons'
+
+Googleは最近、と呼ばれる新機能をリリースしました[コンテキストキャッシュ](https://ai.google.dev/gemini-api/docs/caching?lang=python)これは、Gemini 1.5 Pro および Gemini 1.5 Flash モデルの Gemini API を介して利用できます。このガイドでは、Gemini 1.5 Flash でコンテキスト キャッシュを使用する方法の基本的な例を示します。
+
+<iframe width="100%" height="415px" src="https://www.youtube.com/embed/987Pd89EDPs?si=j43isgNb0uwH5AeI" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
+
+https://youtu.be/987Pd89EDPs?si=j43isgNb0uwH5AeI
+
+### ユースケース: 1 年分の ML 論文の分析
+
+このガイドでは、コンテキスト キャッシュを使用してすべてのサマリーを分析する方法を示します。[過去 1 年間に文書化した ML 論文](https://github.com/dair-ai/ML-Papers-of-the-Week)。これらの概要をテキスト ファイルに保存し、Gemini 1.5 Flash モデルに入力して効率的にクエリできるようになりました。
+
+### プロセス: アップロード、キャッシュ、クエリ
+
+1. **データの準備:**&#x307E;ず、readme ファイル (概要を含む) をプレーン テキスト ファイルに変換します。
+2. **Utilizing the Gemini API:**&#x47;oogle を使用してテキスト ファイルをアップロードできます。`generativeai`図書館。
+3. **コンテキスト キャッシュの実装:**&#x30AD;ャッシュは、`caching.CachedContent.create()`関数。これには以下が含まれます。
+   - Gemini Flash 1.5 モデルの指定。
+   - キャッシュの名前を指定します。
+   - モデルに対する指示を定義します (例: 「あなたは AI 研究の専門家です...」)。
+   - キャッシュの存続時間 (TTL) を設定します (例: 15 分)。
+4. **モデルの作成:**&#x6B21;に、キャッシュされたコンテンツを使用して生成モデル インスタンスを作成します。
+5. **クエリ:**&#x6B21;のような自然言語の質問を使用してモデルのクエリを開始できます。
+   - 「今週の最新の AI 論文を教えていただけますか?」
+   - 「Mamba について言及している論文をリストアップしていただけますか? 論文のタイトルと概要をリストしてください。」
+   - 「ロングコンテキスト LLM に関する革新的なものは何ですか? 論文のタイトルと概要を列挙してください。」
+
+結果は有望なものでした。モデルはテキスト ファイルから情報を正確に取得して要約しました。コンテキスト キャッシュは非常に効率的であることが証明され、クエリごとにテキスト ファイル全体を繰り返し送信する必要がなくなりました。
+
+このワークフローは研究者にとって価値のあるツールとなる可能性があり、次のことを可能にします。
+
+- 大量の研究データを迅速に分析し、クエリを実行します。
+- ドキュメントを手動で検索することなく、特定の結果を取得します。
+- プロンプトトークンを無駄にすることなく、インタラクティブなリサーチセッションを実施します。
+
+私たちは、特にエージェント ワークフローのようなより複雑なシナリオ内で、コンテキスト キャッシュのさらなる応用を検討することに興奮しています。
+
+ノートブックは以下にあります。
+
+<Cards>
+  <Card icon={<CodeIcon />} title="Context Caching with Gemini APIs" href="https://github.com/dair-ai/Prompt-Engineering-Guide/blob/main/notebooks/gemini-context-caching.ipynb" />
+</Cards>
+
+<Callout type= "info" emoji="🎓">
+新しい AI コースでキャッシュ方法について詳しく学びましょう。[今すぐ参加してください！](https://dair-ai.thinkific.com/)コード PROMPTING20 を使用すると、さらに 20% オフになります。
+</Callout>

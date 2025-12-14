@@ -1,0 +1,21 @@
+# What is Groq?
+
+[Groq](https://groq.com/)は、現在利用可能な最速の LLM 推論ソリューションの 1 つとして、最近多くの見出しを飾りました。 LLM の実践者からは、LLM 応答の待ち時間を短縮することに多くの関心が寄せられています。レイテンシーは、リアルタイム AI アプリケーションを最適化して有効にするための重要な指標です。現在、この分野では多くの企業が LLM 推論を中心に競争しています。
+
+Groq は、この記事の執筆時点で、18 倍高速な推論パフォーマンスを主張する LLM 推論会社の 1 つです。[Anyscale の LLMPerf リーダーボード](https://github.com/ray-project/llmperf-leaderboard)他のトップクラウドベースプロバイダーと比較して。 Groq は現在、Meta AI の Llama 2 70B や Mixtral 8x7B などのモデルを API 経由で利用可能にしています。これらのモデルは、言語処理ユニット (LPU) と呼ばれる LLM を実行するために設計された独自のカスタム ハードウェアで構築された Groq LPU™ 推論エンジンを利用しています。
+
+Groq の FAQ によると、LPU は単語あたりの計算時間を短縮し、より高速なテキスト シーケンスの生成を可能にします。 LPU の技術的詳細とその利点について詳しくは、ISCA 賞を受賞した資料をご覧ください。[2020年](https://wow.groq.com/groq-isca-paper-2020/)そして[2022年](https://wow.groq.com/isca-2022-paper/)書類。
+
+以下は、モデルの速度と価格のグラフです。
+
+!["Groq pricing"](../../img/research/groq.png)
+
+以下のグラフは、1 秒あたりに返される出力トークンの平均数である出力トークン スループット (トークン/秒) を比較しています。グラフ内の数値は、Llama 2 70B モデルの LLM 推論プロバイダーの平均出力トークン スループット (150 リクエストに基づく) に対応します。
+
+!["LLMPerf Leaderboard"](https://github.com/ray-project/llmperf-leaderboard/blob/main/.assets/output_tokens_per_s.jpg?raw=true)
+
+LLM 推論のもう 1 つの重要な要素 (特にストリーミング アプリケーションの場合) は、LLM が最初のトークンを返す時間に相当する最初のトークンまでの時間 (TTFT) と呼ばれます。以下は、さまざまな LLM 推論プロバイダーのパフォーマンスを示すグラフです。
+
+!["time to first token (seconds)"](https://github.com/ray-project/llmperf-leaderboard/blob/main/.assets/ttft.jpg?raw=true)
+
+Groq の LLM 推論パフォーマンスについて詳しくは、Anyscale の LLMPerf Leaderboard をご覧ください。[ここ](https://wow.groq.com/groq-lpu-inference-engine-crushes-first-public-llm-benchmark/).

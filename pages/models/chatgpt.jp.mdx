@@ -1,79 +1,86 @@
-# ChatGPT プロンプトエンジニアリング
+# ChatGPT Prompt Engineering
 
 import { Callout, FileTree } from 'nextra-theme-docs'
 import {Screenshot} from 'components/screenshot'
 import CHATGPT1 from '../../img/chatgpt-1.png'
 import CHATGPTCLASSIC from '../../img/chatgpt-classic.png'
+import {Cards, Card} from 'nextra-theme-docs'
+import {CodeIcon} from 'components/icons'
 
-このセクションでは、ChatGPTの最新のプロンプトエンジニアリング技術について、ヒント、アプリケーション、制限、論文、参考資料を追加しています。
+このセクションでは、ヒント、アプリケーション、制限事項、論文、追加の読み物など、ChatGPT の最新のプロンプト エンジニアリング テクニックについて説明します。
 
-<Callout emoji="⚠️">
-  このセクションは、現在大幅に開発中です。
-</Callout>
+トピック:
 
-トピック：
-- [ChatGPTの紹介](#ChatGPTの紹介)
-- [会話タスクのレビュー](#会話タスクのレビュー)
-- [ChatGPTとの会話](#ChatGPTとの会話)
+- [ChatGPT Introduction](#chatgpt-introduction)
+- [会話タスクの確認](#reviewing-the-conversation-task)
+- [Conversations with ChatGPT](#conversations-with-chatgpt)
 
----
-## ChatGPTの紹介
+***
 
-ChatGPTは、会話形式でのやりとりができる新しいモデルであり、OpenAIによってトレーニングされています。このモデルは、プロンプトに従って指示を実行し、対話の文脈に適切な応答を提供するようにトレーニングされています。ChatGPTは、質問に答えたり、レシピの提案、特定のスタイルで歌詞を書いたり、コードを生成したりするのに役立ちます。
+## ChatGPT Introduction
 
-ChatGPTは、人間のフィードバックからの強化学習（RLHF）を使用してトレーニングされています。このモデルは、以前のGPTのイテレーションよりもはるかに能力がある（そして有害で不正確な出力を減らすためにトレーニングされている）が、それでも制限があります。いくつかの具体的な例を使って、これらの能力と制限について説明しましょう。
+ChatGPTは新しいモデルです[trained by OpenAI](https://openai.com/blog/chatgpt)会話形式で対話する機能があります。このモデルは、プロンプトの指示に従い、対話のコンテキストで適切な応答を提供するようにトレーニングされています。 ChatGPT は、質問への回答、レシピの提案、特定のスタイルでの歌詞の作成、コードの生成などを支援します。
 
-ChatGPTの研究プレビューは[こちら](chat.openai.com)で利用できますが、以下の例ではOpenAI Playgroundの`Chat`モードを使用します。
+ChatGPT は、ヒューマン フィードバックからの強化学習 (RLHF) を使用してトレーニングされます。このモデルは、以前の GPT イテレーションよりもはるかに機能が優れていますが (有害な出力や虚偽の出力を減らすように訓練もされています)、依然として制限があります。具体的な例を使用して、機能と制限の一部を説明しましょう。
 
----
-## 会話タスクのレビュー
+ChatGPTのリサーチプレビューを使用できます[ここ](chat.openai.com)ただし、以下の例では、`Chat`OpenAI Playground のモード。
 
-以前のガイドの1つで、会話の能力や役割のプロンプトについて少し説明しました。特定のスタイル、意図、行動、アイデンティティでLLMに会話を行うように指示する方法について説明しました。
+***
 
-ここでは、より技術的で科学的な応答を生成できる会話システムを作成した基本的な例を再度みてみましょう。
+## 会話タスクの確認
+
+以前のガイドの 1 つで、会話機能と役割プロンプトについて少し説明しました。特定の意図、動作、アイデンティティを備えた特定のスタイルで会話するように LLM に指示する方法について説明しました。
+
+質問に対してより技術的かつ科学的な応答を生成できる会話システムを作成した、前の基本的な例を見直してみましょう。
 
 *プロンプト：*
+
 ```
-以下はAI研究アシスタントとの会話です。アシスタントのトーンは技術的で科学的なものとします。
+The following is a conversation with an AI research assistant. The assistant tone is technical and scientific.
 
-人間：こんにちは、あなたは誰ですか？
-AI：ご挨拶です！私はAIの研究助手です。今日はどのようなご用件でしょうか？
-人間： ブラックホールの生成について教えてください。
-AI：
+Human: Hello, who are you?
+AI: Greeting! I am an AI research assistant. How can I help you today?
+Human: Can you tell me about the creation of black holes?
+AI:
 ```
-上記の例から、2つの重要なコンポーネントがわかります。
-- チャットボットの**意図**または説明
-- 応答時に使用するスタイルやトーンを指示する**アイデンティティ**
 
-上記の単純な例は、`text-davinci-003`を使用するテキスト補完APIでうまく機能します。最近、OpenAIは[ChatGPT API](https://openai.com/blog/introducing-chatgpt-and-whisper-apis)を発表しました。より強力で安価な`gpt-3.5-turbo`モデルは、このタイプの機能（チャット補完）に特化して開発されたもので、非チャットの使用ケースでもOpenAIの最高峰のモデルとして推奨されています。ChatGPT APIを使用することの利点は、コストの削減（90％）と効率性です。
+上の例から、2 つの重要なコンポーネントがわかります。
 
-Snap Inc.やInstacartなどの大手企業は、パーソナライズされた推奨事項から自由なショッピング目標まで、ChatGPTを利用した会話機能を既に自社製品に組み込んでいます。
+- の**意図**またはチャットボットとは何かの説明
+- の**身元**チャットボットが応答するために使用するスタイルや口調を指示します
 
----
-## ChatGPTとの会話
+上記の簡単な例は、以下を使用するテキスト補完 API とうまく連携します。`text-davinci-003`. More recently, OpenAI [announced the ChatGPT APIs](https://openai.com/blog/introducing-chatgpt-and-whisper-apis)と呼ばれる、より強力で安価なモデルです。`gpt-3.5-turbo`は、このタイプの機能 (チャット補完) 用に特別に構築されました。実際、OpenAI は、チャット以外のユースケースでもこれを最良のモデルとして推奨しています。 ChatGPT API を使用することのその他の利点は、大幅なコスト削減 (90%) と効率性です。
 
-### マルチターンの会話
+Snap Inc. や Instacart などの大企業は、パーソナライズされた推奨事項から無制限のショッピング目標に至るまで、ChatGPT を活用した会話機能を自社製品にすでに統合しています。
 
-ChatGPTの機能を示すために、上記のチャットボットアシスタントの例を使用して、その結果について説明します。`text-davinci-003`に比べて、ChatGPTのパワーを支える`gpt-3.5-turbo`モデルは、入力としてチャット形式を使用します。モデルは、入力として一連のメッセージを期待し、それらを使用して応答を生成します。
+***
+
+## Conversations with ChatGPT
+
+### マルチターン会話
+
+ChatGPT の機能のデモを始めるために、上記のチャットボット アシスタントの例を使用して、結果について説明します。に比べ`text-davinci-003`、`gpt-3.5-turbo`ChatGPT を強化するモデルは、入力としてチャット形式を使用します。モデルは一連のメッセージを入力として想定し、それらを使用して応答を生成します。
 
 *入力：*
+
 ```
-システム：あなたはAIの研究助手です。あなたは技術的で科学的なトーンで話します。
-ユーザ：こんにちは、あなたは誰ですか？
-アシスタント：ご挨拶です！私はAIの研究助手です。今日はどのようなご用件でしょうか？
-ユーザ：ブラックホールの生成について教えてください。
+SYSTEM: You are an AI research assistant. You use a tone that is technical and scientific.
+USER: Hello, who are you?
+ASSISTANT: Greeting! I am an AI research assistant. How can I help you today?
+USER: Can you tell me about the creation of black holes?
 ```
 
 *出力：*
+
 ```
-アシスタント：もちろんです！ブラックホールとは、巨大な星が燃料を使い果たし、自らの重力で崩壊したときにできるものです。この崩壊によって、星は信じられないほど密度が高くなり、光さえも逃れられないほど強い重力場ができます。この帰らざる地点が事象の地平線と呼ばれるものです。事象の地平線を超えた星は、ブラックホールとみなされます。
+ASSISTANT: Of course! Black holes are created when a massive star runs out of fuel and collapses under its own gravity. This collapse causes the star to become incredibly dense, with a gravitational field so strong that not even light can escape it. This point of no return is known as the event horizon. Once a star crosses the event horizon, it is considered a black hole...
 ```
 
-上記の例では、入力と出力を単純化しましたが、ChatGPTチャット補完APIは、メッセージを特定の形式で入力する必要があります。以下に、OpenAI Playgroundの`Chat Mode`を使用してこの例がどのように見えるかのスナップショットを追加しました：
+上の例では入力と出力を簡略化しましたが、ChatGPT チャット完了 API ではメッセージが特定の形式である必要があることに注意してください。以下に、この例がどのように見えるかを示すスナップショットを追加しました。`Chat Mode` in the OpenAI Playground:
 
 <Screenshot src={CHATGPT1} alt="CHATGPT1" />
 
-この例でより正式なAPIコールは、以下の例のようなものになります：
+この例のより正式な API 呼び出しは、次の例のようになります。
 
 ```python
 import openai
@@ -81,48 +88,50 @@ import openai
 openai.ChatCompletion.create(
   model="gpt-3.5-turbo",
   messages=[
-        {"role": "system", "content": "あなたはAIの研究助手です。あなたは技術的で科学的なトーンで話します。"},
-        {"role": "user", "content": "こんにちは、あなたは誰ですか？"},
-        {"role": "assistant", "content": "ご挨拶です！私はAIの研究助手です。今日はどのようなご用件でしょうか？"},
-        {"role": "user", "content": "ブラックホールの生成について教えてください。"}
+        {"role": "system", "content": "You are an AI research assistant. You use a tone that is technical and scientific."},
+        {"role": "user", "content": "Hello, who are you?"},
+        {"role": "assistant", "content": "Greeting! I am an AI research assistant. How can I help you today?"},
+        {"role": "user", "content": "Can you tell me about the creation of black holes?"}
     ]
 )
 ```
 
-実際には、ChatGPTとの開発者のやりとりは、[Chat Markup Language](https://github.com/openai/openai-python/blob/main/chatml.md)（短縮形ChatML）を介して行われることが期待されています。
+実際、開発者が将来 ChatGPT と対話する方法は、[チャットマークアップ言語](https://github.com/openai/openai-python/blob/main/chatml.md)(略してChatML)。
 
-### 単一ターンタスク
+### シングルターンタスク
 
-チャット形式は、マルチターンの会話を可能にするだけでなく、`text-davinci-003`で使用したのと似た単一ターンのタスクもサポートしています。これは、オリジナルのGPTモデルで実証したのと同様のタスクをChatGPTを使用して実行できることを意味します。たとえば、ChatGPTを使用して次の質問応答タスクを実行してみましょう。
+チャット形式では複数ターンの会話が可能ですが、以前と同様のシングルターンのタスクもサポートされています。`text-davinci-003`。これは、ChatGPT を使用して、元の GPT モデルで実証したものと同様のタスクを実行できることを意味します。たとえば、ChatGPT を使用して次の質問応答タスクを実行してみます。
 
-*Input:*
+*入力：*
+
 ```
-ユーザ: 以下の文脈に基づき、質問に答えてください。回答は短く、簡潔に答えてください。答えに自信がない場合は、「回答できません。」と答えてください。
+USER: Answer the question based on the context below. Keep the answer short and concise. Respond "Unsure about answer" if not sure about the answer.
 
-文脈: テプリズマブのルーツは、ニュージャージー州のオーソ・ファーマシューティカルという製薬会社です。そこで科学者たちは、OKT3と名付けられたこの抗体の初期バージョンを作製した。この分子はもともとマウスから採取したもので、T細胞の表面に結合し、その殺傷能力を制限することができた。1986年には、腎臓移植後の臓器拒絶反応を防ぐ目的で承認され、ヒトへの使用が許可された最初の治療用抗体となりました。
+Context: Teplizumab traces its roots to a New Jersey drug company called Ortho Pharmaceutical. There, scientists generated an early version of the antibody, dubbed OKT3. Originally sourced from mice, the molecule was able to bind to the surface of T cells and limit their cell-killing potential. In 1986, it was approved to help prevent organ rejection after kidney transplants, making it the first therapeutic antibody allowed for human use.
 
-質問:  OKT3はもともと何から調達されたのですか？
+Question: What was OKT3 originally sourced from?
 
-回答:
-```
-
-*アウトプット：*
-```
-アシスタント: マウス。
+Answer:
 ```
 
-このようなタスクをChatGPTを使用して実行する方法をより良く説明するために、私は `USER` と `ASSISTANT` ラベルを追加しています。プレイグラウンドを使用した例は次のとおりです。
+*出力：*
+
+```
+ASSISTANT: Mice.
+```
+
+を追加していることに注意してください`USER`そして`ASSISTANT`ChatGPT を使用してタスクを実行する方法をより適切に示すためのラベル。 Playground を使用した例を次に示します。
 
 <Screenshot src={CHATGPTCLASSIC} alt="CHATGPTCLASSIC" />
 
-より正式には、このAPI呼び出しです（リクエストのメッセージ要素のみを含めました）。
+より正式には、これは API 呼び出しです (ここではリクエストのメッセージ コンポーネントのみを含めています)。
 
 ```python
-CONTENT = """以下の文脈に基づき、質問に答えてください。回答は短く、簡潔に答えてください。答えに自信がない場合は、 \"回答できません。\" と答えてください。
+CONTENT = """Answer the question based on the context below. Keep the answer short and concise. Respond \"Unsure about answer\" if not sure about the answer.
 
-Context: テプリズマブのルーツは、ニュージャージー州のオーソ・ファーマシューティカルという製薬会社です。そこで科学者たちは、OKT3と名付けられたこの抗体の初期バージョンを作製した。この分子はもともとマウスから採取したもので、T細胞の表面に結合し、その殺傷能力を制限することができた。1986年には、腎臓移植後の臓器拒絶反応を防ぐ目的で承認され、ヒトへの使用が許可された最初の治療用抗体となりました。
+Context: Teplizumab traces its roots to a New Jersey drug company called Ortho Pharmaceutical. There, scientists generated an early version of the antibody, dubbed OKT3. Originally sourced from mice, the molecule was able to bind to the surface of T cells and limit their cell-killing potential. In 1986, it was approved to help prevent organ rejection after kidney transplants, making it the first therapeutic antibody allowed for human use.
 
-Question: OKT3はもともと何から調達されたのですか？
+Question: What was OKT3 originally sourced from?
 
 Answer:
 """
@@ -136,57 +145,170 @@ response = openai.ChatCompletion.create(
 )
 ```
 
-### チャットモデルの指示
+### チャットモデルの指導
 
-公式のOpenAIドキュメントによると、`gpt-3.5-turbo`モデルのスナップショットも利用可能になります。たとえば、3月1日のスナップショット `gpt-3.5-turbo-0301` にアクセスできます。これにより、開発者は特定のモデルバージョンを選択できます。これはまた、モデルの指示のためのベストプラクティスがバージョンごとに変更される可能性があることを意味します。
+OpenAI の公式ドキュメントによると、`gpt-3.5-turbo`モデルも発売される予定です。たとえば、3 月 1 日のスナップショットにアクセスできます。`gpt-3.5-turbo-0301`。これにより、開発者は特定のモデル バージョンを選択できるようになります。これは、モデルを指示するためのベスト プラクティスがバージョンごとに異なる可能性があることも意味します。
 
-`gpt-3.5-turbo-0301`の現在の推奨事項は、利用可能な `system` メッセージではなく、`user` メッセージに指示を追加することです。
+現在の推奨事項は、`gpt-3.5-turbo-0301`に命令を追加することです`user`利用可能なメッセージとは対照的に、`system`メッセージ。
 
----
-## References
+## ノート
 
-- [ChatGPT as the Transportation Equity Information Source for Scientific Writing](https://arxiv.org/abs/2303.11158) (March 2023)
-- [Translating Radiology Reports into Plain Language using ChatGPT and GPT-4 with Prompt Learning: Promising Results, Limitations, and Potential](https://arxiv.org/abs/2303.09038) (March 2023)
-- [ChatGPT Participates in a Computer Science Exam](https://arxiv.org/abs/2303.09461) (March 2023)
+これは、公式の`openai`図書館：
+
+<Cards>
+  <Card icon={<CodeIcon />} title="Introduction to The ChatGPT APIs" href="https://github.com/dair-ai/Prompt-Engineering-Guide/blob/main/notebooks/pe-chatgpt-intro.ipynb" />
+
+  <Card icon={<CodeIcon />} title="ChatGPT with LangChain" href="https://github.com/dair-ai/Prompt-Engineering-Guide/blob/main/notebooks/pe-chatgpt-langchain.ipynb" />
+</Cards>
+
+***
+
+## 参考文献
+
+- [ChatGPTを使用した列タイプのアノテーション](https://arxiv.org/abs/2306.00745) (June 2023)
+- [ChatGPT で生成された反事実的思考に触発された質問で電子教科書のプログラミングを強化する](https://arxiv.org/abs/2306.00551) (June 2023)
+- [ChatGPT と ENFJ、バードと ISTJ: 大規模言語モデルの性格に関する実証的研究](https://arxiv.org/abs/2305.19926) (May 2023)
+- [ベンチマーク データセットにおける ChatGPT の体系的な研究と包括的な評価](https://arxiv.org/abs/2305.18486) (May 2023)
+- [数学と論理の問題でテストされるチャットボット: ChatGPT-3.5、ChatGPT-4、および Google Bard の予備的な比較と評価](https://arxiv.org/abs/2305.18618) (May 2023)
+- [建設業界における GPT モデル: 機会、限界、およびユースケースの検証](https://arxiv.org/abs/2305.18997) (May 2023)
+- [Fairness of ChatGPT](https://arxiv.org/abs/2305.18569) (May 2023)
+- [主流メディアにおける ChatGPT のマッピング: 感情分析と単語頻度分析による初期の定量的洞察](https://arxiv.org/abs/2305.18340) (May 2023)
+- [ChatGPT に関する調査: AI が生成したコンテンツ、課題、解決策](https://arxiv.org/abs/2305.18339) (May 2023)
+- [言語モデルは参照の幻覚をいつ起こしているかを知っていますか?](https://arxiv.org/abs/2305.18248) (May 2023)
+- \[HowkGPT: コンテキストを意識した複雑性分析による ChatGPT によって生成された大学生の宿題の検出を調査する]
+- [大規模言語モデルを使用して繰り返しゲームをプレイする](https://arxiv.org/abs/2305.16867) (May 2023)
+- [ゼロはまだヒーローではない: 財務タスクにおける LLM のゼロショット パフォーマンスのベンチマーク](https://arxiv.org/abs/2305.16633) (May 2023)
+- [ハイブリッドロングドキュメントから KPI を取得するための LLM の活用: 包括的なフレームワークとデータセット](https://arxiv.org/abs/2305.16344) (May 2023)
+- [マークされたペルソナ: 自然言語プロンプトを使用して言語モデルのステレオタイプを測定する](https://arxiv.org/abs/2305.18189v1) (May 2023)
+- [大きいほど失敗しにくくなります: 言語モデルは Python の識別子の交換を認識しません](https://arxiv.org/pdf/2305.15507v1.pdf) (May 2023)
+- [InternGPT: 言語を超えて ChatGPT と対話してビジョン中心のタスクを解決する](https://arxiv.org/abs/2305.05662v3) (May 2023)
+- [Narrative XL: 長期記憶モデルのための大規模データセット](https://arxiv.org/abs/2305.13877) (May 2023)
+- [ChatGPT には Theory of Mind がありますか?](https://arxiv.org/abs/2305.14020) (May 2023)
+- [LLM はすでにデータベース インターフェイスとして機能できますか?大規模データベースのグラウンデッド Text-to-SQL のためのビッグベンチ](https://arxiv.org/abs/2305.03111v2) (May 2023)
+- [ZeroSCROLLS: 長いテキストを理解するためのゼロショット ベンチマーク](https://arxiv.org/abs/2305.14196) (May 2023)
+- [ゼロショット分類のための迅速な複雑性の回避: 計算社会科学における大規模言語モデルの研究](https://arxiv.org/abs/2305.14310) (May 2023)
+- [ChatGPT-EDSS: ChatGPT 由来のコンテキスト単語埋め込みからトレーニングされた共感対話音声合成](https://arxiv.org/abs/2305.13724) (May 2023)
+- [LLM は、事前トレーニングされた言語モデルの解釈を容易にすることができますか?](https://arxiv.org/abs/2305.13386) (May 2023)
+- [ChatGPT は意図を検出できますか?音声言語理解のための大規模言語モデルの評価](https://arxiv.org/abs/2305.13512) (May 2023)
+- [LLM を活用した精神科医と患者のシミュレーション用チャットボット: アプリケーションと評価](https://arxiv.org/abs/2305.13614) (May 2023)
+- [パーソナル データ サイエンティストとしての ChatGPT](https://arxiv.org/abs/2305.13657) (May 2023)
+- [大規模な言語モデルは抽象的な要約を評価するのに適していますか?](https://arxiv.org/abs/2305.13091) (May 2023)
+- [ChatGPTは真実を守ることができるか?自動弁証法的評価により LLM の推論の欠陥が明らかになる](https://arxiv.org/abs/2305.13160) (May 2023)
+- [多言語および絵文字ベースのヘイトスピーチ検出における ChatGPT のパフォーマンスの評価](https://arxiv.org/abs/2305.13276) (May 2023)
+- [ChatGPT が意図分類のパラフレーズのクラウドソーシングを置き換える: より高い多様性と同等のモデルの堅牢性](https://arxiv.org/abs/2305.12947) (May 2023)
+- [説明可能な自動学生解答評価のための ChatGPT の抽出](https://arxiv.org/abs/2305.12962) (May 2023)
+- [Prompt ChatGPT In MNER: ChatGPT からの補助的な洗練された知識に基づいて改良されたマルチモーダル固有表現認識方法](https://arxiv.org/abs/2305.12212) (May 2023)
+- [ChatGPT は女性よりも男性として認識される可能性が高い](https://arxiv.org/abs/2305.12564) (May 2023)
+- [通信ドメインの LLM に関する所見: 機能と制限](https://arxiv.org/abs/2305.13102) (May 2023)
+- [Bits of Grass: GPT はすでにホイットマンのような書き方を知っていますか?](https://arxiv.org/abs/2305.11064) (May 2023)
+- [大規模な言語モデルはガイド付き読書に適していますか?](https://arxiv.org/abs/2305.10645) (May 2023)
+- [ChatGPT は機械翻訳における性別バイアスを永続させ、性別のない代名詞を無視する: ベンガル語と他の 5 つの低リソース言語での調査結果](https://arxiv.org/abs/2305.10510) (May 2023)
+- [BAD: 候補者スクリーニングにおける大規模言語モデルの BiAs 検出](https://arxiv.org/abs/2305.10407) (May 2023)
+- [MemoryBank: 長期記憶による大規模言語モデルの強化](https://arxiv.org/abs/2305.10250) (May 2023)
+- [ナレッジ グラフ補完モデルは少数回の学習者である: LLM を使用した電子商取引における関係ラベリングの実証的研究](https://arxiv.org/abs/2305.09858) (May 2023)
+- [Java 関数用の GPT-3.5 および Bard AI モデルのコード生成機能に関する予備分析](https://arxiv.org/abs/2305.09402) (May 2023)
+- [ChatGPT-4 はゼロショット学習による政治的な Twitter メッセージへの注釈付けにおいて専門家やクラウド ワーカーを上回ります](https://arxiv.org/abs/2304.06588) (April 2023)
+- [英語を超えた ChatGPT: 多言語学習における大規模言語モデルの包括的な評価に向けて](https://arxiv.org/abs/2304.05613) (April 2023)
+- [日本語のスタイロメトリー分析による ChatGPT(-3.5、-4) で作成された論文と人間が書いた論文の区別](https://arxiv.org/abs/2304.05534) (April 2023)
+- [ChatGPTによるゼロショット時間関係抽出](https://arxiv.org/abs/2304.05454) (April 2023)
+- [ChatGPT と Bard は整合性のとれた評価項目を生成できますか?人間のパフォーマンスに対する信頼性の分析](https://arxiv.org/abs/2304.05372) (April 2023)
+- [大規模な言語モデルは医療向けに準備ができていますか?臨床言語理解に関する比較研究](https://arxiv.org/abs/2304.05368) (April 2023)
+- [ウォール街の初心者: マルチモーダル株価変動予測の課題に対する ChatGPT のゼロショット分析](https://arxiv.org/abs/2304.05351) (April 2023)
+- [ChatGPT の毒性: ペルソナに割り当てられた言語モデルの分析](https://arxiv.org/abs/2304.05335) (April 2023)
+- [ChatGPT に対する複数段階のジェイルブレイクによるプライバシー攻撃](https://arxiv.org/abs/2304.05197) (April 2023)
+- [ChatGPT は優れた感情分析ツールですか?予備調査](https://arxiv.org/abs/2304.04339) (April 2023)
+- [ゼロショット対話理解​​のための ChatGPT の予備評価](https://arxiv.org/abs/2304.04256) (April 2023)
+- [ChatGPT による抽出的な要約による忠実な要約生成](https://arxiv.org/abs/2304.04193) (April 2023)
+- [ChatGPT は人間の価値観について何を返しますか?記述的価値理論を使用して ChatGPT の価値バイアスを調査する](https://arxiv.org/abs/2304.03612) (April 2023)
+- [ChatGPT とメンタルヘルス分析のための感情強化プロンプトの評価について](https://arxiv.org/abs/2304.03347) (April 2023)
+- [ChatGPT-Crawler: ChatGPT が何を話しているのかを本当に理解しているかどうかを確認する](https://arxiv.org/abs/2304.03325) (April 2023)
+- [ChatGPT はバイアスされるべきですか?大規模言語モデルにおけるバイアスの課題とリスク](https://arxiv.org/abs/2304.03738) (April 2023)
+- [自然言語仕様からの数学プログラムの合成](https://arxiv.org/abs/2304.03287) (April 2023)
+- [大規模な言語モデルは文学翻訳に文書レベルのコンテキストを効果的に活用しますが、重大なエラーが残ります](https://arxiv.org/abs/2304.03245) (April 2023)
+- [ソーシャルメディア上のスタンス検出のためのChatGPTを使用した思考連鎖の調査](https://arxiv.org/abs/2304.03087) (April 2023)
+- [歯科の未来を形作る ChatGPT: マルチモーダル大規模言語モデルの可能性](https://arxiv.org/abs/2304.03086) (April 2023)
+- [大規模な言語モデルはテキスト ゲームをうまくプレイできるでしょうか?現在の最先端の質問と未解決の質問](https://arxiv.org/abs/2304.02868) (April 2023)
+- [ChatGPTによる人間らしい要約評価](https://arxiv.org/abs/2304.02554) (April 2023)
+- [生物医学的推論と分類のためのモデルの ChatGPT ファミリの評価](https://arxiv.org/abs/2304.02496) (April 2023)
+- [CHATGPT の比較分析と言語モデルの進化](https://arxiv.org/abs/2304.02468) (April 2023)
+- [ChatGPT の翻訳力の解放: 実証研究](https://arxiv.org/abs/2304.02182) (April 2023)
+- [Geotechnical Parrot Tales (GPT): 地質工学用途向けの迅速なエンジニアリングで GPT 幻覚を克服](https://arxiv.org/abs/2304.02138) (April 2023)
+- [ChatGPT の可能性を解き放つ: 自然言語処理における応用、利点、限界、将来の方向性の包括的な探求](https://arxiv.org/abs/2304.02017) (April 2023)
+- [ChatGPT/GPT-4 研究の概要と大規模言語モデルの将来に向けた展望](https://arxiv.org/abs/2304.01852) (April 2023)
+- [ChatGPT は非常に流暢な文法エラー修正システムですか?総合的な評価](https://arxiv.org/abs/2304.01746) (April 2023)
+- [大規模言語モデル時代の安全性分析: ChatGPT を使用した STPA のケーススタディ](https://arxiv.org/abs/2304.01246) (April 2023)
+- [大規模な言語モデルは報道機関の信頼性を評価できる](https://arxiv.org/abs/2304.00228) (April 2023)
+- [AI チャットボットは、エンジニアリングの基礎 (FE) およびエンジニアリングの原則と実践 (PE) の構造試験に合格できますか?](https://arxiv.org/abs/2303.18149) (April 2023)
+- [AIはガンマ線天体物理学者を失業させることができるか?](https://arxiv.org/abs/2303.17853) (March 2023)
+- [ChatGPT によって生成された抽象的な要約と、盲検レビューアーおよびテキスト分類アルゴリズムによる実際の要約の比較](https://arxiv.org/abs/2303.17650) (March 2023)
+- [HuggingGPT: ChatGPT と HuggingFace のその仲間を使用して AI タスクを解決する](https://arxiv.org/abs/2303.17580) (March 2023)
+- [SelfCheckGPT: 生成大規模言語モデル向けのゼロリソース ブラック ボックス幻覚検出](https://arxiv.org/abs/2303.08896) (March 2023)
+- [WavCaps: 音声言語マルチモーダル研究用の ChatGPT 支援の弱いラベル付き音声キャプション データセット](https://arxiv.org/abs/2303.17395) (March 2023)
+- [大規模言語モデルは算術タスクでどの程度うまく機能しますか?](https://arxiv.org/abs/2304.02015) (March 2023)
+- [ChatGPT と人間社会間の異文化間の連携の評価: 実証的研究](https://arxiv.org/abs/2303.17466) (March 2023)
+- [はい、しかし...ChatGPT は歴史文書内のエンティティを識別できますか?](https://arxiv.org/abs/2303.17322) (March 2023)
+- [NLP ベースのメンタルヘルス アプリケーションにおける ChatGPT の評価](https://arxiv.org/abs/2303.15727) (March 2023)
+- [象の透視鏡: Google、ChatGPT、Wikipedia、YouTube における言語バイアスの調査](https://arxiv.org/abs/2303.16281) (March 2023)
+- [ChatGPT それとも学術科学者ですか?既製の機械学習ツールを使用して、99% 以上の精度で著者を区別します。](https://arxiv.org/abs/2303.16352) (March 2023)
+- [ChatGPT を使用したゼロショット臨床実体認識](https://arxiv.org/abs/2303.16416) (March 2023)
+- [ChatGPT は知識は豊富だが経験の浅いソルバーです: 大規模言語モデルにおける常識問題の調査](https://arxiv.org/abs/2303.16421) (March 2023)
+- [ChatGPT4PCG コンペティション: Science Bird のキャラクター風のレベル生成](https://arxiv.org/abs/2303.15662) (March 2023)
+- [抽象的なテキスト要約のための事実不一致評価ツールとしての ChatGPT](https://arxiv.org/abs/2303.15621) (March 2023)
+- [Chat-REC: インタラクティブで説明可能な LLM 拡張レコメンダー システムに向けて](https://arxiv.org/abs/2303.14524) (March 2023)
+- [ChatGPT のゼロショット Text-to-SQL 機能の包括的な評価](https://arxiv.org/abs/2303.13547) (March 2023)
+- [ChatGPTの機械翻訳活用に向けて](https://arxiv.org/abs/2303.13780) (March 2023)
+- [エラー分析プロンプトにより、大規模言語モデルにおける人間のような翻訳評価が可能になります: ChatGPT のケーススタディ](https://arxiv.org/abs/2303.13809) (March 2023)
+- [ChatGPT はテキスト注釈タスクでクラウドワーカーを上回るパフォーマンスを発揮](https://arxiv.org/pdf/2303.15056v1.pdf) (March 2023)
+- [ChatGPT か Grammarly か?文法的誤り訂正ベンチマークで ChatGPT を評価する](https://arxiv.org/abs/2303.13648) (March 2023)
+- [ChatGPT と新しい学術の現実: AI によって書かれた研究論文と学術出版における大規模言語モデルの倫理](https://arxiv.org/abs/2303.13367) (March 2023)
+- [LLM はすべての取引の達人ですか? : LLM のドメインに依存しない推論スキルの探求](https://arxiv.org/abs/2303.12810) (March 2023)
+- [ChatGPT は優れたキーフレーズ ジェネレーターですか?予備調査](https://arxiv.org/abs/2303.13001) (March 2023)
+- [MM-REACT: ChatGPT にマルチモーダルな推論とアクションを要求する](https://arxiv.org/abs/2303.11381) (March 2023)
+- [大規模な言語モデルを使用して、ゼロショット学習環境で政治家のイデオロギーを推定できる](https://arxiv.org/abs/2303.12057) (March 2023)
+- [中国人の中級英語学習者は、深い凝集力で ChatGPT を上回りました: 英語の物語執筆の証拠](https://arxiv.org/abs/2303.11812) (March 2023)
+- [GPT-3 および GPT-3.5 シリーズ モデルの包括的な機能分析](https://arxiv.org/abs/2303.10420) (March 2023)
+- [科学的執筆のための交通公平性情報ソースとしての ChatGPT](https://arxiv.org/abs/2303.11158) (March 2023)
+- [ChatGPT および GPT-4 を使用した、迅速な学習による放射線医学レポートの平易な言語への翻訳: 有望な結果、限界、および可能性](https://arxiv.org/abs/2303.09038) (March 2023)
+- [ChatGPT がコンピュータ サイエンス試験に参加します](https://arxiv.org/abs/2303.09461) (March 2023)
 - [Consistency Analysis of ChatGPT](https://arxiv.org/abs/2303.06273) (Mar 2023)
-- [Algorithmic Ghost in the Research Shell: Large Language Models and Academic Knowledge Creation in Management Research](https://arxiv.org/abs/2303.07304) (Mar 2023)
-- [Large Language Models in the Workplace: A Case Study on Prompt Engineering for Job Type Classification](https://arxiv.org/abs/2303.07142) (March 2023)
-- [Seeing ChatGPT Through Students' Eyes: An Analysis of TikTok Data](https://arxiv.org/abs/2303.05349) (March 2023)
-- [Extracting Accurate Materials Data from Research Papers with Conversational Language Models and Prompt Engineering -- Example of ChatGPT](https://arxiv.org/abs/2303.05352) (Mar 2023)
-- [ChatGPT is on the horizon: Could a large language model be all we need for Intelligent Transportation?](https://arxiv.org/abs/2303.05382) (Mar 2023)
-- [Making a Computational Attorney](https://arxiv.org/abs/2303.05383) (Mar 2023)
-- [Does Synthetic Data Generation of LLMs Help Clinical Text Mining?](https://arxiv.org/abs/2303.04360) (Mar 2023)
-- [MenuCraft: Interactive Menu System Design with Large Language Models](https://arxiv.org/abs/2303.04496) (Mar 2023)
-- [A Comprehensive Survey of AI-Generated Content (AIGC): A History of Generative AI from GAN to ChatGPT](https://arxiv.org/abs/2303.04226) (Mar 2023)
-- [Exploring the Feasibility of ChatGPT for Event Extraction](https://arxiv.org/abs/2303.03836)
-- [ChatGPT: Beginning of an End of Manual Annotation? Use Case of Automatic Genre Identification](https://arxiv.org/abs/2303.03953) (Mar 2023)
-- [Is ChatGPT a Good NLG Evaluator? A Preliminary Study](https://arxiv.org/abs/2303.04048) (Mar 2023)
-- [Will Affective Computing Emerge from Foundation Models and General AI? A First Evaluation on ChatGPT](https://arxiv.org/abs/2303.03186) (Mar 2023)
-- [UZH_CLyp at SemEval-2023 Task 9: Head-First Fine-Tuning and ChatGPT Data Generation for Cross-Lingual Learning in Tweet Intimacy Prediction](https://arxiv.org/abs/2303.01194) (Mar 2023)
-- [How to format inputs to ChatGPT models](https://github.com/openai/openai-cookbook/blob/main/examples/How_to_format_inputs_to_ChatGPT_models.ipynb) (Mar 2023)
-- [Can ChatGPT Assess Human Personalities? A General Evaluation Framework](https://arxiv.org/abs/2303.01248) (Mar 2023)
-- [Cross-Lingual Summarization via ChatGPT](https://arxiv.org/abs/2302.14229) (Feb 2023)
-- [ChatAug: Leveraging ChatGPT for Text Data Augmentation](https://arxiv.org/abs/2302.13007) (Feb 2023)
-- [Dr ChatGPT, tell me what I want to hear: How prompt knowledge impacts health answer correctness](https://arxiv.org/abs/2302.13793) (Feb 2023)
-- [An Independent Evaluation of ChatGPT on Mathematical Word Problems (MWP)](https://arxiv.org/abs/2302.13814) (Feb 2023)
-- [ChatGPT: A Meta-Analysis after 2.5 Months](https://arxiv.org/abs/2302.13795) (Feb 2023)
-- [Let's have a chat! A Conversation with ChatGPT: Technology, Applications, and Limitations](https://arxiv.org/abs/2302.13817) (Feb 2023)
-- [Check Your Facts and Try Again: Improving Large Language Models with External Knowledge and Automated Feedback](https://arxiv.org/abs/2302.12813) (Feb 2023)
-- [On the Robustness of ChatGPT: An Adversarial and Out-of-distribution Perspective](https://arxiv.org/abs/2302.12095) (Feb 2023)
-- [How Generative AI models such as ChatGPT can be (Mis)Used in SPC Practice, Education, and Research? An Exploratory Study](https://arxiv.org/abs/2302.10916) (Feb 2023)
-- [Can ChatGPT Understand Too? A Comparative Study on ChatGPT and Fine-tuned BERT](https://arxiv.org/abs/2302.10198) (Feb 2023)
-- [A Prompt Pattern Catalog to Enhance Prompt Engineering with ChatGPT](https://arxiv.org/abs/2302.11382) (Feb 2023)
-- [Zero-Shot Information Extraction via Chatting with ChatGPT](https://arxiv.org/abs/2302.10205) (Feb 2023)
-- [ChatGPT: Jack of all trades, master of none](https://arxiv.org/abs/2302.10724) (Feb 2023)
-- [A Pilot Evaluation of ChatGPT and DALL-E 2 on Decision Making and Spatial Reasoning](https://arxiv.org/abs/2302.09068) (Feb 2023)
-- [Netizens, Academicians, and Information Professionals' Opinions About AI With Special Reference To ChatGPT](https://arxiv.org/abs/2302.07136) (Feb 2023)
-- [Linguistic ambiguity analysis in ChatGPT](https://arxiv.org/abs/2302.06426) (Feb 2023)
-- [ChatGPT versus Traditional Question Answering for Knowledge Graphs: Current Status and Future Directions Towards Knowledge Graph Chatbots](https://arxiv.org/abs/2302.06466) (Feb 2023)
-- [What ChatGPT and generative AI mean for science](https://www.nature.com/articles/d41586-023-00340-6) (Feb 2023)
-- [Applying BERT and ChatGPT for Sentiment Analysis of Lyme Disease in Scientific Literature](https://arxiv.org/abs/2302.06474) (Feb 2023)
-- [Exploring AI Ethics of ChatGPT: A Diagnostic Analysis](https://arxiv.org/abs/2301.12867) (Jan 2023)
-- [ChatGPT for Good? On Opportunities and Challenges of Large Language Models for Education](https://www.edu.sot.tum.de/fileadmin/w00bed/hctl/_my_direct_uploads/ChatGPT_for_Good_.pdf) (Jan 2023)
-- [The political ideology of conversational AI: Converging evidence on ChatGPT's pro-environmental, left-libertarian orientation](https://arxiv.org/abs/2301.01768) (Jan 2023)
-- [Techniques to improve reliability - OpenAI Cookbook](https://github.com/openai/openai-cookbook/blob/main/techniques_to_improve_reliability.md)
+- [Research Shell のアルゴリズム ゴースト: 経営研究における大規模言語モデルと学術的知識の創造](https://arxiv.org/abs/2303.07304) (Mar 2023)
+- [職場における大規模言語モデル: 職種分類のための即時エンジニアリングに関するケーススタディ](https://arxiv.org/abs/2303.07142) (March 2023)
+- [学生の目でChatGPTを見る: TikTokデータの分析](https://arxiv.org/abs/2303.05349) (March 2023)
+- [会話型言語モデルとプロンプトエンジニアリングを使用して研究論文から正確な材料データを抽出 -- ChatGPT の例](https://arxiv.org/abs/2303.05352) (Mar 2023)
+- [ChatGPT が目前に迫っています: インテリジェント交通手段に必要なのは大規模な言語モデルだけでよいでしょうか?](https://arxiv.org/abs/2303.05382) (Mar 2023)
+- [計算弁護士を作る](https://arxiv.org/abs/2303.05383) (Mar 2023)
+- [LLM の合成データ生成は臨床テキストマイニングに役立ちますか?](https://arxiv.org/abs/2303.04360) (Mar 2023)
+- [MenuCraft: 大規模な言語モデルを使用した対話型メニュー システムの設計](https://arxiv.org/abs/2303.04496) (Mar 2023)
+- [AI 生成コンテンツ (AIGC) の包括的調査: GAN から ChatGPT までの生成 AI の歴史](https://arxiv.org/abs/2303.04226) (Mar 2023)
+- [イベント抽出のための ChatGPT の実現可能性を探る](https://arxiv.org/abs/2303.03836)
+- [ChatGPT: 手動アノテーションの終わりの始まり?自動ジャンル識別の使用例](https://arxiv.org/abs/2303.03953) (Mar 2023)
+- [ChatGPT は優れた NLG 評価ツールですか?予備調査](https://arxiv.org/abs/2303.04048) (Mar 2023)
+- [アフェクティブ コンピューティングは基礎モデルや一般的な AI から生まれるのでしょうか? ChatGPT の最初の評価](https://arxiv.org/abs/2303.03186) (Mar 2023)
+- [SemEval-2023 の UZH\_CLyp タスク 9: ツイート親密性予測における言語横断学習のためのヘッドファースト微調整と ChatGPT データ生成](https://arxiv.org/abs/2303.01194) (Mar 2023)
+- [ChatGPT モデルへの入力をフォーマットする方法](https://github.com/openai/openai-cookbook/blob/main/examples/How_to_format_inputs_to_ChatGPT_models.ipynb) (Mar 2023)
+- [ChatGPT は人間の性格を評価できますか?一般的な評価の枠組み](https://arxiv.org/abs/2303.01248) (Mar 2023)
+- [ChatGPT による多言語要約](https://arxiv.org/abs/2302.14229) (Feb 2023)
+- [ChatAug: ChatGPT を活用したテキスト データ拡張](https://arxiv.org/abs/2302.13007) (Feb 2023)
+- [ChatGPT 博士、聞きたいことを教えてください: 迅速な知識が健康に関する回答の正しさにどのような影響を与えるか](https://arxiv.org/abs/2302.13793) (Feb 2023)
+- [数学文章題 (MWP) に関する ChatGPT の独立した評価](https://arxiv.org/abs/2302.13814) (Feb 2023)
+- [ChatGPT: 2.5 か月後のメタ分析](https://arxiv.org/abs/2302.13795) (Feb 2023)
+- [チャットしましょう! ChatGPT との会話: テクノロジー、アプリケーション、制限事項](https://arxiv.org/abs/2302.13817) (Feb 2023)
+- [事実を確認して再試行: 外部知識と自動フィードバックによる大規模言語モデルの改善](https://arxiv.org/abs/2302.12813) (Feb 2023)
+- [ChatGPT の堅牢性について: 敵対的かつ配布外の観点](https://arxiv.org/abs/2302.12095) (Feb 2023)
+- [ChatGPT などの生成 AI モデルは、SPC の実践、教育、研究でどのように (誤って) 使用される可能性がありますか?探索的研究](https://arxiv.org/abs/2302.10916) (Feb 2023)
+- [ChatGPTも理解できるのでしょうか？ ChatGPT と Fine-tuned BERT の比較研究](https://arxiv.org/abs/2302.10198) (Feb 2023)
+- [ChatGPT を使用してプロンプト エンジニアリングを強化するプロンプト パターン カタログ](https://arxiv.org/abs/2302.11382) (Feb 2023)
+- [ChatGPTによるチャットによるゼロショット情報抽出](https://arxiv.org/abs/2302.10205) (Feb 2023)
+- [ChatGPT: 何でも屋、何の達人でもない](https://arxiv.org/abs/2302.10724) (Feb 2023)
+- [意思決定と空間推論に関する ChatGPT と DALL-E 2 のパイロット評価](https://arxiv.org/abs/2302.09068) (Feb 2023)
+- [ChatGPT を特に参照した AI に関するネチズン、学者、情報専門家の意見](https://arxiv.org/abs/2302.07136) (Feb 2023)
+- [ChatGPT における言語の曖昧さの分析](https://arxiv.org/abs/2302.06426) (Feb 2023)
+- [ChatGPT とナレッジ グラフの従来の質問応答: ナレッジ グラフ チャットボットの現状と今後の方向性](https://arxiv.org/abs/2302.06466) (Feb 2023)
+- [ChatGPT と生成 AI が科学に与える意味](https://www.nature.com/articles/d41586-023-00340-6) (Feb 2023)
+- [科学文献におけるライム病の感情分析への BERT と ChatGPT の適用](https://arxiv.org/abs/2302.06474) (Feb 2023)
+- [ChatGPT の AI 倫理の探求: 診断分析](https://arxiv.org/abs/2301.12867) (Jan 2023)
+- [ChatGPT を永久に使用しますか?教育における大規模言語モデルの機会と課題について](https://www.edu.sot.tum.de/fileadmin/w00bed/hctl/_my_direct_uploads/ChatGPT_for_Good_.pdf) (Jan 2023)
+- [会話型 AI の政治イデオロギー: ChatGPT の環境保護、自由主義左派の方向性に関する証拠の集約](https://arxiv.org/abs/2301.01768) (Jan 2023)
+- [信頼性を向上させるテクニック - OpenAI クックブック](https://github.com/openai/openai-cookbook/blob/main/techniques_to_improve_reliability.md)
 - [Awesome ChatGPT Prompts](https://github.com/f/awesome-chatgpt-prompts)
 - [Introducing ChatGPT](https://openai.com/blog/chatgpt) (Nov 2022)

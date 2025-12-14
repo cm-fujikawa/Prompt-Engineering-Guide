@@ -1,6 +1,11 @@
 {
-    "generating": "データ生成",
-    "coding": "Generating Code",
-    "workplace_casestudy": "Graduate Job Classification Case Study",
-    "pf": "Prompt Function"
+  "finetuning-gpt4o": "Fine-tuning GPT-4o",
+  "function_calling": "関数呼び出し",
+  "context-caching": "LLM によるコンテキスト キャッシュ",
+  "generating": "データの生成",
+  "synthetic_rag": "RAG 用の合成データセットの生成",
+  "generating_textbooks": "生成されたデータセットの多様性への取り組み",
+  "coding": "コードの生成",
+  "workplace_casestudy": "大学院生の職種分類のケーススタディ",
+  "pf": "プロンプト機能"
 }
