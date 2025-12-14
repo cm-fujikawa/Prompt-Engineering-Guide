@@ -1,15 +1,21 @@
-# マルチモーダルCoTプロンプティング
+# マルチモーダル CoT プロンプト
 
 import { Callout, FileTree } from 'nextra-theme-docs'
 import {Screenshot} from 'components/screenshot'
 import MCOT from '../../img/multimodal-cot.png'
 
-[Zhang et al. (2023)](https://arxiv.org/abs/2302.00923)は、最近、マルチモーダルの思考連鎖プロンプティングアプローチを提案しました。従来のCoTは言語モダリティに焦点を当てています。対照的に、マルチモーダルCoTは、テキストとビジョンを2段階のフレームワークに組み込んでいます。最初のステップは、マルチモーダル情報に基づく理由生成です。これに続いて、情報量の多い生成された理由を活用した回答推論が行われます。
+[Zhang et al. (2023)](https://arxiv.org/abs/2302.00923)最近、マルチモーダルな思考連鎖を促すアプローチを提案しました。従来の CoT は言語モダリティに焦点を当てています。対照的に、マルチモーダル CoT は、テキストとビジョンを 2 段階のフレームワークに組み込みます。最初のステップには、マルチモーダルな情報に基づいた理論的根拠の生成が含まれます。これに、生成された有益な理論的根拠を活用する第 2 フェーズである回答推論が続きます。
 
-マルチモーダルCoTモデル（1B）は、ScienceQAベンチマークでGPT-3.5を上回る性能を発揮しています。
+マルチモーダル CoT モデル (1B) は、ScienceQA ベンチマークで GPT-3.5 を上回ります。
 
 <Screenshot src={MCOT} alt="MCOT" />
-Image Source: [Zhang et al. (2023)](https://arxiv.org/abs/2302.00923)
 
-詳細は以下を参照してください：
-- [Language Is Not All You Need: Aligning Perception with Language Models](https://arxiv.org/abs/2302.14045) (Feb 2023)
+画像出典:[Zhang et al. (2023)](https://arxiv.org/abs/2302.00923)
+
+さらに読む:
+
+- [必要なのは言語だけではありません: 認識を言語モデルに合わせる](https://arxiv.org/abs/2302.14045) (Feb 2023)
+
+<Callout type= "info" emoji="🎓">
+新しい AI コースで高度なプロンプト方法について詳しく学びましょう。[今すぐ参加してください！](https://dair-ai.thinkific.com/)コード PROMPTING20 を使用すると、さらに 20% オフになります。
+</Callout>

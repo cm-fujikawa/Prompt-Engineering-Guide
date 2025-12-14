@@ -1,0 +1,91 @@
+# RAG 用の合成データセットの生成
+
+import {Screenshot} from 'components/screenshot'
+import remarkMath from 'remark-math'
+import rehypeKatex from 'rehype-katex'
+
+import IMG1 from '../../img/synthetic_rag/synthetic_rag_1.png'
+import IMG2 from '../../img/synthetic_rag/synthetic_rag_2.png'
+import IMG3 from '../../img/synthetic_rag/synthetic_rag_3.png'
+import IMG4 from '../../img/synthetic_rag/synthetic_rag_4.png'
+
+## RAG セットアップ用の合成データ
+
+残念ながら、機械学習エンジニアの生活の中では、ラベル付きデータが不足しているか、ほとんどないことがよくあります。通常、プロジェクトはこれに気づくと、データの収集とラベル付けという長いプロセスに着手します。ソリューションの開発を開始できるのは 2、3 か月後です。
+
+しかし、LLM の出現により、一部の製品ではパラダイムが変化しました。現在では、LLM の一般化機能を利用して、ほぼ即座にアイデアをテストしたり、AI を活用した機能を開発したりできるようになりました。それが（ほぼ）意図したとおりに機能することが判明した場合は、従来の開発プロセスを開始できます。
+
+<Screenshot src={IMG1} alt="Paradigm shift in AI-powered products." />
+
+画像出典:[AI エンジニアの台頭、S. Wang 著](https://www.latent.space/p/ai-engineer)
+
+新しいアプローチの 1 つは、[Retrieval Augmented Generation (RAG)](https://www.promptingguide.ai/techniques/rag)。これは、モデルの知識だけに頼ることができない、知識集約的なタスクに使用されます。 RAG は、情報検索コンポーネントとテキスト ジェネレーター モデルを組み合わせます。このアプローチの詳細については、以下を参照してください。[ガイドの関連セクション](https://www.promptingguide.ai/techniques/rag).
+
+RAG の主要なコンポーネントは、関連するドキュメントを識別し、さらなる処理のために LLM に渡す検索モデルです。取得モデルのパフォーマンスが向上すればするほど、製品や機能の成果も向上します。理想的には、取得は箱から出してすぐにうまく機能します。ただし、言語や特定のドメインが異なるとパフォーマンスが低下することがよくあります。
+
+これを想像してみてください。チェコの法律と法的慣行に基づいて質問に答えるチャットボットを作成する必要があります (もちろんチェコ語で)。または、インド市場向けにカスタマイズされた税務アシスタント (GPT-4 プレゼンテーション中に OpenAI によって提示されたユースケース) を設計します。おそらく、検索モデルでは最も関連性の高いドキュメントが見逃されることが多く、全体的にパフォーマンスが低下するため、システムの品質が制限されることがわかります。
+
+しかし、解決策はあります。新しいトレンドには、既存の LLM を使用して、新世代の LLM/レトリバー/その他のモデルのトレーニング用のデータを合成することが含まれます。このプロセスは、プロンプトベースのクエリ生成を介して LLM を標準サイズのエンコーダに抽出するものとみなすことができます。蒸留は計算量を多く必要としますが、推論コストが大幅に削減され、特に低リソース言語や特殊なドメインではパフォーマンスが大幅に向上する可能性があります。
+
+このガイドでは、指示に従って大量の合成コンテンツを生成できる ChatGPT や GPT-4 などの最新のテキスト生成モデルを利用します。[Dai et al. (2022)](https://arxiv.org/abs/2209.11755)は、手動でラベル付けされた 8 つの例と、ラベル付けされていないデータの大規模なコーパス (解析されたすべての法律など、検索用の文書) だけで、ほぼ最先端のパフォーマンスを達成できる方法を提案しました。この研究では、データ不足により監視されたドメイン内微調整が課題となるタスクに対して、合成的に生成されたデータによりタスク固有のレトリーバーのトレーニングが容易になることが確認されました。
+
+## ドメイン固有のデータセットの生成
+
+LLM を利用するには、短い説明を入力し、いくつかの例に手動でラベルを付ける必要があります。異なる検索タスクは異なる検索意図を持っており、これは「関連性」の異なる定義を意味することに注意することが重要です。言い換えれば、同じペア (クエリ、ドキュメント) であっても、その関連性は検索の意図に基づいて完全に異なる可能性があります。たとえば、引数検索タスクは裏付けとなる引数を求める可能性がありますが、他のタスクは反論を必要とします (次のように)。[ArguAna データセット](https://aclanthology.org/P18-1023/)).
+
+以下の例を考えてみましょう。理解を容易にするために英語で書かれていますが、ChatGPT/GPT-4 はリソースの少ない言語でも効率的に処理するため、データはどの言語でも使用できることに注意してください。
+
+*プロンプト：*
+
+```
+Task: Identify a counter-argument for the given argument.
+
+Argument #1: {insert passage X1 here}
+
+A concise counter-argument query related to the argument #1: {insert manually prepared query Y1 here}
+
+Argument #2: {insert passage X2 here}
+A concise counter-argument query related to the argument #2: {insert manually prepared query Y2 here}
+
+<- paste your examples here ->
+
+Argument N: Even if a fine is made proportional to income, you will not get the equality of impact you desire. This is because the impact is not proportional simply to income, but must take into account a number of other factors. For example, someone supporting a family will face a greater impact than someone who is not, because they have a smaller disposable income. Further, a fine based on income ignores overall wealth (i.e. how much money someone actually has: someone might have a lot of assets but not have a high income). The proposition does not cater for these inequalities, which may well have a much greater skewing effect, and therefore the argument is being applied inconsistently.
+
+A concise counter-argument query related to the argument #N:
+```
+
+*出力：*
+
+```
+punishment house would make fines relative income
+```
+
+一般に、このようなプロンプトは次のように表現できます。
+
+$(e\_{prompt}、e\_{doc}(d\_{1})、e\_{query}(q\_1)、 。 。 。 、e\_{doc}(d\_k)、e\_{query}(q\_k)、e\_{doc}(d))$
+
+、ここで $e\_{doc}$ と $e\_{query}$ はそれぞれタスク固有のドキュメント、クエリの説明、$e\_{prompt}$ は、ChatGPT/GPT-4 のタスク固有のプロンプト/指示であり、$d$ は、LLM がクエリを生成する新しいドキュメントです。
+
+このプロンプトからは、最後のドキュメント $d$ と生成されたクエリのみが、ローカル モデルのさらなるトレーニングに使用されます。このアプローチは、ターゲット検索コーパス $D$ が利用可能な場合に適用できますが、新しいタスクの注釈付きクエリと文書のペアの数は制限されています。
+
+パイプライン全体の概要:
+
+<Screenshot src={IMG2} alt="PROMPTGATOR Dataset Generation & Training Overview." />
+
+画像出典:[Dai et al. (2022)](https://arxiv.org/abs/2209.11755)
+
+例への手動のアノテーションを責任を持って処理することが重要です。もっと多く (たとえば 20 個) 用意し、そのうち 2 ～ 8 個をランダムに選択してプロンプトに表示する方が良いでしょう。これにより、アノテーションに大幅な時間コストを費やすことなく、生成されるデータの多様性が高まります。ただし、これらの例は、代表的で、正しくフォーマットされており、ターゲットのクエリの長​​さやトーンなどの詳細も含まれている必要があります。例と手順が正確であればあるほど、レトリバーのトレーニングに適した合成データが得られます。ショット数が少ない低品質のサンプルは、トレーニングされたモデルの結果の品質に悪影響を与える可能性があります。
+
+ほとんどの場合、ChatGPT のような、より手頃な価格のモデルを使用するだけで十分です。これは、英語以外の特殊なドメインや言語でも適切に動作するためです。たとえば、指示と 4 ～ 5 つの例を含むプロンプトは通常 700 トークンを使用し (Retriever の制約により各パッセージが 128 トークン以下であると仮定)、生成は 25 トークンであるとします。したがって、ローカル モデルの微調整のために 50,000 件のドキュメントのコーパスの合成データセットを生成するには、次のコストがかかります。`50,000 * (700 * 0.001 * $0.0015 + 25 * 0.001 * $0.002) = 55`、 どこ`$0.0015`そして`$0.002`GPT-3.5 Turbo API の 1,000 トークンあたりのコストです。同じドキュメントに対して 2 ～ 4 つのクエリ例を生成することも可能です。ただし、特に Retriever を一般的なドメイン (英語でのニュース検索など) ではなく特定のドメイン (前述のチェコの法律など) に使用している場合には、さらにトレーニングを続ける価値があることがよくあります。
+
+50,000という数字は偶然ではありません。による研究では、[Dai et al. (2022)](https://arxiv.org/abs/2209.11755)、これは、モデルが合成データでトレーニングされたモデルの品質と一致するために必要な、手動でラベル付けされたデータのおおよその数であると述べられています。製品を発売する前に少なくとも 10,000 件のサンプルを収集しなければならないことを想像してみてください。それには 1 か月以上かかり、人件費は確実に 1,000 ドルを超えるでしょう。これは、合成データを生成してローカルのレトリバー モデルをトレーニングするよりもはるかに高額です。今日学んだテクニックを使えば、わずか 2 日で 2 桁の指標の増加を達成できます。
+
+<Screenshot src={IMG3} alt="Synthetic Dataset VS Manually Labeled Dataset" />
+
+画像出典:[Dai et al. (2022)](https://arxiv.org/abs/2209.11755)
+
+ここでは、BeIR ベンチマークの一部のデータセットに対する同じ論文からのプロンプト テンプレートを示します。
+
+<Screenshot src={IMG4} alt="Prompt Templates from PROMPTGATOR paper." />
+
+画像出典:[Dai et al. (2022)](https://arxiv.org/abs/2209.11755)

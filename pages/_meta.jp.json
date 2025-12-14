@@ -1,17 +1,53 @@
 {
-  "index": "Prompt Engineering",
-  "introduction": "Introduction",
-  "techniques": "Techniques",
-  "applications": "Applications",
-  "prompts": "Prompt Hub",
-  "models": "Models",
-  "risks": "Risks & Misuses",
-  "research": "LLM Research Findings",
-  "papers": "Papers",
-  "tools": "Tools",
-  "notebooks": "Notebooks",
-  "datasets": "Datasets",
-  "readings": "Additional Readings",
+  "index": "プロンプトエンジニアリング",
+  "introduction": "導入",
+  "techniques": "プロンプトテクニック",
+  "agents": "AIエージェント",
+  "guides": "ガイド",
+  "applications": "アプリケーション",
+  "prompts": "プロンプトハブ",
+  "models": "モデル",
+  "risks": "リスクと誤用",
+  "research": "LLM研究成果",
+  "papers": "論文",
+  "tools": "ツール",
+  "notebooks": "ノート",
+  "datasets": "データセット",
+  "readings": "追加の資料",
+  "courses": {
+    "title": "🎓コース",
+    "type": "menu",
+    "items": {
+      "intro-prompt-engineering": {
+        "title": "プロンプトエンジニアリングの紹介",
+        "href": "https://dair-ai.thinkific.com/courses/introduction-prompt-engineering"
+      },
+      "advanced-prompt-engineering": {
+        "title": "高度なプロンプトエンジニアリング",
+        "href": "https://dair-ai.thinkific.com/courses/advanced-prompt-engineering"
+      },
+      "intro-ai-agents": {
+        "title": "Intro to AI Agents",
+        "href": "https://dair-ai.thinkific.com/courses/introduction-ai-agents"
+      },
+      "agents-with-n8n": {
+        "title": "n8n を使用して効果的な AI エージェントを構築する",
+        "href": "https://dair-ai.thinkific.com/courses/agents-with-n8n"
+      },
+      "rag-systems": {
+        "title": "Build RAG Systems",
+        "href": "https://dair-ai.thinkific.com/courses/introduction-rag"
+      },
+      "advanced-agents": {
+        "title": "Building Advanced AI Agents",
+        "href": "https://dair-ai.thinkific.com/courses/advanced-ai-agents"
+      },
+      "all-courses": {
+        "title": "全て見る→",
+        "href": "https://dair-ai.thinkific.com/pages/courses"
+      }
+    }
+  },
   "about": {
     "title": "About",
     "type": "page"

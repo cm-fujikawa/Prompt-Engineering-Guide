@@ -1,14 +1,192 @@
-# ReAct
+# ReActプロンプト
 
 import { Callout, FileTree } from 'nextra-theme-docs'
 import {Screenshot} from 'components/screenshot'
 import REACT from '../../img/react.png'
+import REACT1 from '../../img/react/table1.png'
+import REACT2 from '../../img/react/alfworld.png'
 
-[Yao et al.、2022](https://arxiv.org/abs/2210.03629)は、LLMが交互に推論トレースとタスク固有のアクションを生成するフレームワークを紹介しました。推論トレースの生成により、モデルはアクション計画を誘導、追跡、更新し、例外を処理することができます。アクションステップにより、知識ベースや環境などの外部ソースとのインターフェースや情報収集が可能になります。
+[Yao et al., 2022](https://arxiv.org/abs/2210.03629)ReAct という名前のフレームワークを導入しました。LLM を使用して両方の生成が行われます。*推論の痕跡*そして*タスク固有のアクション*インターリーブ方式で。
 
-ReActフレームワークは、LLMが外部ツールと対話して追加情報を取得し、より信頼性の高い事実に基づく回答を生成することができます。
+推論トレースを生成すると、モデルはアクション プランを誘導、追跡、更新し、例外を処理することもできます。アクション ステップにより、知識ベースや環境などの外部ソースと連携し、そこから情報を収集できます。
+
+ReAct フレームワークを使用すると、LLM が外部ツールと対話して、より信頼性の高い事実に基づく応答につながる追加情報を取得できるようになります。
+
+結果は、ReAct が言語および意思決定タスクに関していくつかの最先端のベースラインを上回るパフォーマンスを発揮できることを示しています。 ReAct は、人間による LLM の解釈可能性と信頼性の向上にもつながります。全体として、著者らは、推論中に得られる内部知識と外部情報の両方を使用できる思考連鎖 (CoT) と ReAct を組み合わせたアプローチが最適であることを発見しました。
+
+## 仕組みは?
+
+ReAct は、人間が新しいタスクを学習し、意思決定や推論を行うことを可能にする「行動」と「推論」の相乗効果にインスピレーションを得ています。
+
+思考連鎖 (CoT) プロンプトは、LLM が推論トレースを実行して、数あるタスクの中でも特に算術推論や常識推論を含む質問に対する答えを生成する能力を示しています。[(Wei et al., 2022)](https://arxiv.org/abs/2201.11903)。しかし、外部世界へのアクセスがなかったり、知識を更新できなかったりすると、事実の幻覚や誤りの伝播などの問題が発生する可能性があります。
+
+ReAct は、推論と LLM による動作を組み合わせた一般的なパラダイムです。 ReAct は、LLM にタスクの口頭推論トレースとアクションを生成するよう促します。これにより、システムは動的な推論を実行して行動計画を作成、維持、調整できると同時に、外部環境 (Wikipedia など) と対話して追加情報を推論に組み込むことも可能になります。以下の図は、ReAct の例と、質問応答を実行するために必要なさまざまな手順を示しています。
 
 <Screenshot src={REACT} alt="REACT" />
-Image Source: [Yao et al., 2022](https://arxiv.org/abs/2210.03629)
 
-具体的な例は近日中に公開します！
+画像出典:[Yao et al., 2022](https://arxiv.org/abs/2210.03629)
+
+上の例では、次の質問のようなプロンプトを渡します。[ホットポットQA](https://hotpotqa.github.io/):
+
+```
+Aside from the Apple Remote, what other devices can control the program Apple Remote was originally designed to interact with?
+```
+
+コンテキスト内の例もプロンプトに追加されますが、ここでは簡素化のために省略していることに注意してください。モデルが生成することがわかります。*タスク解決の軌跡*（考え、行動する）。 Obs は、対話されている環境 (検索エンジンなど) からの観察に対応します。基本的に、ReAct は推論をサポートする情報を取得でき、推論は次に何を取得するかをターゲットにするのに役立ちます。
+
+<Callout type= "info" emoji="🎓">
+ReAct プロンプトと ReAct エージェントの詳細については、新しい AI コースでご覧ください。[今すぐ参加してください！](https://dair-ai.thinkific.com/)コード PROMPTING20 を使用すると、さらに 20% オフになります。
+</Callout>
+
+## ReActプロンプト
+
+ReAct プロンプトがどのように機能するかを示すために、論文の例に従ってみましょう。
+
+最初のステップは、トレーニング セット (HotPotQA など) からケースを選択し、ReAct 形式のトラジェクトリを作成することです。これらは、プロンプトでいくつかのショットの例として使用されます。上の図に示すように、軌跡は複数の思考、行動、観察のステップで構成されます。自由形式の思考は、質問の分解、情報の抽出、常識/算術推論の実行、ガイド検索の定式化、最終的な答えの合成などのさまざまなタスクを達成するために使用されます。
+
+ReAct プロンプトのサンプルの例を次に示します (論文から取得し、わかりやすくするために 1 つの例に短縮しています)。
+
+```
+Question What is the elevation range for the area that the eastern sector of the
+Colorado orogeny extends into?
+Thought 1 I need to search Colorado orogeny, find the area that the eastern sector
+of the Colorado orogeny extends into, then find the elevation range of the
+area.
+Action 1 Search[Colorado orogeny]
+Observation 1 The Colorado orogeny was an episode of mountain building (an orogeny) in
+Colorado and surrounding areas.
+Thought 2 It does not mention the eastern sector. So I need to look up eastern
+sector.
+Action 2 Lookup[eastern sector]
+Observation 2 (Result 1 / 1) The eastern sector extends into the High Plains and is called
+the Central Plains orogeny.
+Thought 3 The eastern sector of Colorado orogeny extends into the High Plains. So I
+need to search High Plains and find its elevation range.
+Action 3 Search[High Plains]
+Observation 3 High Plains refers to one of two distinct land regions
+Thought 4 I need to instead search High Plains (United States).
+Action 4 Search[High Plains (United States)]
+Observation 4 The High Plains are a subregion of the Great Plains. From east to west, the
+High Plains rise in elevation from around 1,800 to 7,000 ft (550 to 2,130
+m).[3]
+Thought 5 High Plains rise in elevation from around 1,800 to 7,000 ft, so the answer
+is 1,800 to 7,000 ft.
+Action 5 Finish[1,800 to 7,000 ft]
+...
+```
+
+タスクの種類ごとに異なるプロンプト設定が使用されることに注意してください。推論が最も重要なタスク (HotpotQA など) では、タスク解決の軌跡に複数の思考、行動、観察のステップが使用されます。多くのアクションステップを伴う意思決定タスクでは、思考はまばらに使用されます。
+
+<iframe width="100%" height="415px" src="https://www.youtube.com/embed/f8whjxDBcd8?si=YuLAggOKAPOIxNkV" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
+
+## 知識集約型タスクの結果
+
+この論文ではまず、質問応答 (HotPotQA) や事実検証などの知識集約型の推論タスクで ReAct を評価します ([熱](https://fever.ai/resources.html)）。プロンプトのベースモデルにはPaLM-540Bを採用。
+
+<Screenshot src={REACT1} alt="REACT1" />
+
+画像出典:[Yao et al., 2022](https://arxiv.org/abs/2210.03629)
+
+異なるプロンプト方法を使用した HotPotQA と Fever でのプロンプト結果は、両方のタスクにおいて ReAct が Act (演技のみを含む) よりも一般的に優れていることを示しています。
+
+また、ReAct は Fever では CoT を上回っていますが、HotpotQA では CoT に遅れていることも観察できます。詳細なエラー分析は論文で提供されています。要約すれば：
+
+- CoTは事実幻覚に悩まされている
+- ReAct の構造的制約により、推論ステップを定式化する際の柔軟性が低下します
+- ReAct は取得する情報に大きく依存します。有益でない検索結果はモデルの推論を狂わせ、考えを回復して再構築することが困難になります。
+
+ReAct と CoT+Self-Consistency を組み合わせて切り替えをサポートするプロンプト メソッドは、通常、他のすべてのプロンプト メソッドよりも優れたパフォーマンスを発揮します。
+
+## 意思決定タスクの結果
+
+この論文では、意思決定タスクにおける ReAct のパフォーマンスを実証する結果も報告されています。 ReAct は 2 つのベンチマークで評価されます。[アルフワールド](https://alfworld.github.io/)（テキストベースのゲーム）と[ウェブショップ](https://webshop-pnlp.github.io/)（ネットショッピングサイト環境）どちらも、効果的に行動し探索するための推論を必要とする複雑な環境を必要とします。
+
+ReAct プロンプトは、推論と行動を組み合わせるという同じ中心的なアイデアを維持しながら、これらのタスクに対して異なるように設計されていることに注意してください。以下は、ReAct プロンプトに関する ALFWorld 問題の例です。
+
+<Screenshot src={REACT2} alt="REACT2" />
+
+画像出典:[Yao et al., 2022](https://arxiv.org/abs/2210.03629)
+
+ReAct は、ALFWorld と Webshop の両方で Act を上回ります。何も考えずに行動すると、目標をサブ目標に正しく分解できません。 ReAct ではこのようなタイプのタスクでは推論が有利であるように見えますが、現在のプロンプトベースの方法では、これらのタスクにおける専門家のパフォーマンスにはまだ程遠いです。
+
+詳しい結果については論文をご覧ください。
+
+## LangChain ReAct の使用法
+
+以下は、ReAct プロンプト アプローチが実際にどのように機能するかを示す高レベルの例です。 LLM には OpenAI を使用します。[LangChain](https://python.langchain.com/en/latest/index.html)これは、ReAct フレームワークを活用して、LLM とさまざまなツールの機能を組み合わせてタスクを実行するエージェントを構築する機能がすでに組み込まれているためです。
+
+まず、必要なライブラリをインストールしてインポートしましょう。
+
+```python
+%%capture
+# update or install the necessary libraries
+!pip install --upgrade openai
+!pip install --upgrade langchain
+!pip install --upgrade python-dotenv
+!pip install google-search-results
+
+# import libraries
+import openai
+import os
+from langchain.llms import OpenAI
+from langchain.agents import load_tools
+from langchain.agents import initialize_agent
+from dotenv import load_dotenv
+load_dotenv()
+
+# load API keys; you will need to obtain these if you haven't yet
+os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
+os.environ["SERPER_API_KEY"] = os.getenv("SERPER_API_KEY")
+
+```
+
+これで、LLM、使用するツール、および LLM とツールとともに ReAct フレームワークを活用できるようにするエージェントを構成できるようになりました。外部情報を検索するために検索 API を使用し、数学ツールとして LLM を使用していることに注意してください。
+
+```python
+llm = OpenAI(model_name="text-davinci-003" ,temperature=0)
+tools = load_tools(["google-serper", "llm-math"], llm=llm)
+agent = initialize_agent(tools, llm, agent="zero-shot-react-description", verbose=True)
+```
+
+これを構成したら、必要なクエリ/プロンプトを使用してエージェントを実行できるようになります。ここでは、論文で説明されているような数ショットのサンプルを提供することは期待されていないことに注意してください。
+
+```python
+agent.run("Who is Olivia Wilde's boyfriend? What is his current age raised to the 0.23 power?")
+```
+
+チェーンの実行は次のようになります。
+
+```yaml
+> Entering new AgentExecutor chain...
+ I need to find out who Olivia Wilde's boyfriend is and then calculate his age raised to the 0.23 power.
+Action: Search
+Action Input: "Olivia Wilde boyfriend"
+Observation: Olivia Wilde started dating Harry Styles after ending her years-long engagement to Jason Sudeikis — see their relationship timeline.
+Thought: I need to find out Harry Styles' age.
+Action: Search
+Action Input: "Harry Styles age"
+Observation: 29 years
+Thought: I need to calculate 29 raised to the 0.23 power.
+Action: Calculator
+Action Input: 29^0.23
+Observation: Answer: 2.169459462491557
+
+Thought: I now know the final answer.
+Final Answer: Harry Styles, Olivia Wilde's boyfriend, is 29 years old and his age raised to the 0.23 power is 2.169459462491557.
+
+> Finished chain.
+```
+
+得られる出力は次のとおりです。
+
+```
+"Harry Styles, Olivia Wilde's boyfriend, is 29 years old and his age raised to the 0.23 power is 2.169459462491557."
+```
+
+の例を適応させました。[ラングチェーンのドキュメント](https://python.langchain.com/docs/modules/agents/agent_types/react)、したがって、信用は彼らにあります。学習者には、ツールとタスクのさまざまな組み合わせを検討することをお勧めします。
+
+このコードのノートブックはここで見つけることができます: https://github.com/dair-ai/Prompt-Engineering-Guide/blob/main/notebooks/react.ipynb
+
+<Callout type= "info" emoji="🎓">
+ReAct プロンプトと ReAct エージェントの詳細については、新しい AI コースでご覧ください。[今すぐ参加してください！](https://dair-ai.thinkific.com/)コード PROMPTING20 を使用すると、さらに 20% オフになります。
+</Callout>

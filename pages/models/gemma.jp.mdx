@@ -1,0 +1,180 @@
+# Gemma
+
+Google DeepMind は、Gemini の作成に使用されたのと同じ研究とテクノロジーに触発された一連のオープン言語モデルである Gemma をリリースします。 Gemma モデル リリースには、ベース チェックポイントと命令調整チェックポイントを含む 2B (2T トークンでトレーニングされた) モデルと 7B (6T トークンでトレーニングされた) モデルが含まれています。モデルは 8192 トークンのコンテキスト長でトレーニングされており、いくつかのベンチマークでは一般に Llama 2 7B モデルおよび Mistral 7B モデルよりも優れたパフォーマンスを示します。
+
+Gemma モデル アーキテクチャは、トランス デコーダに基づいており、次のような改良が加えられています。[マルチクエリの注意](http://arxiv.org/abs/1911.02150)(2B モデルで使用)、マルチヘッド アテンション (7B モデルで使用)、[RoPE 埋め込み](https://arxiv.org/abs/2104.09864), [GeGLU アクティベーション](https://arxiv.org/abs/2002.05202)、 そして[ノーマライザーの場所](http://arxiv.org/abs/1910.07467).
+
+によると、[テクニカルレポート](https://storage.googleapis.com/deepmind-media/gemma/gemma-report.pdf), Gemma 2B と 7B は、主に Web ドキュメント、数学、コードで構成される 2T トークンと 6T トークンでトレーニングされます。 Gemini とは異なり、これらのモデルは、多言語またはマルチモーダル機能をサポートするように明示的にトレーニングされていません。語彙サイズは 256K トークンで、Gemini の SentencePiece トークン化のサブセットを使用し、分割桁の空白を保持し、未知のトークンについてはバイトレベルのエンコーディングに依存します。
+
+命令調整モデルは、テキストのみの合成プロンプト応答ペアと人間が生成したプロンプト応答ペアの組み合わせに対する教師あり微調整と、ラベル付き嗜好データでトレーニングされた報酬モデル (RLHF) による強化学習、および一連の高品質プロンプトに基づくポリシーを使用して調整されます。使用されるデータセットはすべて英語のみであることに注意してください。以下の表に示すように、命令調整モデルでは、会話における役割と順番を示すために特定の書式制御トークンも使用されます。
+
+!["Gemma Control Tokens"](../../img/gemma/control-tokens.png)
+
+## 結果
+
+以下の図に示すように、Gemma 7B モデルは数学、科学、コード関連のタスクで優れたパフォーマンスを示します。スコアは、能力ごとにグループ化された学術ベンチマーク評価の平均スコアに対応します。
+
+!["Gemma Capabilities"](../../img/gemma/capabilities.png)
+
+Gemma 7B は、HumanEval、GSM8K、MATH、および AGIEval で顕著なパフォーマンスを示し、さまざまな学術ベンチマークで Llama 2 7B および Mistral 7B を上回り、推論、対話、数学、およびコードのパフォーマンスが向上しています。
+
+!["Gemma Safety"](../../img/gemma/benchmarks.png)
+
+Gemma 7B 命令調整モデルは、人間による評価による安全性と命令に従っているという点でも、Mistral-7B v0.2 命令モデルよりも優れています。
+
+!["Gemma Safety"](../../img/gemma/safety.png)
+
+Gemma はいくつかの安全性学術ベンチマークでも評価され、ミストラルと比較されます。この技術レポートでは、大規模言語モデル (LLM) に関連する一般的なリスクを潜在的に軽減するために、バイアス除去技術とレッドチームの使用についても言及しています。 Gemma を使用して責任を持って開発する方法について詳しくは、[モデルカード](https://ai.google.dev/gemma/docs/model_card)そして[Responsible Generative AI toolkit](https://ai.google.dev/responsible).
+
+!["Gemma Safety"](../../img/gemma/safety-2.png)
+
+## Gemma 7B Prompt Format
+
+Gemma ベース モデルは特定のプロンプト形式を使用しませんが、ゼロ ショット/フュー ショット プロンプトを通じてタスクの実行を求めることができます。 Gemma Instruct モデルは次の形式を使用します。
+
+```
+<start_of_turn>user
+Generate a Python function that multiplies two numbers <end_of_turn>
+<start_of_turn>model
+```
+
+以下の表は、Gemma で使用できる関連する書式設定制御トークンを示しています。
+
+|コンテキスト |関連するトークン |
+|---------------------------------|-----------------------------|
+|ユーザーターン |`user`|
+|モデルターン |`model`|
+|会話の開始ターン |`<start_of_turn>`|
+|会話ターンの終了 |`<end_of_turn>`    |
+
+次のように、複数ターンのユーザー プロンプトのコンテキストで特別なコントロール トークンを使用することもできます。
+
+```markdown
+<start_of_turn>user
+What is a good place for travel in the US?<end_of_turn>
+<start_of_turn>model
+California.<end_of_turn>
+<start_of_turn>user
+What can I do in California?<end_of_turn>
+<start_of_turn>model
+```
+
+## Gemma 7B にプロンプ​​トを表示する方法
+
+Gemma 7B に効果的にプロンプ​​トを表示するには、プロンプト テンプレートを適切に使用できる必要があります。次の例では、さまざまなタスクに対する Gemma 7B Instruct のプロンプト テンプレートの効果的な使用法を示すいくつかの例を取り上げます。
+
+### Zero-Shotプロンプト
+
+他のモデルと同様に、次のようにプロンプ​​トを表示するだけで、Gemma のゼロショット機能を活用できます。
+
+```markdown
+<start_of_turn>user
+Explain why the sky is blue<end_of_turn>
+<start_of_turn>model
+```
+
+### システムプロンプトによるゼロショットプロンプト
+
+システム ロールまたはシステム プロンプトを追加すると、LLM をより適切に制御するのに役立ちます。 Gemma には明示的なシステムの役割はありませんが、次のようにプロンプ​​トの一部として追加の指示を追加できます。
+
+```markdown
+<start_of_turn>user
+Answer the following question in a concise and informative manner:
+
+Explain why the sky is blue<end_of_turn>
+<start_of_turn>model
+```
+
+上の例では、次のように追加しました`"Answer the following question in a concise and informative manner:"`モデルをより適切に操作するための追加の指示またはシステム プロンプトとして。
+
+### ロールプレイング
+
+また、Gemma のロールプレイング機能をテストすることもできます。これは、モデルの応答をパーソナライズするだけでなく、より複雑なドメイン固有の構築にも役立ちます。[LLM agents](https://www.promptingguide.ai/research/llm-agents).
+
+プロンプト：
+
+```
+<start_of_turn>user
+You are a helpful 2nd-grade teacher. Help a 2nd grader to answer questions in a short and clear manner.
+
+Explain why the sky is blue<end_of_turn>
+<start_of_turn>model
+```
+
+モデル応答:
+
+```
+Sure, here is an explanation for why the sky is blue:
+
+The sky appears blue because of a phenomenon called Rayleigh Scattering.
+
+Here's the science behind it:
+
+Sunlight is made up of different colors of light, like red, green, blue, and violet.
+When sunlight hits the Earth's atmosphere, the different colors of light scatter in different directions.
+Blue light scatters more easily than other colors because it has shorter wavelengths.
+The scattered blue light travels in all directions, including towards your eyes.
+That's why we see the sky as blue.
+It's important to note that this explanation is simplified and does not account for all scientific details. However, it gives you a good understanding of the basic science behind why the sky appears blue.
+```
+
+回答の正確性や 2 年生に適しているかどうかは確認していないことに注意してください。ただし、上記の応答を、その後に続く思考連鎖プロンプトから得られる応答と比較することができます。
+
+### 推論
+
+以下を使用して、ジェマの推論能力を引き出すことができます。[ゼロショットの思考連鎖のプロンプト](https://www.promptingguide.ai/techniques/cot#zero-shot-cot-prompting)次のように：
+
+プロンプト：
+
+```markdown
+<start_of_turn>user
+Think and write your step-by-step reasoning before responding.
+
+Explain why the sky is blue.<end_of_turn>
+<start_of_turn>model
+```
+
+モデルの応答 (簡潔にするために省略):
+
+```
+Step 1: Scattering of Light
+
+The sky appears blue due to the phenomenon of scattering of light. When sunlight hits the Earth's atmosphere, it interacts with the particles of air, primarily nitrogen and oxygen molecules.
+
+Step 2: Rayleigh Scattering
+
+Rayleigh scattering is the specific scattering mechanism that occurs when light interacts with particles much smaller than the wavelength of light. In this process, shorter wavelengths (blue light) are scattered more effectively than longer wavelengths (red light).
+
+Step 3: Blue Scattered Light Travels in All Directions
+
+...
+
+Conclusion
+
+The sky appears blue due to the scattering of light, specifically Rayleigh scattering. Shorter wavelengths of light are scattered more effectively, and this scattered light travels in all directions, with the scattered light that travels opposite to the sun's rays being most visible to our eyes.
+```
+
+Gemma モデルで注目すべき点は、マークダウン形式を自動的に出力できることです。デモンストレーションと簡略化の目的でテキスト形式を少し編集しましたが、内容はモデルが応答したものとまったく同じです。応答の精度やモデルが幻覚を示すかどうかも評価していないことに注意してください。
+
+## リソースと統合
+
+Gemma リリースの一部であるいくつかのリソースと統合を次に示します。
+
+- [コラボ](https://ai.google.dev/gemma/docs/get_started)そして[カグル](https://www.kaggle.com/models/google/gemma/code)ノート
+- [Hugging Face models](https://huggingface.co/collections/google/gemma-release-65d5efbccdbb8c4202ec078b)
+- [マックステキスト](https://github.com/google/maxtext)
+- [NVIDIA NeMo](https://github.com/NVIDIA/GenerativeAIExamples/tree/main/models/Gemma)
+- [TensorRT-LLM](https://developer.nvidia.com/blog/nvidia-tensorrt-llm-revs-up-inference-for-google-gemma/)
+- Gemma 7B は、[NVIDIA AI Playground](https://catalog.ngc.nvidia.com/orgs/nvidia/teams/ai-foundation/models/gemma-7b)
+
+公式によると[ブログリリース](https://blog.google/technology/developers/gemma-open-models/)、[利用規約](https://www.kaggle.com/models/google/gemma/license/consent)規模に関係なく、すべての組織に対して責任ある商業利用と配布を許可します。
+
+## 参考文献
+
+- [ジェマ: 新しい最先端のオープンモデルの紹介](https://blog.google/technology/developers/gemma-open-models/)
+- [Gemma: Gemini の研究とテクノロジーに基づくオープン モデル](https://storage.googleapis.com/deepmind-media/gemma/gemma-report.pdf)
+- [Responsible Generative AI Toolkit](https://ai.google.dev/responsible)
+- [高速トランスデコーディング: 必要なのは 1 つの書き込みヘッドだけです](https://arxiv.org/abs/1911.02150)
+- [Roformer: ロータリー位置埋め込み機能を備えた強化されたトランスフォーマー](https://arxiv.org/abs/2104.09864)
+- [GLU variants improve transformer](https://arxiv.org/abs/2002.05202)
+- [二乗平均平方根層の正規化](http://arxiv.org/abs/1910.07467)

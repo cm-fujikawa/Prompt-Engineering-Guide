@@ -1,3 +1,146 @@
-# Function Calling with LLMs
+# LLM を使用した関数呼び出し
 
-This page needs a translation! Feel free to contribute a translation by clicking the `Edit this page` button on the right.
+import {Cards, Card, Callout} from 'nextra-theme-docs'
+import {CodeIcon} from 'components/icons'
+
+## 関数呼び出しの開始
+
+<iframe width="100%" height="415px" src="https://www.youtube.com/embed/p0I-hwZSWMs?si=tQgi-LiHe6Oj_rzm" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
+
+関数呼び出しは、LLM を外部ツールに確実に接続して、ツールの効果的な使用と外部 API との対話を可能にする機能です。
+
+GPT-4 や GPT-3.5 などの LLM は、関数を呼び出す必要があるときを検出し、関数を呼び出すための引数を含む JSON を出力するように微調整されています。関数呼び出しによって呼び出される関数は、AI アプリケーションのツールとして機能し、1 つのリクエストで複数の関数を定義できます。
+
+関数呼び出しは、LLM のコンテキストを取得したり、自然言語を API 呼び出しに変換して外部ツールと対話したりする必要がある、LLM を利用したチャットボットまたはエージェントを構築するための重要な機能です。
+
+関数呼び出しにより、開発者は以下を作成できます。
+
+- 外部ツールを効率的に使用して質問に回答できる会話型エージェント。たとえば、「ベリーズの天気はどんな感じですか?」というクエリが考えられます。次のような関数呼び出しに変換されます。`get_current_weather(location: string, unit: 'celsius' | 'fahrenheit')`
+- データの抽出とタグ付けのための LLM を利用したソリューション (例: Wikipedia の記事から人名を抽出)
+- 自然言語を API 呼び出しまたは有効なデータベース クエリに変換するのに役立つアプリケーション
+- 知識ベースと対話する会話型知識検索エンジン
+
+このガイドでは、GPT-4 やオープンソース モデルなどのモデルに、さまざまなユースケースでの関数呼び出しを実行するよう促す方法を示します。
+
+## GPT-4による関数呼び出し
+
+基本的な例として、モデルに特定の場所の天気を確認するように依頼したとします。
+
+LLM はカットオフ ポイントのあるデータセットでトレーニングされているため、単独ではこのリクエストに応答できません。これを解決する方法は、LLM と外部ツールを組み合わせることです。モデルの関数呼び出し機能を利用して、引数とともに呼び出す外部関数を決定し、その関数に最終応答を返させることができます。以下は、OpenAI API を使用してこれを実現する方法の簡単な例です。
+
+ユーザーがモデルに次の質問をしたとします。
+
+```
+What is the weather like in London?
+```
+
+関数呼び出しを使用してこのリクエストを処理するには、最初のステップは、OpenAI API リクエストの一部として渡す天気関数または関数セットを定義することです。
+
+```python
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_current_weather",
+            "description": "Get the current weather in a given location",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "location": {
+                        "type": "string",
+                        "description": "The city and state, e.g. San Francisco, CA",
+                    },
+                    "unit": {
+                        "type": "string", 
+                        "enum": ["celsius", "fahrenheit"]},
+                },
+                "required": ["location"],
+            },
+        },   
+    }
+]
+```
+
+の`get_current_weather`関数は、指定された場所の現在の天気を返します。この関数定義をリクエストの一部として渡すと、実際には関数は実行されず、関数の呼び出しに必要な引数を含む JSON オブジェクトが返されるだけです。これを実現する方法のコード スニペットをいくつか示します。
+
+次のように補完関数を定義できます。
+
+```python
+def get_completion(messages, model="gpt-3.5-turbo-1106", temperature=0, max_tokens=300, tools=None):
+    response = openai.chat.completions.create(
+        model=model,
+        messages=messages,
+        temperature=temperature,
+        max_tokens=max_tokens,
+        tools=tools
+    )
+    return response.choices[0].message
+```
+
+ユーザーの質問は次のように作成できます。
+
+```python
+messages = [
+    {
+        "role": "user",
+        "content": "What is the weather like in London?"
+    }
+]
+```
+
+最後に、次のように呼び出すことができます。`get_completion`上記の両方を通過します`messages`そして`tools`:
+
+```python
+response = get_completion(messages, tools=tools)
+```
+
+の`response`オブジェクトには次のものが含まれます。
+
+```python
+ChatCompletionMessage(content=None, role='assistant', function_call=None, tool_calls=[ChatCompletionMessageToolCall(id='...', function=Function(arguments='{"location":"London","unit":"celsius"}', name='get_current_weather'), type='function')])
+```
+
+特に、`arguments`オブジェクトには、モデルによって抽出された、リクエストを完了するために必要な重要な引数が含まれています。
+
+その後、実際の天気に対して外部天気 API を呼び出すことを選択できます。気象情報を取得したら、それをモデルに戻して、元のユーザーの質問に対する最終応答を要約することができます。
+
+## ノート
+
+<Callout type= "info" emoji="🎓">
+新しい AI コースで関数呼び出しについて詳しく学びましょう。[今すぐ参加してください！](https://dair-ai.thinkific.com/)コード PROMPTING20 を使用すると、さらに 20% オフになります。
+</Callout>
+
+以下は、OpenAI API で関数呼び出しを使用する方法を示す簡単な例を含むノートブックです。
+
+<Cards>
+  <Card icon={<CodeIcon />} title="Function Calling with OpenAI APIs" href="https://github.com/dair-ai/Prompt-Engineering-Guide/blob/main/notebooks/pe-function-calling.ipynb" />
+</Cards>
+
+## オープンソース LLM を使用した関数呼び出し
+
+オープンソース LLM を使用した関数呼び出しに関する詳細は近々公開予定です。
+
+## 関数呼び出しの使用例
+
+以下は、LLM の関数呼び出し機能から恩恵を受けるユースケースのリストです。
+
+- **会話型エージェント**: 関数呼び出しを使用すると、外部 API または外部ナレッジ ベースを呼び出して、より関連性の高い有用な応答を提供することで、複雑な質問に答える複雑な会話エージェントまたはチャットボットを作成できます。
+
+- **自然言語理解**: 自然言語を構造化された JSON データに変換し、テキストから構造化データを抽出し、固有表現認識、センチメント分析、キーワード抽出などのタスクを実行できます。
+
+- **数学の問題解決**: 関数呼び出しを使用してカスタム関数を定義し、複数のステップとさまざまな種類の高度な計算を必要とする複雑な数学的問題を解決できます。
+
+- **API Integration**: LLM を外部 API と効果的に統合して、データをフェッチしたり、入力に基づいてアクションを実行したりするために使用できます。これは、QA システムまたはクリエイティブ アシスタントの構築に役立つ可能性があります。一般に、関数呼び出しは自然言語を有効な API 呼び出しに変換できます。
+
+- **情報抽出**: 関数呼び出しは、関連するニュース記事や記事からの参照を取得するなど、特定の入力から特定の情報を抽出するために効果的に使用されます。
+
+## 参考文献
+
+- [Fireworks は関数呼び出しモデルと API リリースで品質基準を引き上げます](https://blog.fireworks.ai/fireworks-raises-the-quality-bar-with-function-calling-model-and-api-release-e7f49d1e98e9)
+- [エージェントツールの使用と関数呼び出しのベンチマーク](https://blog.langchain.dev/benchmarking-agent-tool-use/)
+- [関数呼び出し](https://ai.google.dev/docs/function_calling)
+- [API との対話](https://python.langchain.com/docs/use_cases/apis)
+- [OpenAI's Function Calling](https://platform.openai.com/docs/guides/function-calling)
+- [チャットモデルで関数を呼び出す方法](https://cookbook.openai.com/examples/how_to_call_functions_with_chat_models)
+- [ChatGPT の構造化データのサポートを限界まで押し上げる](https://minimaxir.com/2023/12/chatgpt-structured-data/)
+- [関数呼び出しによる数学の問題の解決](https://github.com/svpino/openai-function-calling/blob/main/sample.ipynb)

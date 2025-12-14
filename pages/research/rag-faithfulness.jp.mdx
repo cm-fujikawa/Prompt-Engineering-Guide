@@ -1,0 +1,20 @@
+# RAG モデルはどの程度忠実ですか?
+
+import {Bleed} from 'nextra-theme-docs'
+
+<iframe width="100%" height="415px" src="https://www.youtube.com/embed/eEU1dWVE8QQ?si=b-qgCU8nibBCSX8H" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
+
+この新しい論文は、[Wu et al. (2024)](https://arxiv.org/abs/2404.10198)RAG と LLM の内部事前分布の間の綱引きを定量化することを目的としています。
+
+分析のための質問応答に関する GPT-4 およびその他の LLM に焦点を当てています。
+
+正しい取得情報を提供すると、モデルの間違いのほとんどが修正されることがわかります (精度 94%)。
+
+!["RAG Faithfulness"](../../img/research/rag-faith.png)
+*ソース：[Wu et al. (2024)](https://arxiv.org/abs/2404.10198)*
+
+文書に含まれる不正確な値が多く、LLM の内部事前分布が弱い場合、LLM は不正確な情報を暗唱する可能性が高くなります。ただし、LLM は、より強力な事前分布を持つ場合、より耐性があることがわかります。
+
+この論文はまた、「修正された情報がモデルの事前情報から逸脱すればするほど、モデルがそれを好む可能性は低くなる」とも報告しています。
+
+非常に多くの開発者や企業が実稼働環境で RAG システムを使用しています。この研究は、裏付けとなる情報、矛盾する情報、または完全に不正確な情報を含む可能性のあるさまざまな種類のコンテキスト情報を考慮して LLM を使用する場合のリスクを評価することの重要性を強調しています。

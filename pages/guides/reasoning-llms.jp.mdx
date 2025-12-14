@@ -1,0 +1,218 @@
+## 推論 LLM ガイド
+
+### 目次
+
+- [推論LLMとは何ですか?](#what-are-reasoning-llms)
+- [上位の推論モデル](#top-reasoning-models)
+- [推論モデルの設計パターンとユースケース](#reasoning-model-design-patterns--use-cases)
+  - [エージェントシステムの計画](#planning-for-agentic-systems)
+  - [Agentic RAG](#agentic-rag)
+  - [LLM-as-a-Judge](#llm-as-a-judge)
+  - [視覚的推論](#visual-reasoning)
+  - [その他の使用例](#other-use-cases)
+- [Reasoning LLM Usage Tips](#reasoning-llm-usage-tips)
+  - [一般的な使用パターンとプロンプトのヒント](#general-usage-patterns--prompting-tips)
+  - [ハイブリッド推論モデルの使用](#using-hybrid-reasoning-models)
+- [推論モデルの制限](#limitations-with-reasoning-models)
+- [次のステップ](#next-steps)
+
+### 推論LLMとは何ですか?
+
+<iframe width="100%" height="415px" src="https://www.youtube.com/embed/AZhUhGsgz4s?si=iZ_WsVs4HalgFBW5" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
+
+大規模推論モデル (LRM) または単に推論 LLM は、ネイティブ思考または思考連鎖を実行するように明示的にトレーニングされたモデルです。推論モデルの一般的な例には、Gemini 2.5 Pro、Claude 3.7 Sonnet、o3 などがあります。
+
+***ChatGPT (o3) と Gemini 2.5 Pro (AI Google Studio) を試すプロンプト:***
+
+```
+What is the sum of the first 50 prime numbers? Generate and run Python code for the calculation, and make sure you get all 50. Provide the final sum clearly.
+```
+
+### 上位の推論モデル
+
+以下に、一般的な推論モデルとその特徴と長所をまとめます。
+
+[Reasoning LLMs \[WIP\]](https://docs.google.com/spreadsheets/d/1Ru5875NC9PdKK19SVH54Y078Mb4or-ZLXqafnqPDxlY/edit?usp=sharing)
+
+推論モデルのベンチマーク パフォーマンスを追跡するためのいくつかのソースを次に示します。
+
+- [Chatbot Arena LLM Leaderboard](https://beta.lmarena.ai/leaderboard)
+- [一般的な推論](https://gr.inc/)
+- [エージェント リーダーボード - ハグ顔スペース by galileo-ai](https://huggingface.co/spaces/galileo-ai/agent-leaderboard)
+
+### 推論モデルの設計パターンとユースケース
+
+#### エージェントシステムの計画
+
+エージェントシステムを構築する場合、**計画**システムが複雑なタスクをより適切に実行できるようにする重要なコンポーネントです。たとえば、詳細な調査のエージェント システムを構築する場合、計画は実際の検索を計画し、タスクの進行に合わせてエージェント システムをガイドするのに役立ちます。以下の例は、検索を調整して実行する前に、まず計画 (クエリを細分化) する検索エージェントを示しています。
+
+!["Orchestrator-Worker Agent"](../../img/reasoning-llms/orchestrator_worker_LI_1.JPG)
+
+#### Agentic RAG
+
+**Agentic RAG**は、高度なツールの使用と、複雑な知識ベースまたはソースに基づいた推論を伴うエージェント RAG アプリケーションを構築するための推論モデルを活用するシステムです。これには、**検索エージェント**複雑な推論を必要とする複雑なクエリ/コンテキストを (ツール/関数呼び出し経由で) ルーティングするための推論チェーン/ツールを使用します。
+
+!["Agentic RAG"](../../img/reasoning-llms/agentic_rag.JPG)\
+n8n を使用したエージェント RAG システムの基本的な実装を次に示します。[n8n テンプレート](https://drive.google.com/drive/folders/1Rx4ithkjQbYODt5L6L-OcSTTRT4M1MiR?usp=sharing)
+
+エージェント RAG システムのビデオ チュートリアルは次のとおりです。[推論 LLM を使用した構築 | n8n Agentic RAG デモ + テンプレート](https://www.youtube.com/watch?v=rh2JRWsLGfg\&ab_channel=ElvisSaravia)
+
+#### LLM-as-a-Judge
+
+自動化された評価/評価が必要なアプリケーションを構築する場合、LLM-as-a-Judge がオプションになります。 LLM-as-a-Judge は、大量の情報の複雑な理解と推論を活用します。推論 LLM は、このタイプのユースケースに最適です。以下の例は、最初に予測を評価してフィードバックを生成する LLM-as-a-Judge エージェント (推論モデルを利用) とループする、評価者/オプティマイザー エージェント システムを示しています。フィードバックは、現在のプロンプト、フィードバックを受け取り、基本システム プロンプトの最適化を試みるメタ プロンプトによって使用されます。
+
+!["LLM-as-a-Judge"](../../img/reasoning-llms/llm_as_a_judge.JPG)
+
+#### 視覚的推論
+
+o3 のようなモデルは、マルチツールの使用機能を活用して実行できます。[高度な視覚的推論](https://openai.com/index/thinking-with-images/)また、画像についての推論や、利用可能なツールを使用した画像の変更 (ズーム、クロップ、回転など) などのタスクを実行します。モデルは思考の連鎖の中でイメージを使って推論することができます。
+
+**🧩クロスワードパズル:** [https://chatgpt.com/share/681fcc32-58fc-8000-b2dc-5da7e84cf8bf](https://chatgpt.com/share/681fcc32-58fc-8000-b2dc-5da7e84cf8bf)
+
+#### その他の使用例
+
+その他の使用例は次のとおりです。
+
+- 技術領域における大規模で複雑なデータセット (個別のドキュメントの大規模なセットなど) に関する関係を見つけて質問に答える
+- 大規模なコードベースのレビュー、理解、デバッグ。アルゴリズム開発や科学的コーディングにも優れています
+- 高度な数学的問題解決、実験計画、より深い推論を必要とする科学的タスク
+- 文献レビューと総合
+- LLM のステップバイステップの指示 (メタプロンプトなど) を最適化するための KB のルーチン生成
+- データセットの品質と信頼性を向上させるためのデータ検証
+- 複数ステップのエージェント計画 (詳細な調査など)
+- QA システムに関連する情報を認識して抽出する
+- 知識集約型で曖昧なタスク
+
+## **Reasoning LLM Usage Tips**
+
+### **一般的な使用パターンとプロンプトのヒント**
+
+- **戦略的推論:**&#x63A8;論モデルは、アプリケーションのすべての部分ではなく、LLM ベースのアプリケーションの推論が重要なモジュールまたはコンポーネントに使用します。関心事の分離を適用して (アプリケーションをモジュール化して)、アプリケーションのどの部分で推論が役立つかを簡単に特定できるようにします。
+
+- **推論時間のスケーリング (テスト時間の計算):**&#x4E00;般に、思考時間 (つまり、計算) が長くなるほど、ほとんどの推論モデルのパフォーマンスが向上します。
+
+- **思考時間:**\` などのさまざまな推論努力オプションを使用できます。**低い**\` コストを削減し、応答を迅速化する場合、または \`**高い**\` を使用すると、思考時間が長くなり、トークンが増加します。その結果、応答も遅くなります。 \`**中くらい**\` は正確さとスピードのバランスです。
+
+- **指示を明確にしてください。**&#x4ED6;の標準的なチャット LLM と同様に、達成したいことに対する明確かつ明示的な指示を含む推論モデルを提供します。ステップバイステップの詳細を提供する必要はありません (これについては後述します)。ただし、モデルが試行しようとするあらゆる仮定を排除するために、必要な高レベルの命令、制約、および必要な出力をモデルに与えることが重要です。
+
+- **手動 CoT を回避します。**&#x624B;順内で思考の連鎖 (ステップバイステップ) を促すことは避けてください。指示はシンプルかつ直接的である必要があります。必要に応じて、命令に応答制約を追加します。
+
+- **構造の入力と出力:**&#x6A19;準の LLM と同様に、入力を区切り文字で構造化することをお勧めします。特に複雑なエージェント アプリケーションを構築する場合には、構造化された出力を活用することもできます。ほとんどの推論モデルは、JSON または XML を使用して出力を構造化するための指示に従うのに効果的です。コンテンツを JSON で出力するという難しい要件がない限り、生成されたコンテンツを構造化するためのデフォルト モードとして XML を使用することをお勧めします。**Claude 4 のようなモデルからの出力形式は、プロンプトの構造に影響を受ける傾向があります (たとえば、プロンプトの形式に Markdown が使用されている場合は、Markdown 出力に大きく依存します)。**
+
+- **Few-Shotプロンプト**: モデルが苦労している目的の出力を満たす必要がある場合は、数ショットのデモ/サンプルを追加します。混乱を避けるために、これらを大まかな手順と合わせてください。フューショット プロンプトは、目的の出力を説明したり、モデルに避けたい動作の例を提供したりするのが難しい場合に特に役立ちます。
+
+- **モデルに指示を与えるときは、説明的で明確な修飾子を使用します。**&#x660E;確な修飾子と命令内の詳細を使用することで、o3 や Claude 4 などのモデルを操作して、より複雑で高品質の出力 (コードや検索結果など) を生成できます。[Claude 4 ドキュメントから取得](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/claude-4-best-practices#enhance-visual-and-frontend-code-generation)フロントエンド コードを生成する例としては、「ホバー状態、遷移、マイクロ インタラクションなどの考え抜かれた詳細を追加する」などが挙げられます。
+
+### ハイブリッド推論モデルの使用
+
+- **シンプルに始めましょう:**&#x6700;初に標準モード (思考モードをオフ) を使用して、応答を評価します。ここで手動の思考連鎖プロンプトを使用してみることもできます。
+
+- **ネイティブ推論を有効にする:**&#x9593;違いや浅い応答が見つかったものの、より広範な分析/推論がタスクに役立つと思われる場合は、思考を有効にします。少ない思考力から始めて、応答の質を評価します。
+
+- **思考時間を増やす:**&#x4F4E;めの思考だけでは不十分な場合は、中程度の努力に切り替えてください。
+
+- **より多くの思考時間:**&#x4E2D;程度の努力では不十分な場合は、高い努力に切り替えてください。
+
+- **数回のプロンプトを使用します。**&#x51FA;力のスタイルと形式を改善する必要がある場合は、デモンストレーションを使用します。
+
+!["Hybrid Reasoning Models"](../../img/reasoning-llms/hybrid_reasoning_models.JPG)
+
+🧑‍💻 コードデモ:[推論.ipynb](https://drive.google.com/file/d/16t34_Ql4QWORkb6U9ykVbvhCHnMvQUE_/view?usp=sharing)
+
+## **推論モデルの制限**
+
+以下は、推論モデルを使用する際に留意すべき一般的な進行中の問題のリストです。
+
+- **出力品質**
+
+  - 推論モデルでは、言語が混在したコンテンツ、コンテンツの繰り返し、一貫性のない出力、フォーマットの問題、低品質の出力スタイルが生成される場合があります。
+
+  - これらの問題の一部は、モデルのプロンプトのベスト プラクティスに従うことで軽減できます。曖昧で不必要な指示は避けてください。
+
+- **推論は指示に従うことに影響を与える**
+
+  - 推論モデルで明示的な思考連鎖プロンプトを使用すると、モデルの指示に従うパフォーマンスが損なわれる可能性があります ([参照](https://arxiv.org/abs/2505.11423)）。これは、CoT の使用方法にもっと注意し、推論モデルでの CoT の使用を完全に避ける必要があることを意味します。
+
+  - これ[紙](https://arxiv.org/abs/2505.11423)は、次の緩和戦略を提案しています。
+
+    - 慎重に選ばれた例を使用した数回の文脈に沿った学習
+    - 内省（モデルが自分自身の答えを批判し、修正する）
+    - 自己選択的推論 (モデルがいつ推論するかを決定します)
+    - 分類子選択的推論 (推論が役立つかどうかを外部分類子が予測します)
+
+- **考えすぎと考えすぎ**
+
+  - 適切に指示されないと、推論モデルは考えすぎたり、考えすぎたりする傾向があります。
+
+  - タスク、プロセス、および予想される出力形式について非常に具体的にすることで、この問題を改善できます。
+
+  - 他の開発者は、サブタスクを作成し、必要に応じて複雑なタスクを推論ツールにルーティングすることでこの問題に対処しています (推論モデルを利用しています)。
+
+- **料金**
+
+  - 推論モデルは標準のチャット LLM よりも大幅にコストがかかるため、必ずデバッグ ツールを使用して実験し、応答の品質を常に評価してください。
+
+  - 一貫性のない出力から生じるトークンの使用状況とコストを追跡します。
+
+- **レイテンシ**
+
+  - 推論モデルは比較的時間がかかり、当面のタスクに関係のない不要なコンテンツを出力する場合があり、これが遅延の問題につながります。
+
+  - これらの遅延の問題は、プロンプトをより簡潔にすることで回避できます。アプリケーション側では、ストリーミング トークンを活用して、体感的な遅延を改善することもできます。
+
+  - 小規模な推論モデルや Claude 3.7 Sonnet などの他のモデルでは、待ち時間が長くなります。
+
+  - ***まず精度を最適化してから、レイテンシーとコストを最適化してください。***
+
+- **ツール呼び出しとエージェント機能が不十分**
+
+  - o3 のような推論モデルはマルチツール呼び出しを改善しましたが、並列ツール呼び出しには依然として問題がある可能性があります。
+
+  - 他の推論モデルも、明示的にトレーニングされていない限り、ツール呼び出し機能が不十分です (DeepSeek-R1 や Qwen シリーズなど)。
+
+  - 高度で信頼性の高いツール呼び出しにより、現実世界でアクションを実行できるエージェント システムのロックが解除される可能性があります。推論 LLM はすでに非常に知識が豊富ですが、さらに改善する必要があります。**意思決定**を通して**堅牢かつ動的なツール呼び出し機能**物理世界とデジタル世界の両方を理解すること。マルチモーダル推論は、現在進行中の研究分野です。
+
+LLM の推論に関する最新のガイドもここで見つけることができます。[推論 LLM ガイド](https://docs.google.com/document/d/1AwylUdyciJhvYn-64ltpe79UL7_G-BmNwqs4NNt4oQ0/edit?usp=sharing)
+
+## **次のステップ**
+
+推論 LLM のアプリケーションについて詳しく学び、LLM ベースのエージェント システム ワークフロー開発を改善するには、次のコースをお勧めします。
+
+- [開発者向けの迅速なエンジニアリング](https://dair-ai.thinkific.com/courses/prompt-engineering-devs)
+  - プロンプト推論 LLM とアプリケーションに関するヒントをさらに取り上げます。
+- [Advanced AI Agents](https://dair-ai.thinkific.com/courses/advanced-ai-agents)
+  - マルチエージェント システムで推論 LLM を活用する方法や、裁判官としての LLM やスーパーバイザーとワーカーのエージェント アーキテクチャなどのその他の高度なアイデアについて説明します。
+- [Introduction to AI Agents](https://dair-ai.thinkific.com/courses/introduction-ai-agents)
+  - ReAct Agents などの概念を使用して構築する方法をカバーします。
+- [Introduction to RAG](https://dair-ai.thinkific.com/courses/introduction-rag)
+  - Agentic RAG などの一般的なデザイン パターンを使用して構築する方法をカバーします。
+
+また、サポートやガイダンスを得たり、ライブオフィスアワーに参加したり、専門家とのライブイベントに参加したりできる、活発なコミュニティフォーラムもあります。
+
+連絡先[academy@dair.ai](mailto:academy@dair.ai)ご質問がございましたら。
+
+import { Callout } from 'nextra/components'
+
+<Callout type= "info" emoji="🎓">
+新しいコースで、推論 LLM を使用して高度なエージェントを構築する方法を学びます。[Advanced AI Agents](https://dair-ai.thinkific.com/courses/advanced-ai-agents)
+
+コード PROMPTING20 を使用すると、さらに 20% オフになります。
+</Callout>
+
+## **参考文献**
+
+- [Claude 4 プロンプト エンジニアリングのベスト プラクティス](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/claude-4-best-practices)
+- [LLM 推論 |プロンプトエンジニアリングガイド\<!-- -->](https://www.promptingguide.ai/research/llm-reasoning)
+- [推論モデルは常に自分の考えを言うわけではありません](https://arxiv.org/abs/2505.05410)
+- [双子座の考え方 |ジェミニ API |開発者向けの Google AI](https://ai.google.dev/gemini-api/docs/thinking)
+- [OpenAI o3 および o4-mini の紹介](https://openai.com/index/introducing-o3-and-o4-mini/)
+- [推論 LLM を理解する](https://sebastianraschka.com/blog/2025/understanding-reasoning-llms.html)
+- [イメージで考える | OpenAI](https://openai.com/index/thinking-with-images/)
+- [DeepSeek R1 Paper](https://github.com/deepseek-ai/DeepSeek-R1/blob/main/DeepSeek_R1.pdf)
+- [一般的な推論](https://gr.inc/)
+- [Llama-Nemotron: 効率的な推論モデル](https://arxiv.org/pdf/2505.00949v1)
+- [Phi-4-Mini Reasoning](https://arxiv.org/abs/2504.21233)
+- [CoT 百科事典](https://arxiv.org/abs/2505.10185)
+- [LLM における推論のより深い理解に向けて](https://arxiv.org/abs/2505.10543)
+- [LLM における指示の推論の落とし穴](http://arxiv.org/abs/2505.11423)
+- [思考の幻想: 問題の複雑さのレンズを通して推論モデルの長所と限界を理解する](https://ml-site.cdn-apple.com/papers/the-illusion-of-thinking.pdf)

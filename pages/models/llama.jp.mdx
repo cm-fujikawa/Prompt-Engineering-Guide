@@ -1,42 +1,39 @@
 ## LLaMA: オープンで効率的な基礎言語モデル
 
 <Callout emoji="⚠️">
-  このセクションは現在開発中です。
+このセクションは現在鋭意開発中です。
 </Callout>
-
 
 import {Screenshot} from 'components/screenshot'
 import { Callout, FileTree } from 'nextra-theme-docs'
 import LLAMA1 from '../../img/llama-1.png'
 
+## 新着情報？
 
-## What's new?
+このペーパーでは、7B から 65B パラメータにわたる基礎言語モデルのコレクションを紹介します。
 
-本稿では、7Bから65Bパラメータの基礎言語モデルのコレクションを紹介します。
+モデルは、公開されているデータセットを使用して数兆のトークンでトレーニングされます。
 
-このモデルは、公開されているデータセットを用いて何兆ものトークンでトレーニングしました。
-
-[(Hoffman et al. 2022)](https://arxiv.org/abs/2203.15556)は、計算予算があれば、より小さいモデルがより多くのデータで訓練された場合、より大きなモデルよりも優れたパフォーマンスを達成できる可能性が示されています。この研究では、10Bモデルを2000億トークンで訓練することを推奨しています。しかし、LLaMA論文では、7Bモデルのパフォーマンスが1兆トークンを超えても改善し続けることが示されています。
+による作品[(Hoffman et al. 2022)](https://arxiv.org/abs/2203.15556)計算予算が与えられた場合、より多くのデータでトレーニングされた小規模なモデルが、大規模なモデルよりも優れたパフォーマンスを達成できることを示しています。この作業では、200B トークンで 10B モデルをトレーニングすることが推奨されています。ただし、LLaMA の論文では、7B モデルのパフォーマンスは 1T トークン後も向上し続けていることがわかりました。
 
 <Screenshot src={LLAMA1} alt="LLAMA1" />
 
-この研究では、より多くのトークンでトレーニングすることで、様々な推論予算で最高の性能を達成する言語モデル(LLaMa)をトレーニングすることに焦点を当てています。
+この研究は、より多くのトークンでトレーニングすることにより、さまざまな推論予算で可能な限り最高のパフォーマンスを達成するトレーニング モデル (LLaMA) に焦点を当てています。
 
-## 性能と主な結果
+## 機能と主な結果
 
-全体として、LLaMA-13Bは10倍小さく、シングルGPUで動作可能でありながら、多くのベンチマークでGPT-3(175B)を上回りました。LLaMA 65BからChinchilla-70BやPaLM-540Bなどのモデルと競争力を持っています。
+全体として、LLaMA-13B は 10 倍小さく、単一の GPU を実行できるにもかかわらず、多くのベンチマークで GPT-3(175B) よりも優れたパフォーマンスを示します。 LLaMA 65B は、Chinchilla-70B や PaLM-540B などのモデルと競合します。
 
+*紙：* [LLaMA: オープンで効率的な基礎言語モデル](https://arxiv.org/abs/2302.13971)
 
-*Paper:* [LLaMA: Open and Efficient Foundation Language Models](https://arxiv.org/abs/2302.13971)
-
-*Code:* https://github.com/facebookresearch/llama
+*コード：*&#x68;ttps://github.com/facebookresearch/llama
 
 ## 参考文献
 
-- [Koala: A Dialogue Model for Academic Research](https://bair.berkeley.edu/blog/2023/04/03/koala/) (April 2023)
-- [Baize: An Open-Source Chat Model with Parameter-Efficient Tuning on Self-Chat Data](https://arxiv.org/abs/2304.01196) (April 2023)
-- [Vicuna: An Open-Source Chatbot Impressing GPT-4 with 90%* ChatGPT Quality](https://vicuna.lmsys.org/) (March 2023)
-- [LLaMA-Adapter: Efficient Fine-tuning of Language Models with Zero-init Attention](https://arxiv.org/abs/2303.16199) (March 2023)
+- [コアラ: 学術研究のための対話モデル](https://bair.berkeley.edu/blog/2023/04/03/koala/) (April 2023)
+- [Baize: セルフチャット データのパラメータ効率の高いチューニングを備えたオープンソース チャット モデル](https://arxiv.org/abs/2304.01196) (April 2023)
+- [Vicuna: 90%\* ChatGPT 品質で GPT-4 を実現するオープンソース チャットボット](https://vicuna.lmsys.org/) (March 2023)
+- [LLaMA アダプター: ゼロ初期化アテンションによる言語モデルの効率的な微調整](https://arxiv.org/abs/2303.16199) (March 2023)
 - [GPT4All](https://github.com/nomic-ai/gpt4all) (March 2023)
-- [ChatDoctor: A Medical Chat Model Fine-tuned on LLaMA Model using Medical Domain Knowledge](https://arxiv.org/abs/2303.14070) (March 2023)
-- [Stanford Alpaca](https://github.com/tatsu-lab/stanford_alpaca) (March 2023)
+- [ChatDoctor: 医療領域の知識を使用して LLaMA モデルに基づいて微調整された医療チャット モデル](https://arxiv.org/abs/2303.14070) (March 2023)
+- [スタンフォード アルパカ](https://github.com/tatsu-lab/stanford_alpaca) (March 2023)

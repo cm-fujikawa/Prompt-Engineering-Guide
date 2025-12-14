@@ -1,0 +1,284 @@
+# **コンテキストエンジニアリングガイド**
+
+## **目次**
+
+- [コンテキストエンジニアリングとは何ですか?](#what-is-context-engineering)
+- [コンテキストエンジニアリングの実践](#context-engineering-in-action)
+  - [システムプロンプト](#system-prompt)
+  - [説明書](#instructions)
+  - [ユーザー入力](#user-input)
+  - [構造化された入力と出力](#structured-inputs-and-outputs)
+  - [ツール](#tools)
+  - [RAG & Memory](#rag--memory)
+  - [州と歴史的背景](#states--historical-context)
+- [高度なコンテキスト エンジニアリング](#advanced-context-engineering-wip)
+- [リソース](#resources)
+
+## **コンテキストエンジニアリングとは何ですか?**
+
+数年前、多くの、トップの AI 研究者さえも、プロンプト エンジニアリングはもう廃止されるだろうと主張しました。
+
+明らかに、彼らは非常に間違っており、実際、迅速なエンジニアリングが今まで以上に重要になっています。非常に重要であるため、現在は次のようにブランド名が変更されています。***コンテキストエンジニアリング***.
+
+はい、LLM がタスクを効果的に実行するために必要な命令と関連コンテキストを調整する重要なプロセスを表す、別の派手な用語です。
+
+コンテキスト エンジニアリングについてはすでに多くのことが書かれています ([アンクル・ゴヤル](https://x.com/ankrgyl/status/1913766591910842619), [ウォールデン・ヤン](https://cognition.ai/blog/dont-build-multi-agents), [トビ・ルトケ](https://x.com/tobi/status/1935533422589399127)、 そして[アンドレイ・カルパシー](https://x.com/karpathy/status/1937902205765607626)) ですが、このトピックについての私の考えを書き、AI エージェント ワークフローの開発においてコンテキスト エンジニアリングを実践する具体的なステップバイステップ ガイドを示したいと思いました。
+
+コンテキスト エンジニアリングという言葉を誰が作ったのかは完全にはわかりませんが、この図に基づいて構築していきます。[デックス・ホーシー](https://x.com/dexhorthy/status/1933283008863482067)コンテキスト エンジニアリングとは何かについて簡単に説明します。
+
+![A diagram showing overlapping aspects of context engineering](../../img/context-engineering-guide/context-engineering-diagram.jpg)
+
+私はコンテキスト エンジニアリングという用語が好きです。他の関連タスクも含め、プロンプト エンジニアリングにかかる​​作業のほとんどをより適切に説明する広範な用語のように感じられるからです。
+
+プロンプト エンジニアリングが本格的なスキルであるかどうかについて疑問があるのは、多くの人がそれをブラインド プロンプト (ChatGPT などの LLM で使用する短いタスクの説明) と混同していることです。ブラインド プロンプトでは、システムに質問しているだけです。プロンプト エンジニアリングでは、プロンプトのコンテキストと構造についてより慎重に考える必要があります。おそらく、早い段階からコンテキストエンジニアリングと呼ぶべきだったのでしょう。
+
+コンテキスト エンジニアリングは次のフェーズで、完全なコンテキストを設計します。これには多くの場合、単純なプロンプトを超えて、システムに関する知識を取得、強化、最適化するためのより厳密な方法が必要です。
+
+開発者の観点から見ると、コンテキスト エンジニアリングには、望ましい結果を達成するために LLM に提供する命令とコンテキストを最適化する反復プロセスが含まれます。これには、戦術が機能しているかどうかを測定するための正式なプロセス (評価パイプラインなど) を設けることが含まれます。
+
+AI 分野の急速な進化を考慮して、コンテキスト エンジニアリングをより広義に定義することを提案します。***LLM と高度な AI モデルがタスクを効果的に実行するための命令と関連コンテキストを設計および最適化するプロセス。***&#x3053;れには、テキストベースの LLM だけでなく、より普及しつつあるマルチモーダル モデルのコンテキストの最適化も含まれます。これには、すべての迅速なエンジニアリング作業と、次のような関連プロセスが含まれます。
+
+- プロンプト チェーンの設計と管理 (該当する場合)
+- チューニング手順/システムプロンプト
+- プロンプトの動的要素の管理 (ユーザー入力、日付/時刻など)
+- 関連する知識の検索と準備 (つまり、RAG)
+- クエリの拡張
+- ツールの定義と手順 (エージェント システムの場合)
+- 数ショットのデモの準備と最適化
+- 入力と出力の構造化 (区切り文字、JSON スキーマなど)
+- 短期記憶 (つまり、状態/歴史的コンテキストの管理) と長期記憶 (例えば、ベクトル ストアから関連する知識の取得)
+- また、LLM システムの最適化に役立つその他の多くのトリックにより、目的のタスクを達成することができます。
+
+言い換えれば、コンテキスト エンジニアリングで達成しようとしているのは、LLM のコンテキスト ウィンドウに提供する情報を最適化することです。これは、ノイズの多い情報をフィルタリングすることも意味します。これは、LLM のパフォーマンスを体系的に測定する必要があるため、それ自体が科学です。
+
+誰もがコンテキスト エンジニアリングについて書いていますが、ここでは、AI エージェントを構築する際のコンテキスト エンジニアリングがどのようなものであるかを具体的な例を通して説明します。
+
+## **コンテキストエンジニアリングの実践**
+
+私が個人使用のために構築したマルチエージェントディープリサーチアプリケーションのために行った最近のコンテキストエンジニアリング作業の具体例を見てみましょう。
+
+n8n 内にエージェント ワークフローを構築しましたが、ツールは重要ではありません。私が構築した完全なエージェント アーキテクチャは次のようになります。
+
+![An image of an n8n workflow displaying a multi-agent deep research application](../../img/context-engineering-guide/context-engineering-workflow.jpg)
+
+私のワークフローの検索プランナー エージェントは、ユーザー クエリに基づいて検索プランを生成する役割を担っています。
+
+### **システムプロンプト**
+
+以下は、このサブエージェント用にまとめたシステム プロンプトです。
+
+```
+You are an expert research planner. Your task is to break down a complex research query (delimited by <user_query></user_query>) into specific search subtasks, each focusing on a different aspect or source type.
+        
+The current date and time is: {{ $now.toISO() }}
+
+For each subtask, provide:
+1. A unique string ID for the subtask (e.g., 'subtask_1', 'news_update')
+2. A specific search query that focuses on one aspect of the main query
+3. The source type to search (web, news, academic, specialized)
+4. Time period relevance (today, last week, recent, past_year, all_time)
+5. Domain focus if applicable (technology, science, health, etc.)
+6. Priority level (1-highest to 5-lowest)
+        
+All fields (id, query, source_type, time_period, domain_focus, priority) are required for each subtask, except time_period and domain_focus which can be null if not applicable.
+        
+Create 2 subtasks that together will provide comprehensive coverage of the topic. Focus on different aspects, perspectives, or sources of information.
+
+Each substask will include the following information:
+
+id: str
+query: str
+source_type: str  # e.g., "web", "news", "academic", "specialized"
+time_period: Optional[str] = None  # e.g., "today", "last week", "recent", "past_year", "all_time"
+domain_focus: Optional[str] = None  # e.g., "technology", "science", "health"
+priority: int  # 1 (highest) to 5 (lowest)
+
+After obtaining the above subtasks information, you will add two extra fields. Those correspond to start_date and end_date. Infer this information given the current date and the time_period selected. start_date and end_date should use the format as in the example below:
+
+"start_date": "2024-06-03T06:00:00.000Z",
+"end_date": "2024-06-11T05:59:59.999Z",
+```
+
+このプロンプトには、タスクを効果的に実行するために計画エージェントにどのような正確なコンテキストを提供するかについて慎重に検討する必要がある部分が多くあります。ご覧のとおり、単純なプロンプトや指示をデザインするだけではありません。このプロセスには実験が必要であり、タスクを最適に実行するためにモデルに重要なコンテキストを提供する必要があります。
+
+問題を、効果的なコンテキスト エンジニアリングの鍵となるコア コンポーネントに分解してみましょう。
+
+### **説明書**
+
+命令は、何をすべきかを正確に指示するためにシステムに提供される高レベルの命令です。
+
+```
+You are an expert research planner. Your task is to break down a complex research query (delimited by <user_query></user_query>) into specific search subtasks, each focusing on a different aspect or source type.
+```
+
+多くの初心者や経験豊富な AI 開発者でさえ、ここで立ち止まるでしょう。上記でプロンプト全体を共有したことを考えると、システムが希望どおりに動作するためには、システムにさらに多くのコンテキストを与える必要があることが理解できるでしょう。それがコンテキスト エンジニアリングのすべてです。それは、問題の範囲と、システムに正確に何を望んでいるのかについて、より詳細にシステムに情報を提供します。
+
+### **ユーザー入力**
+
+ユーザー入力はシステム プロンプトには表示されませんでしたが、どのように表示されるかの例を以下に示します。
+
+```
+<user_query> What's the latest dev news from OpenAI? </user_query>
+```
+
+区切り文字の使用に注目してください。これは、プロンプトをより適切に構造化するためです。これは混乱を避けるために重要であり、ユーザー入力が何であるか、システムにどのようなものを生成させたいのかを明確にします。場合によっては、入力している情報の種類が、モデルに出力してもらいたい内容に関連していることがあります (たとえば、クエリが入力で、サブクエリが出力であるなど)。
+
+### **構造化された入力と出力**
+
+大まかな指示とユーザー入力に加えて、計画エージェントが作成する必要があるサブタスクに関連する詳細にかなりの労力を費やしたことに気づいたかもしれません。以下は、ユーザーのクエリに応じてサブタスクを作成するために私が計画エージェントに提供した詳細な指示です。
+
+```
+For each subtask, provide:
+1. A unique string ID for the subtask (e.g., 'subtask_1', 'news_update')
+2. A specific search query that focuses on one aspect of the main query
+3. The source type to search (web, news, academic, specialized)
+4. Time period relevance (today, last week, recent, past_year, all_time)
+5. Domain focus if applicable (technology, science, health, etc.)
+6. Priority level (1-highest to 5-lowest)
+        
+All fields (id, query, source_type, time_period, domain_focus, priority) are required for each subtask, except time_period and domain_focus which can be null if not applicable.
+        
+Create 2 subtasks that together will provide comprehensive coverage of the topic. Focus on different aspects, perspectives, or sources of information.
+```
+
+上記の手順をよく見ていただくと、計画担当者に生成してもらいたい必要な情報のリストと、データ生成プロセスをより適切に進めるためのいくつかのヒント/例を構造化することにしました。これは、期待される内容に関する追加のコンテキストをエージェントに提供するために重要です。たとえば、優先度レベルを 1 ～ 5 のスケールにするように指示しなかった場合、システムは 1 ～ 10 のスケールを使用することを好む可能性があります。繰り返しますが、このコンテキストは非常に重要です。
+
+次に、構造化されたアウトプットについて話しましょう。計画エージェントから一貫した出力を取得するために、予期されるサブタスク形式とフィールド タイプに関するコンテキストも提供します。以下は、追加のコンテキストとしてエージェントに渡す例です。これにより、出力として期待される内容に関するヒントと手掛かりがエージェントに提供されます。
+
+```
+Each substask will include the following information:
+
+id: str
+query: str
+source_type: str  # e.g., "web", "news", "academic", "specialized"
+time_period: Optional[str] = None  # e.g., "today", "last week", "recent", "past_year", "all_time"
+domain_focus: Optional[str] = None  # e.g., "technology", "science", "health"
+priority: int  # 1 (highest) to 5 (lowest)
+```
+
+これに加えて、n8n 内ではツール出力パーサーを使用することもできます。これは基本的に最終出力を構造化するために使用されます。私が使用しているオプションは、次のような JSON の例を提供しています。
+
+```
+{
+  "subtasks": [
+    {
+      "id": "openai_latest_news",
+      "query": "latest OpenAI announcements and news",
+      "source_type": "news",
+      "time_period": "recent",
+      "domain_focus": "technology",
+      "priority": 1,
+      "start_date": "2025-06-03T06:00:00.000Z",
+      "end_date": "2025-06-11T05:59:59.999Z"
+    },
+    {
+      "id": "openai_official_blog",
+      "query": "OpenAI official blog recent posts",
+      "source_type": "web",
+      "time_period": "recent",
+      "domain_focus": "technology",
+      "priority": 2,
+      "start_date": "2025-06-03T06:00:00.000Z",
+      "end_date": "2025-06-11T05:59:59.999Z"
+    },
+...
+}
+```
+
+次に、ツールはこれらの例からスキーマを自動的に生成します。これにより、以下の例に示すように、システムが適切に構造化された出力を解析して生成できるようになります。
+
+```
+[
+  {
+    "action": "parse",
+    "response": {
+      "output": {
+        "subtasks": [
+          {
+            "id": "subtask_1",
+            "query": "OpenAI recent announcements OR news OR updates",
+            "source_type": "news",
+            "time_period": "recent",
+            "domain_focus": "technology",
+            "priority": 1,
+            "start_date": "2025-06-24T16:35:26.901Z",
+            "end_date": "2025-07-01T16:35:26.901Z"
+          },
+          {
+            "id": "subtask_2",
+            "query": "OpenAI official blog OR press releases",
+            "source_type": "web",
+            "time_period": "recent",
+            "domain_focus": "technology",
+            "priority": 1.2,
+            "start_date": "2025-06-24T16:35:26.901Z",
+            "end_date": "2025-07-01T16:35:26.901Z"
+          }
+        ]
+      }
+    }
+  }
+]
+```
+
+これは複雑に見えますが、今日の多くのツールでは、すぐに構造化された出力機能が有効になっているため、おそらく自分で実装する必要はありません。 n8n は、コンテキスト エンジニアリングのこの部分を簡単にします。これはコンテキスト エンジニアリングの過小評価されている側面の 1 つですが、多くの AI 開発者が何らかの理由で無視しているのを目にします。コンテキスト エンジニアリングによって、これらの重要なテクニックにさらに光が当てられることを願っています。これは、特にワークフロー内の次のコンポーネントに特別な形式で渡す必要がある一貫性のない出力をエージェントが取得する場合に、非常に強力なアプローチです。
+
+### **ツール**
+
+エージェントの構築に n8n を使用しているため、現在の日付と時刻をコンテキストに組み込むのは簡単です。次のようにして実行できます。
+
+```
+The current date and time is: {{ $now.toISO() }}
+```
+
+これは n8n で呼び出されるシンプルで便利な関数ですが、処理をより動的にする (つまり、クエリで必要な場合にのみ日付と時刻を取得する) のに役立つ専用ツールとしてこれを構築するのが一般的です。それがコンテキストエンジニアリングの意味です。これにより、ビルダーは、どのコンテキストをいつ LLM に渡すかについて具体的な決定を下す必要があります。これは、アプリケーションから仮定や不正確さを排除できるため、優れています。
+
+日付と時刻はシステムにとって重要なコンテキストです。そうしないと、現在の日付と時刻の知識を必要とするクエリのパフォーマンスが低下する傾向があります。たとえば、先週発生した OpenAI からの最新の開発ニュースを検索するようにシステムに依頼した場合、システムは日付と時刻を推測するだけで、最適ではないクエリが発生し、その結果、不正確な Web 検索が行われてしまいます。システムが正しい日付と時刻を持っている場合、日付範囲をより適切に推測できます。これは検索エージェントとツールにとって重要です。 LLM が日付範囲を生成できるようにするために、これをコンテキストの一部として追加しました。
+
+```
+After obtaining the above subtasks information, you will add two extra fields. Those correspond to start_date and end_date. Infer this information given the current date and the time_period selected. start_date and end_date should use the format as in the example below:
+
+"start_date": "2024-06-03T06:00:00.000Z",
+"end_date": "2024-06-11T05:59:59.999Z",
+```
+
+私たちはアーキテクチャの計画エージェントに焦点を当てているため、ここに追加する必要があるツールはそれほど多くありません。他に追加することが合理的な唯一のツールは、クエリを指定して関連するサブタスクを取得する取得ツールです。このアイデアについては以下で説明しましょう。
+
+### **RAG & Memory**
+
+私が構築したディープリサーチアプリケーションのこの最初のバージョンは、短期メモリの使用を必要としませんが、さまざまなユーザークエリのサブクエリをキャッシュするバージョンを構築しました。これは、ワークフローの高速化/最適化を実現するのに役立ちます。同様のクエリが以前にユーザーによってすでに使用されていた場合、それらの結果をベクトル ストアに保存して検索することができ、すでに生成され、ベクトル ストアに存在するプランに対して新しいサブクエリのセットを作成する必要がなくなります。 LLM API を呼び出すたびに、レイテンシとコストが増加することに注意してください。
+
+これは、アプリケーションをより動的に、より安価に、効率的にするための賢いコンテキスト エンジニアリングです。ご存知のとおり、コンテキスト エンジニアリングはプロンプトを最適化するだけではありません。対象とする目標に適したコンテキストを選択することが重要です。また、ベクター ストアをどのように維持するか、既存のサブタスクをコンテキストに取り込む方法について、より創造性を発揮することもできます。創造的で斬新なコンテキストエンジニアリングが堀です！
+
+### **州と歴史的背景**
+
+ディープ リサーチ エージェントの v1 には表示されていませんが、このプロジェクトの重要な部分は、結果を最適化して最終レポートを生成することでした。多くの場合、エージェント システムは、クエリ、サブタスク、および Web 検索 API から取得するデータのすべてまたは一部を修正する必要がある場合があります。これは、システムが問題に対して複数のショットを実行し、以前の状態と、場合によってはシステムのすべての歴史的コンテキストにアクセスする必要があることを意味します。
+
+これは、私たちのユースケースの文脈において何を意味するのでしょうか?この例では、サブタスクの状態、改訂 (存在する場合)、ワークフロー内の各エージェントからの過去の結果、および改訂フェーズで役立つその他のコンテキストへのアクセスをエージェントに与えることができます。このタイプのコンテキストの場合、何を渡すかは、最適化の対象によって異なります。ここでは多くの意思決定が行われます。コンテキスト エンジニアリングは必ずしも単純ではありません。このコンポーネントでどれくらいの反復が必要になるかは想像できると思います。だからこそ、私は評価など他の分野の重要性を強調し続けています。これらすべてを測定していない場合、コンテキスト エンジニアリングの取り組みが機能しているかどうかをどうやって知ることができるでしょうか?
+
+## **Advanced Context Engineering \[WIP]**
+
+コンテキスト エンジニアリングには、コンテキスト圧縮、コンテキスト管理手法、コンテキストの安全性、コンテキストの有効性の評価 (つまり、コンテキストが時間の経過とともにどれだけ効果的であるかを測定する) など、この記事では取り上げていない他の側面もたくさんあります。今後の記事で、これらのトピックに関するさらなるアイデアを共有する予定です。
+
+コンテキストは希薄化または非効率になる (つまり、古くて無関係な情報で満たされる) 可能性があるため、これらの問題を把握するには特別な評価ワークフローが必要です。
+
+私は、コンテキスト エンジニアリングが AI 開発者/エンジニアにとって重要なスキルとして進化し続けることを期待しています。手動によるコンテキスト エンジニアリング以外にも、効果的なコンテキスト エンジニアリングの処理を自動化する方法を構築する機会もあります。これを試みたツールをいくつか見てきましたが、この分野ではさらなる進歩が必要です。
+
+<Callout type="info" emoji="🎓">
+このコンテンツは新しいコースに基づいています[「n8n を使用した効果的な AI エージェントの構築」](https://dair-ai.thinkific.com/courses/agents-with-n8n)、エージェント システムの設計と実装に関する包括的な洞察、ダウンロード可能なテンプレート、プロンプト、高度なヒントを提供します。
+
+<strong>コードを使用する<code>PROMPTING20</code>Pro メンバーシップが 20% オフになります。</strong>
+</Callout>
+
+## **リソース**
+
+以下は、コンテキスト エンジニアリングについて最近執筆した他の人による推奨書籍の一部です。
+
+- [https://rlancemartin.github.io/2025/06/23/context\_engineering/](https://rlancemartin.github.io/2025/06/23/context_engineering/)
+- [https://x.com/karpathy/status/1937902205765607626](https://x.com/karpathy/status/1937902205765607626)
+- [https://www.philschmid.de/context-engineering](https://www.philschmid.de/context-engineering)
+- [https://simple.ai/p/the-skill-thats-replacing-prompt-engineering?](https://simple.ai/p/the-skill-thats-replacing-prompt-engineering?)
+- [https://github.com/humanlayer/12-factor-agents](https://github.com/humanlayer/12-factor-agents)
+- [https://blog.langchain.com/the-rise-of-context-engineering/](https://blog.langchain.com/the-rise-of-context-engineering/)
+
+import { Callout } from 'nextra/components'
