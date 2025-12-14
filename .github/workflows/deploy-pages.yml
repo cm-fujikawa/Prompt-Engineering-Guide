@@ -37,21 +37,40 @@ jobs:
 
       - name: Prepare Japanese-only build
         run: |
-          # 日本語ページを英語ページとしてコピー（上書き）
+          # 1. 日本語ページを英語ページとしてコピー（上書き）
           find pages -name "*.jp.mdx" | while read file; do
             newfile="${file%.jp.mdx}.mdx"
             cp "$file" "$newfile"
-            echo "Copied: $file -> $newfile"
           done
 
-          # 日本語メタファイルを英語メタファイルとしてコピー
+          # 2. 日本語メタファイルを英語メタファイルとしてコピー
           find pages -name "_meta.jp.json" | while read file; do
             newfile="${file%.jp.json}.json"
             cp "$file" "$newfile"
-            echo "Copied: $file -> $newfile"
           done
 
-          # next.config.js から i18n 設定を削除し、静的エクスポート設定を追加
+          # 3. 日本語以外の全ての言語ファイルを削除（*.jp.mdx と _meta.jp.json は除外）
+          find pages -type f \( \
+            -name "*.ar.mdx" -o -name "*.ca.mdx" -o -name "*.de.mdx" -o \
+            -name "*.en.mdx" -o -name "*.es.mdx" -o -name "*.fi.mdx" -o \
+            -name "*.fr.mdx" -o -name "*.it.mdx" -o \
+            -name "*.kr.mdx" -o -name "*.pt.mdx" -o -name "*.ru.mdx" -o \
+            -name "*.tr.mdx" -o -name "*.zh.mdx" -o \
+            -name "_meta.ar.json" -o -name "_meta.ca.json" -o -name "_meta.de.json" -o \
+            -name "_meta.en.json" -o -name "_meta.es.json" -o -name "_meta.fi.json" -o \
+            -name "_meta.fr.json" -o -name "_meta.it.json" -o \
+            -name "_meta.kr.json" -o -name "_meta.pt.json" -o -name "_meta.ru.json" -o \
+            -name "_meta.tr.json" -o -name "_meta.zh.json" \
+          \) -delete
+
+          # 4. ar-pages ディレクトリも削除（アラビア語用の別ディレクトリ）
+          rm -rf ar-pages
+
+          # 5. middleware.js を削除（静的エクスポートでは不要）
+          rm -f middleware.js
+
+      - name: Generate next.config.js
+        run: |
           cat > next.config.js << 'EOF'
           const withNextra = require('nextra')({
             theme: 'nextra-theme-docs',
@@ -80,9 +99,6 @@ jobs:
             }
           })
           EOF
-
-          # middleware.js を削除（静的エクスポートでは不要）
-          rm -f middleware.js
 
       - name: Build
         run: pnpm build
