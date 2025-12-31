@@ -1,0 +1,21 @@
+# 効率的な無限コンテキストトランスフォーマー
+
+import {Bleed} from 'nextra-theme-docs'
+
+<iframe width="100%" height="415px" src="https://www.youtube.com/embed/tOaTaQ8ZGRo?si=pFP-KiLe63Ppl9Pd" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
+
+新しい[紙](https://arxiv.org/abs/2404.07143)Google は、圧縮メモリをバニラのドット積アテンション層に統合します。
+
+目標は、Transformer LLM が制限されたメモリ フットプリントと計算で無限に長い入力を効果的に処理できるようにすることです。
+
+彼らは、バニラ アテンション メカニズムに圧縮メモリ モジュールを組み込んだ、Infini-attention と呼ばれる新しいアテンション技術を提案しています。
+
+!["Infini-Attention"](../../img/research/infini-attention.png)
+
+これは、マスクされたローカル アテンションと長期的なリニア アテンションの両方を 1 つの Transformer ブロックに組み込みます。これにより、Infini-Transformer モデルは長距離および短期の両方のコンテキスト依存関係を効率的に処理できるようになります。
+
+このアプローチは、114 倍のメモリ圧縮率を備えたロングコンテキスト言語モデリングのベースライン モデルよりも優れたパフォーマンスを発揮します。
+
+また、1B LLM は 1M シーケンス長まで自然に拡張でき、8B モデルは 500K 長の本の要約タスクで新しい SoTA 結果を達成できることも示しています。
+
+ロングコンテキスト LLM がいかに重要になってきているかを考えると、効果的なメモリ システムを持つことで、強力な推論、計画、継続的な適応、およびこれまでの LLM には見られなかった機能が解放される可能性があります。

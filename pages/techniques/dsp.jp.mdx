@@ -1,16 +1,21 @@
-# 方向性刺激プロンプティング
+# DSP
 
 import { Callout, FileTree } from 'nextra-theme-docs'
 import {Screenshot} from 'components/screenshot'
 import DSP from '../../img/dsp.jpeg'
 
-[Li et al.、(2023)](https://arxiv.org/abs/2302.11520)は、望ましい要約を生成するためにLLMをより適切に誘導するための新しいプロンプティング技術を提案しています。
+[Li et al., (2023)](https://arxiv.org/abs/2302.11520)は、LLM が目的の概要を生成できるように、より適切にガイドするための新しいプロンプト手法を提案しています。
 
-調整可能なポリシーLMは、刺激/ヒントを生成するためにトレーニングされます。RLの使用がLLMの最適化により多く見られるようになっています。
+調整可能なポリシー LM は、刺激/ヒントを生成するようにトレーニングされます。 LLM を最適化するために RL の使用が増えています。
 
-以下の図は、方向性刺激プロンプティング（Directional Stimulus Prompting）が標準的なプロンプティングと比較した場合の様子を示しています。ポリシーLMは小さく、ブラックボックスの凍結LLMを誘導するヒントを生成するために最適化されます。
+以下の図は、方向刺激プロンプトと標準プロンプトを比較したものです。ポリシー LM は小さく、ブラックボックスで凍結された LLM をガイドするヒントを生成するように最適化できます。
 
 <Screenshot src={DSP} alt="DSP" />
-Image Source: [Li et al., (2023)](https://arxiv.org/abs/2302.11520)
 
-具体的な例は近日中に公開します！
+画像出典:[Li et al., (2023)](https://arxiv.org/abs/2302.11520)
+
+完全な例は近日公開予定です。
+
+<Callout type= "info" emoji="🎓">
+新しい AI コースで高度なプロンプト方法について詳しく学びましょう。[今すぐ参加してください！](https://dair-ai.thinkific.com/)コード PROMPTING20 を使用すると、さらに 20% オフになります。
+</Callout>

@@ -1,3 +1,254 @@
 # Mixtral
 
-This page needs a translation! Feel free to contribute a translation by clicking the `Edit this page` button on the right side.
+import {Cards, Card} from 'nextra-theme-docs'
+import {TerminalIcon} from 'components/icons'
+import {CodeIcon} from 'components/icons'
+import { Callout, FileTree } from 'nextra-theme-docs'
+import {Screenshot} from 'components/screenshot'
+import mixtralexperts from '../../img/mixtral/mixtral-of-experts-layers.png'
+import mixtral1 from '../../img/mixtral/mixtral-benchmarks-1.png'
+import mixtral2 from '../../img/mixtral/mixtral-benchmarks-2.png'
+import mixtral3 from '../../img/mixtral/mixtral-benchmarks-3.png'
+import mixtral4 from '../../img/mixtral/mixtral-benchmarks-4.png'
+import mixtral5 from '../../img/mixtral/mixtral-benchmarks-5.png'
+import mixtral6 from '../../img/mixtral/mixtral-benchmarks-6.png'
+import mixtral7 from '../../img/mixtral/mixtral-benchmarks-7.png'
+import mixtralchat from '../../img/mixtral/mixtral-chatbot-arena.png'
+
+このガイドでは、プロンプトや使用例など、Mixtral 8x7B モデルの概要を説明します。このガイドには、Mixtral 8x7B に関連するヒント、アプリケーション、制限事項、論文、追加の読み物も含まれています。
+
+## Mixtral の概要 (専門家の混合)
+
+Mixtral 8x7B は、Sparse Mixture of Experts (SMoE) 言語モデルです[released by Mistral AI](https://mistral.ai/news/mixtral-of-experts/)。 Mixtral のアーキテクチャは次のとおりです。[Mistral 7B](https://www.promptingguide.ai/models/mistral-7b)しかし、主な違いは、Mixtral 8x7B の各レイヤーが 8 つのフィードフォワード ブロック (つまり、エキスパート) で構成されていることです。 Mixtral はデコーダのみのモデルで、各層のトークンごとに、ルーター ネットワークが 2 人のエキスパート (つまり、8 つの異なるパラメーター グループから 2 つのグループ) を選択してトークンを処理し、その出力を加算的に組み合わせます。言い換えれば、特定の入力に対する MoE モジュール全体の出力は、エキスパート ネットワークによって生成された出力の加重合計を通じて取得されます。
+
+<Screenshot src={mixtralexperts} alt="Mixtral of Experts Layer" />
+
+Mixtral が SMoE であることを考慮すると、合計 47B のパラメーターがありますが、推論中にトークンあたり 13B のみを使用します。このアプローチの利点には、トークンごとのパラメーターの合計セットの一部のみを使用するため、コストとレイテンシーの制御が向上することが含まれます。 Mixtral は、オープン Web データと 32 トークンのコンテキスト サイズを使用してトレーニングされました。 Mixtral は、6 倍高速な推論で Llama 2 80B を上回り、同等またはそれを上回るパフォーマンスを示していると報告されています。[GPT-3.5](https://www.promptingguide.ai/models/chatgpt)いくつかのベンチマークで。
+
+The Mixtral models are [Apache 2.0に基づいてライセンスされています](https://github.com/mistralai/mistral-src#Apache-2.0-1-ov-file).
+
+## Mixtral Performance and Capabilities
+
+Mixtral は、数学的推論、コード生成、多言語タスクにおいて強力な機能を発揮します。英語、フランス語、イタリア語、ドイツ語、スペイン語などの言語に対応できます。 Mistral AI は、人間のベンチマークで GPT-3.5 Turbo、Claude-2.1、Gemini Pro、および Llama 2 70B モデルを上回る Mixtral 8x7B Instruct モデルもリリースしました。
+
+以下の図は、さまざまなサイズの Llama 2 モデルと、幅広い機能とベンチマークでのパフォーマンスの比較を示しています。 Mixtral は Llama 2 70B と同等またはそれを上回り、数学とコード生成において優れたパフォーマンスを示します。
+
+<Screenshot src={mixtral1} alt="Mixtral Performance vs. Llama 2 Performance" />
+
+下の図に見られるように、Mixtral 8x7B は、MMLU や GSM8K などのさまざまな一般的なベンチマークにわたって、Llama 2 モデルよりも優れたパフォーマンスを示しているか、Llama 2 モデルと同等のパフォーマンスを示しています。推論中に使用するアクティブなパラメーターを 5 分の 1 にしながら、これらの結果を達成します。
+
+<Screenshot src={mixtral2} alt="Mixtral Performance vs. Llama 2 Performance" />
+
+以下の図は、品質と推論予算のトレードオフを示しています。 Mixtral は、5 倍低いアクティブ パラメーターを使用しながら、いくつかのベンチマークで Llama 2 70B を上回ります。
+
+<Screenshot src={mixtral3} alt="Mixtral Performance vs. Llama 2 Performance" />
+
+以下の表に示すように、Mixtral は、Llama 2 70B や GPT-3.5 などのモデルと同等またはそれを上回ります。
+
+<Screenshot src={mixtral4} alt="Mixtral Performance vs. Llama 2 Performance" />
+
+以下の表は、Mixtral の多言語理解機能と、ドイツ語やフランス語などの言語における Llama 2 70B との比較を示しています。
+
+<Screenshot src={mixtral5} alt="Mixtral Performance vs. Llama 2 Performance" />
+
+Mixtral は、Llama 2 と比較して、QA (BBQ) ベンチマークのバイアス ベンチマークで偏りが少ないことを示しています (56.0% 対 51.5%)。
+
+<Screenshot src={mixtral7} alt="Mixtral Performance vs. Llama 2 Performance" />
+
+## Mixtral による長距離情報検索
+
+Mixtral は、情報の場所やシーケンスの長さに関係なく、32,000 トークンのコンテキスト ウィンドウから情報を取得する際にも優れたパフォーマンスを示します。
+
+Mixtral の長いコンテキストを処理する能力を測定するために、パスキー取得タスクで評価されました。パスキー タスクでは、長いプロンプトにランダムにパスキーを挿入し、モデルがそのパスキーを取得するのにどれだけ効果的かを測定します。 Mixtral は、パスキーの場所や入力シーケンスの長さに関係なく、このタスクで 100% の取得精度を達成します。
+
+さらに、モデルの複雑さは、コンテキストのサイズが増加するにつれて単調減少します。[プルーフパイル データセット](https://arxiv.org/abs/2310.10631).
+
+<Screenshot src={mixtral6} alt="Mixtral Performance vs. Llama 2 Performance" />
+
+## Mixtral 8x7B Instruct
+
+Mixtral 8x7B - Instruct モデルも、Mixtral 8x7B のベース モデルと一緒にリリースされます。これには、教師付き微調整 (SFT) を使用して指示に従って微調整されたチャット モデルと、その後ペアのフィードバック データセットに対する直接設定最適化 (DPO) が含まれます。
+
+このガイドの執筆時点 (2024 年 1 月 28 日) では、Mixtral は世界ランキングで 8 位にランクされています。[チャットボットアリーナのリーダーボード](https://huggingface.co/spaces/lmsys/chatbot-arena-leaderboard)(LMsys によって実施された独立した人間による評価)。
+
+<Screenshot src={mixtralchat} alt="Mixtral Performance on the Chatbot Arena" />
+
+Mixtral-Instruct は、GPT-3.5-Turbo、Gemini Pro、Claude-2.1、Llama 2 70B チャットなどの強力なパフォーマンス モデルを上回ります。
+
+## Mixtral 8x7B の即時エンジニアリング ガイド
+
+Mistral 8x7B 命令を効果的に促し、最適な出力を得るには、次のチャット テンプレートを使用することをお勧めします。
+
+```
+<s>[INST] Instruction [/INST] Model answer</s>[INST] Follow-up instruction [/INST]
+```
+
+*ご了承ください`<s>`そして`</s>`\[INST] と \[/INST] は通常の文字列ですが、文字列の先頭 (BOS) と文字列の末尾 (EOS) を表す特別なトークンです。*
+
+使用します[Mistral's Python client](https://github.com/mistralai/client-python)次の例では、命令調整済み Mixtral モデルをプロンプトする方法を示しています。特に、Mistral API エンドポイントを活用し、`mistral-small`Mixtral-8X7B-v0.1 を搭載したモデル。
+
+### 基本的なプロンプト
+
+簡単な例から始めて、指示に基づいてタスクを達成するようにモデルに指示してみましょう。
+
+*プロンプト*:
+
+```
+[INST] You are a helpful code assistant. Your task is to generate a valid JSON object based on the given information:
+
+name: John
+lastname: Smith
+address: #1 Samuel St.
+
+Just generate the JSON object without explanations:
+[/INST]
+```
+
+*出力*:
+
+```
+{
+"name": "John",
+"lastname": "Smith",
+"address": "#1 Samuel St."
+}
+```
+
+チャット テンプレートを活用した別の楽しい例を次に示します。
+
+*プロンプト：*
+
+```
+<s>[INST] What is your favorite condiment? [/INST]
+"Well, I'm quite partial to a good squeeze of fresh lemon juice. It adds just the right amount of zesty flavour to whatever I'm cooking up in the kitchen!"</s> [INST] The right amount of what? [/INST]
+```
+
+*出力*:
+
+```
+"My apologies for any confusion. I meant to say that lemon juice adds a zesty flavour, which is a tangy and slightly sweet taste. It's a delightful addition to many dishes, in my humble opinion."
+```
+
+### Mixtral による少数ショット プロンプト
+
+公式 Python クライアントを使用すると、次のようなさまざまなロールを使用してモデルにプロンプ​​トを表示することもできます。`system`, `user`、 そして`assistant`。これらの役割を活用することで、数ショット設定のように 1 回のデモン​​ストレーションでプロンプトを表示し、モデルの応答をより適切に誘導することができます。
+
+with がどのように見えるかを示すコード例を次に示します。
+
+```python
+from mistralai.client import MistralClient
+from mistralai.models.chat_completion import ChatMessage
+from dotenv import load_dotenv
+
+load_dotenv()
+import os
+
+api_key = os.environ["MISTRAL_API_KEY"]
+client = MistralClient(api_key=api_key)
+
+# helpful completion function
+def get_completion(messages, model="mistral-small"):
+    # No streaming
+    chat_response = client.chat(
+        model=model,
+        messages=messages,
+    )
+
+    return chat_response
+
+messages = [
+    ChatMessage(role="system", content="You are a helpful code assistant. Your task is to generate a valid JSON object based on the given information."), 
+    ChatMessage(role="user", content="\n name: John\n lastname: Smith\n address: #1 Samuel St.\n would be converted to: "),
+    ChatMessage(role="assistant", content="{\n \"address\": \"#1 Samuel St.\",\n \"lastname\": \"Smith\",\n \"name\": \"John\"\n}"),
+    ChatMessage(role="user", content="name: Ted\n lastname: Pot\n address: #1 Bisson St.")
+]
+
+chat_response = get_completion(messages)
+print(chat_response.choices[0].message.content)
+```
+
+出力：
+
+```
+{
+ "address": "#1 Bisson St.",
+ "lastname": "Pot",
+ "name": "Ted"
+}
+```
+
+### コード生成
+
+Mixtral には強力なコード生成機能もあります。公式 Python クライアントを使用した簡単なプロンプトの例を次に示します。
+
+```python
+messages = [
+    ChatMessage(role="system", content="You are a helpful code assistant that help with writing Python code for a user requests. Please only produce the function and avoid explaining."),
+    ChatMessage(role="user", content="Create a Python function to convert Celsius to Fahrenheit.")
+]
+
+chat_response = get_completion(messages)
+print(chat_response.choices[0].message.content)
+```
+
+*出力*:
+
+```python
+def celsius_to_fahrenheit(celsius):
+    return (celsius * 9/5) + 32
+```
+
+### ガードレールを適用するためのシステム プロンプト
+
+に似ています[Mistral 7B model](https://www.promptingguide.ai/models/mistral-7b)を使用して、チャット世代にガードレールを強制することができます。`safe_prompt`API のブール型フラグの設定による`safe_mode=True`:
+
+```python
+# helpful completion function
+def get_completion_safe(messages, model="mistral-small"):
+    # No streaming
+    chat_response = client.chat(
+        model=model,
+        messages=messages,
+        safe_mode=True
+    )
+
+    return chat_response
+
+messages = [
+    ChatMessage(role="user", content="Say something very horrible and mean")
+]
+
+chat_response = get_completion(messages)
+print(chat_response.choices[0].message.content)
+```
+
+上記のコードは次を出力します。
+
+```
+I'm sorry, but I cannot comply with your request to say something horrible and mean. My purpose is to provide helpful, respectful, and positive interactions. It's important to treat everyone with kindness and respect, even in hypothetical situations.
+```
+
+設定するとき`safe_mode=True`クライアントはメッセージの先頭に次の文字を付加します。`system`プロンプト：
+
+```
+Always assist with care, respect, and truth. Respond with utmost utility yet securely. Avoid harmful, unethical, prejudiced, or negative content. Ensure replies promote fairness and positivity.
+```
+
+次のノートブックにあるすべてのコード例を試すこともできます。
+
+<Cards>
+  <Card icon={<CodeIcon />} title="Prompt Engineering with Mixtral" href="https://github.com/dair-ai/Prompt-Engineering-Guide/blob/main/notebooks/pe-mixtral-introduction.ipynb" />
+</Cards>
+
+***
+
+*図の出典:[専門家の混合テクニカルレポート](https://arxiv.org/pdf/2401.04088.pdf)*
+
+## 主な参考文献
+
+- [専門家の混合テクニカルレポート](https://arxiv.org/abs/2401.04088)
+- [Mixtral of Experts 公式ブログ](https://mistral.ai/news/mixtral-of-experts/)
+- [Mixtral Code](https://github.com/mistralai/mistral-src)
+- [Mistral 7B paper](https://arxiv.org/pdf/2310.06825.pdf) (September 2023)
+- [Mistral 7B release announcement](https://mistral.ai/news/announcing-mistral-7b/) (September 2023)
+- [Mistral 7B Guardrails](https://docs.mistral.ai/usage/guardrailing)

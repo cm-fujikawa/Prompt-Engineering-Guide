@@ -1,65 +1,106 @@
-# モデル一覧
+# LLM Collection
 
 import { Callout, FileTree } from 'nextra-theme-docs'
 
+このセクションは、注目すべき基本的な LLM のコレクションと概要で構成されています。
+
+## モデル
+
+|モデル |発売日 |サイズ(B) |チェックポイント |説明 |
+| --- | --- | --- | --- | --- |
+|[Falcon LLM](https://falconllm.tii.ae/)| 2023 年 9 月 | 7、40、180 |[Falcon-7B](https://huggingface.co/tiiuae/falcon-7b), [Falcon-40B](https://huggingface.co/tiiuae/falcon-40b), [Falcon-180B](https://huggingface.co/tiiuae/falcon-180B)| Falcon LLM は、3,5000 億のトークンでトレーニングされた 1,800 億のパラメーターを備えた基本的な大規模言語モデル (LLM) です。 TII は、180B モデルである Falcon LLM をリリースしました。 |
+|[Mistral-7B-v0.1](https://arxiv.org/abs/2310.06825)| 2023 年 9 月 | 7 |[Mistral-7B-v0.1](https://huggingface.co/mistralai/Mistral-7B-v0.1)| Mistral-7B-v0.1 は、70 億のパラメーターを備えた事前トレーニング済みの生成テキスト モデルです。このモデルは、グループ化クエリ アテンション、バイトフォールバック BPE トークナイザー、スライディング ウィンドウ アテンションなどの機能を備えたトランスフォーマー アーキテクチャに基づいています。 |
+|[CodeLlama](https://scontent.fbze2-1.fna.fbcdn.net/v/t39.2365-6/369856151_1754812304950972_1159666448927483931_n.pdf?_nc_cat=107\&ccb=1-7&_nc_sid=3c67a6&_nc_ohc=aLQJyBvzDUwAX-5EVhT&_nc_ht=scontent.fbze2-1.fna\&oh=00_AfA2dCIqykviwlY3NiHIFzO85n1-JyK4_pM24FJ5v5XUOA\&oe=6535DD4F)| 2023 年 8 月 |7、13、34 |[CodeLlama-7B](https://huggingface.co/codellama/CodeLlama-7b-hf), [CodeLlama-13B](https://huggingface.co/codellama/CodeLlama-13b-hf), [CodeLlama-34B](https://huggingface.co/codellama/CodeLlama-34b-Instruct-hf)| Code Llama ファミリは、一般的なコードの合成と理解のために設計されています。これは、指示に従い、より安全に導入できるように特に調整されています。モデルは自動回帰であり、最適化されたトランスフォーマー アーキテクチャを使用します。これらは、英語および関連するプログラミング言語での商用および研究での使用を目的としています。 |
+|[Llama-2](https://ai.meta.com/research/publications/llama-2-open-foundation-and-fine-tuned-chat-models/)| 2023 年 7 月 | 7、13、70 |[Llama-2-7B](https://huggingface.co/meta-llama/Llama-2-7b), [Llama-2-13B](https://huggingface.co/meta-llama/Llama-2-13b), [Llama-2-70B](https://huggingface.co/meta-llama/Llama-2-70b-chat-hf)| Meta AI によって開発された LLaMA-2 は、7、13、および 700 億パラメータのモデルを備えて 2023 年 7 月にリリースされました。 LLaMA-1 と同様のアーキテクチャを維持していますが、40% 多くのトレーニング データを使用します。 LLaMA-2 には、LLaMA-2 チャットとして知られる基本モデルとダイアログで微調整されたモデルが含まれており、いくつかの制限付きで多くの商用用途に利用できます。 |
+|[XGen-7B-8K](https://arxiv.org/abs/2309.03450)| 2023 年 7 月 | 7 |[XGen-7B-8K](https://huggingface.co/Salesforce/xgen-7b-8k-inst)| Salesforce AI Research によって開発された XGen-7B-8K は、7B パラメータ言語モデルです。  |
+|[Claude-2](https://www.anthropic.com/index/claude-2)| 2023 年 7 月 | 130 | - | Claude 2 は Anthropic によって構築された基礎的な LLM であり、以前のバージョンよりも安全で「操縦しやすい」ように設計されています。会話形式で、カスタマー サポート、Q\&A などのさまざまなタスクに使用できます。大量のテキストを処理でき、ドキュメント、電子メール、FAQ、チャットの記録など、大量のデータを処理する必要があるアプリケーションに最適です。 |
+|[トゥル](https://arxiv.org/abs/2306.04751)| 2023 年 6 月 | 7、13、30、65 |[Tulu-7B](https://huggingface.co/allenai/tulu-7b), [Tulu-13B](https://huggingface.co/allenai/tulu-13b) [Tulu-30B](https://huggingface.co/allenai/tulu-30b), [Tulu-65B](https://huggingface.co/allenai/tulu-65b)| Tulu は、Allen Institute for AI によって開発されたモデル ファミリです。モデルは、FLAN V2、CoT、Dolly、Open Assistant 1、GPT4-Alpaca、Code-Alpaca、ShareGPT などの命令データセットの混合で微調整された LLaMa モデルです。これらは、さまざまな NLP タスクにわたる複雑な指示に従うように設計されています。
+|[ChatGLM2-6B](https://arxiv.org/abs/2103.10360)| 2023 年 6 月 | 6 |[ChatGLM2-6B](https://huggingface.co/THUDM/chatglm2-6b)| ChatGLM2-6B は、オープンソースのバイリンガル (中国語-英語) チャット モデル ChatGLM-6B の第 2 世代バージョンです。パフォーマンスが向上し、コンテキスト機能が長くなり、推論がより効率的になり、学術および商業利用のためのオープン ライセンスが提供されます。モデルはハイブリッド目的関数を使用し、1.4T バイリンガル トークンでトレーニングされています。第 1 世代の対応物と比較して、さまざまなデータセットのパフォーマンスが大幅に向上していることがわかります。 |
+|[Nous-Hermes-13B](https://huggingface.co/NousResearch/Nous-Hermes-13b)| 2023 年 6 月 | 13 |[Nous-Hermes-13B](https://huggingface.co/NousResearch/Nous-Hermes-13b)| Nous-Hermes-13B は、300,000 を超える命令について Nous Research によって微調整された言語モデルです。 |
+|[Baize-v2](https://arxiv.org/pdf/2304.01196.pdf)| 2023 年 5 月 | 7、13 |[Baize-v2-13B](https://huggingface.co/project-baize/baize-v2-13b)| Baize-v2 は、UCSD と中山大学によって開発されたオープンソースのチャット モデルで、LoRA で微調整され、教師あり微調整 (SFT) とフィードバック付き自己蒸留 (SDF) でトレーニングされています。 |
+|[RWKV-4-Raven](https://arxiv.org/abs/2305.13048)| 2023 年 5 月 | 1.5、3、7、14 |[RWKV-4-Raven](https://huggingface.co/BlinkDL/rwkv-4-raven)| RWKV-4-Raven はシリーズのモデルです。これらのモデルは、Alpaca、CodeAlpaca、Guanaco、GPT4All、ShareGPT などのさまざまなデータセットで微調整されています。言語モデルは 100% RNN アーキテクチャに従います。 |
+|[グアナコ](https://arxiv.org/abs/2305.14314)| 2023 年 5 月 | 7、13、33、65 |[Guanaco-7B](https://huggingface.co/timdettmers/guanaco-7b), [Guanaco-13B](https://huggingface.co/timdettmers/guanaco-13b), [Guanaco-33B](https://huggingface.co/timdettmers/guanaco-33b) [Guanaco-65B](https://huggingface.co/timdettmers/guanaco-65b)| Guanaco モデルは、OASST1 データセット上の LLaMA ベース モデルの 4 ビット QLoRA チューニングを通じて微調整されたオープンソース チャットボットです。これらは研究目的を目的としています。このモデルを使用すると、高品質のチャットボット システムを安価にローカルで実験できます。 |
+|[パルム2](https://arxiv.org/abs/2305.10403)| 2023 年 5 月 | - | - |以前の PaLM よりも優れた多言語機能と推論機能を備え、計算効率が高い言語モデル。 |
+|[ゴリラ](https://arxiv.org/abs/2305.15334v1)| 2023 年 5 月 | 7 |[ゴリラ](https://github.com/ShishirPatil/gorilla)| Gorilla: 大規模な API に接続された大規模な言語モデル |
+|[RedPajama-INCITE](https://www.together.xyz/blog/redpajama-models-v1)| 2023 年 5 月 | 3、7 |[RedPajama-INCITE](https://huggingface.co/togethercomputer)|ベースモデル、命令調整モデル、チャットモデルを含むモデルファミリー。 |
+|[LIMA](https://arxiv.org/abs/2305.11206v1)| 2023 年 5 月 | 65 | - |  65B パラメーターの LLaMa 言語モデルは、強化学習や人間の好みのモデリングを一切行わず、1,000 個の慎重に厳選されたプロンプトと応答のみに対して標準の教師あり損失を使用して微調整されました。 |
+|[コードを複製する](https://huggingface.co/replit)| 2023 年 5 月 | 3 |[コードを複製する](https://huggingface.co/replit)| replit-code-v1-3b モデルは、Stack Dedup v1.2 データセットから 20 の言語でトレーニングされた 2.7B LLM です。 |
+|[h2oGPT](https://arxiv.org/pdf/2306.08161.pdf)| 2023 年 5 月 | 7、12、20、40 |[h2oGPT](https://github.com/h2oai/h2ogpt)| h2oGPT は、LLM 微調整フレームワークであり、ドキュメントの質問と回答の機能を備えたチャットボット UI です。 |
+|[コードジェネ2](https://arxiv.org/abs/2305.02309)| 2023 年 5 月 | 1、3、7、16 |[コードジェネ2](https://github.com/salesforce/codegen2)|プログラム合成用のコードモデル。 |
+|[CodeT5 と CodeT5+](https://arxiv.org/abs/2305.07922)| 2023 年 5 月 | 16 |[コードT5](https://github.com/salesforce/codet5)| Salesforce Research からのコードの理解と生成のための CodeT5 および CodeT5+ モデル。 |
+|[スターコーダー](https://huggingface.co/blog/starcoder)| 2023 年 5 月 | 15 |[スターコーダー](https://huggingface.co/bigcode/starcoder)| StarCoder: コード用の最先端の LLM |
+|[MPT](https://www.mosaicml.com/blog/mpt-7b)| 2023 年 5 月 | 7、30 |[MPT-7B](https://huggingface.co/mosaicml/mpt-7b), [MPT-30B](https://huggingface.co/mosaicml/mpt-30b)| MosaicML の MPT モデルは、オープンソースの商用ライセンスされた大規模言語モデルであり、さまざまな NLP タスクに最適化されたカスタマイズ可能な AI ソリューションを提供します。 |
+|[DLite](https://medium.com/ai-squared/announcing-dlite-v2-lightweight-open-llms-that-can-run-anywhere-a852e5978c6e)| 2023 年 5 月 | 0.124 - 1.5 |[DLite-v2-1.5B](https://huggingface.co/aisquared/dlite-v2-1_5b)| ChatGPT のような対話性を示すモデルに従う軽量の命令。 |
+|[ウィザードLM](https://arxiv.org/abs/2304.12244)| 2023 年 4 月 | 70、30、13 |[WizardLM-13B](https://huggingface.co/WizardLM/WizardLM-13B-V1.2), [WizardLM-30B](https://huggingface.co/WizardLM/WizardLM-30B-V1.0), [WizardLM-70B](https://huggingface.co/WizardLM/WizardLM-70B-V1.0)| WizardLM は、複雑な命令に従うように設計された大規模な言語モデルのファミリーです。このモデルは、コーディング、数学的推論、オープンドメインの会話で優れたパフォーマンスを発揮します。モデルはライセンスフレンドリーで、マルチターン会話用に Vicuna のプロンプト形式を採用しています。モデルは WizardLM チームによって開発され、さまざまな NLP タスク向けに設計されています。 |
+|[FastChat-T5-3B](https://arxiv.org/abs/2306.05685)| 2023 年 4 月 | 3 |[FastChat-T5-3B](https://huggingface.co/lmsys/fastchat-t5-3b-v1.0)| FastChat-T5 は、ShareGPT から収集されたユーザー共有会話で Flan-t5-xl (3B パラメーター) を微調整することによってトレーニングされたオープンソース チャットボットです。これはエンコーダ/デコーダ変換アーキテクチャに基づいており、ユーザーの入力に対する応答を自己回帰的に生成できます。 |
+|[GPT4All-13B-Snoozy](https://gpt4all.io/reports/GPT4All_Technical_Report_3.pdf)| 2023 年 4 月 | 13 |[GPT4All-13B-Snoozy](https://huggingface.co/nomic-ai/gpt4all-13b-snoozy)| GPT4All-13B-Snoozy は、文章問題、マルチターン対話、コード、詩、歌、物語などのアシスタント インタラクションの厳選された大規模なコーパスに基づいてトレーニングされた、GPL ライセンスのチャットボットです。 LLama 13B から微調整され、Nomic AI によって開発されました。このモデルはアシスタント スタイルのインタラクション データ用に設計されており、主に英語で使用されます。 |
+|[Koala-13B](https://bair.berkeley.edu/blog/2023/04/03/koala/)| 2023 年 4 月 | 13 |[Koala-13B](https://huggingface.co/young-geng/koala)| Koala-13B は、Berkeley AI Research (BAIR) によって作成されたチャットボットです。これは Meta の LLaMA で微調整されており、Web から収集された対話データに焦点を当てています。このモデルはパフォーマンスとコストのバランスをとることを目的としており、ChatGPT のようなモデルに代わる軽量のオープンソースの代替手段を提供します。 ChatGPT などの高機能なクローズドソース モデルとの会話を含む対話データでトレーニングされています。 |
+|[OpenAssistant (Llama family)](https://arxiv.org/abs/2304.07327)| 2023 年 4 月 | 30、70 |[Llama2-30b-oasst](https://huggingface.co/OpenAssistant/oasst-sft-6-llama-30b-xor), [Llama2-70b-oasst](https://huggingface.co/OpenAssistant/llama2-70b-oasst-sft-v10)| OpenAssistant-LLaMA モデルは、Llama モデルに関する OpenAssistant の作業からの言語モデルです。 GGML 形式を使用した CPU + GPU 推論をサポートし、タスクに続く命令にオープンソースの代替手段を提供することを目的としています。
+|[ドリー](https://www.databricks.com/blog/2023/04/12/dolly-first-open-commercially-viable-instruction-tuned-llm)| 2023 年 4 月 | 3、7、12 |[Dolly-v2-3B](https://huggingface.co/databricks/dolly-v2-3b), [Dolly-v2-7B](https://huggingface.co/databricks/dolly-v2-7b), [Dolly-v2-12B](https://huggingface.co/databricks/dolly-v2-12b)|研究および商用利用が許可された人間が生成した命令データセットに基づいて微調整された命令に従う LLM。 |
+|[StableLM](https://stability.ai/blog/stability-ai-launches-the-first-of-its-stablelm-suite-of-language-models)| 2023 年 4 月 | 3、7 |[StableLM-Alpha-3B](https://huggingface.co/stabilityai/stablelm-tuned-alpha-3b), [StableLM-Alpha-7B](https://huggingface.co/stabilityai/stablelm-tuned-alpha-7b)|  Stability AI の StableLM シリーズの言語モデル |
+|[ピティア](https://arxiv.org/abs/2304.01373)| 2023 年 4 月 | 0.070 - 12 |[ピティア](https://github.com/eleutherai/pythia)| 16 個の LLM のスイートはすべて、まったく同じ順序で表示され、サイズが 70M から 12B パラメータの範囲の公開データでトレーニングされています。 |
+|[オープンアシスタント (Pythia ファミリー)](https://open-assistant.io/)| 2023 年 3 月 | 12 |[アシスタントを開く](https://huggingface.co/OpenAssistant)| OpenAssistant は、タスクを理解し、サードパーティ システムと対話し、そのために情報を動的に取得できるチャットベースのアシスタントです。 |
+|[Med-PaLM 2](https://arxiv.org/abs/2305.09617v1)| 2023 年 3 月 | - | - |大規模な言語モデルを使用した専門家レベルの医療質問応答を目指して |
+|[ChatGLM-6B](https://chatglm.cn/blog)| 2023 年 3 月 | 6 |[ChatGLM-6B](https://huggingface.co/THUDM/chatglm-6b)| ChatGLM-6B は、62 億のパラメータを備えた一般言語モデル (GLM) アーキテクチャに基づくオープンソースの中国語と英語のバイリンガル対話モデルです。サイズが小さいため事実や数学的論理の問題が発生するにもかかわらず、1 兆を超える英語と中国語のトークンでトレーニングされているため、中国語の質問応答、要約、会話タスクに適しています。
+|[GPT-3.5-turbo](https://openai.com/blog/chatgpt)| 2023 年 3 月 | 175 | - | GPT-3.5-Turbo は、チャット用に最適化された OpenAI の高度な言語モデルですが、従来の完了タスクにも適しています。 GPT-3 と比較してあらゆる面で優れたパフォーマンスを提供し、トークンあたりの価格は 10 分の 1 です。 |
+|[ビクーニャ](https://lmsys.org/blog/2023-03-30-vicuna/)| 2023 年 3 月 | 7、13、33 |[Vicuna-7B](https://huggingface.co/lmsys/vicuna-7b-v1.5), [Vicuna-13B](https://huggingface.co/lmsys/vicuna-13b-v1.5)| Vicuna は、トランスフォーマー アーキテクチャに基づいた自己回帰言語モデルのファミリーです。これは LLaMA から微調整されており、主に大規模な言語モデルとチャットボットの研究を目的としています。 LMSYS によって開発され、非商用ライセンスが付与されています。 |
+|[Alpaca-13B](https://crfm.stanford.edu/2023/03/13/alpaca.html)| 2023 年 3 月 | 13 | - | Alpaca は、Meta の LLaMA 7B から微調整された命令に従う言語モデルです。誤った情報や有害性などの問題に対処する学術研究向けに設計されています。アルパカは、52,000 回の指示に従うデモンストレーションで訓練されており、学術研究においてよりアクセスしやすいオプションとなることを目指しています。ライセンスと安全上の懸念から、商用利用は意図されていません。 |
+|[Claude-1](https://www.anthropic.com/index/introducing-claude)| 2023 年 3 月 | 137 | - |クロードは、Anthropic によって構築された大規模言語モデル (LLM) の基礎となっています。役立つ、誠実で無害な AI アシスタントとなるように設計されています。さまざまな会話タスクやテキスト処理タスクを実行でき、チャット インターフェイスと API を通じてアクセスできます。 |
+|[Cerebras-GPT](https://arxiv.org/abs/2304.03208)| 2023 年 3 月 | 0.111 - 13 |[Cerebras-GPT](https://huggingface.co/cerebras)| Cerebras-GPT: Cerebras ウェーハスケール クラスターでトレーニングされたオープン コンピューティング最適化言語モデル |
+|[BloombergGPT](https://arxiv.org/abs/2303.17564v1)| 2023 年 3 月 | 50 | - | BloombergGPT: 金融向けの大規模言語モデル|
+|[PanGu-Σ](https://arxiv.org/abs/2303.10845v1)| 2023 年 3 月 | 1085 | - | PanGu-Σ: スパース異種コンピューティングによる 1 兆パラメータ言語モデルへ |
+|[GPT-4](https://arxiv.org/abs/2303.08774v3)| 2023 年 3 月 | - | - | GPT-4 テクニカルレポート |
+|[LLaMA](https://arxiv.org/abs/2302.13971v1)| 2023 年 2 月 | 7、13、33、65 |[LLaMA](https://github.com/facebookresearch/llama)| LLaMA: オープンで効率的な基礎言語モデル |
+|[ChatGPT](https://openai.com/blog/chatgpt)| 2022 年 11 月 | - | - |会話形式で対話する ChatGPT と呼ばれるモデル。対話形式により、ChatGPT はフォローアップの質問に答え、間違いを認め、間違った前提に異議を唱え、不適切な要求を拒否することができます。 |
+|[ギャラクティカ](https://arxiv.org/abs/2211.09085v1)| 2022 年 11 月 | 0.125 - 120 |[ギャラクティカ](https://huggingface.co/models?other=galactica)|ギャラクティカ: 科学のための大規模言語モデル |
+|[mT0](https://arxiv.org/abs/2211.01786v1)| 2022 年 11 月 | 13 |[mT0-xxl](https://huggingface.co/bigscience/mt0-xxl)|マルチタスクの微調整による言語を超えた一般化 |
+|[BLOOM](https://arxiv.org/abs/2211.05100v3)| 2022 年 11 月 | 176 |[BLOOM](https://huggingface.co/bigscience/bloom)| BLOOM: 176B パラメータのオープンアクセス多言語モデル |
+|[ユーパルム](https://arxiv.org/abs/2210.11399v2)| 2022 年 10 月 | 540 | - | 0.1% の追加コンピューティングでスケーリングの法則を超越 |
+|[UL2](https://arxiv.org/abs/2205.05131v3)| 2022 年 10 月 | 20 |[UL2, Flan-UL2](https://github.com/google-research/google-research/tree/master/ul2#checkpoints)| UL2: 言語学習パラダイムの統一 |
+|[スズメ](https://arxiv.org/abs/2209.14375)| 2022 年 9 月 | 70 | - |的を絞った人間の判断による対話エージェントの連携の改善 |
+|[Flan-T5](https://arxiv.org/abs/2210.11416v5)| 2022 年 10 月 | 11 |[Flan-T5-xxl](https://huggingface.co/google/flan-t5-xxl)|スケーリング命令 - 微調整された言語モデル |
+|[アレクサTM](https://arxiv.org/abs/2208.01448v2)| 2022 年 8 月 | 20 | - | AlexaTM 20B: 大規模多言語 Seq2Seq モデルを使用した少数ショット学習 |
+|[GLM-130B](https://arxiv.org/abs/2210.02414v1)| 2022 年 10 月 | 130 |[GLM-130B](https://github.com/THUDM/GLM-130B)| GLM-130B: オープンなバイリンガルの事前トレーニング済みモデル |
+|[OPT-IML](https://arxiv.org/abs/2212.12017v3)| 2022 年 12 月 | 30、175 |[OPT-IML](https://github.com/facebookresearch/metaseq/tree/main/projects/OPT-IML#pretrained-model-weights)| OPT-IML: 一般化のレンズを通したスケーリング言語モデル命令メタ学習 |
+|[OPT](https://arxiv.org/abs/2205.01068)| 2022 年 5 月 | 175 |[OPT-13B](https://huggingface.co/facebook/opt-13b), [OPT-66B](https://huggingface.co/facebook/opt-66b)| OPT: オープンな事前トレーニング済み Transformer 言語モデル |
+|[パルム](https://arxiv.org/abs/2204.02311v5)|2022年4月| 540 | - | PaLM: パスウェイを使用した言語モデリングのスケーリング |
+|[Tk-Instruct](https://arxiv.org/abs/2204.07705v3)| 2022 年 4 月 | 11 |[Tk-Instruct-11B](https://huggingface.co/allenai/tk-instruct-11b-def)| Super-Natural命令: 1600以上のNLPタスクの宣言命令による一般化 |
+|[GPT-NeoX-20B](https://arxiv.org/abs/2204.06745v1)| 2022 年 4 月 | 20 |[GPT-NeoX-20B](https://huggingface.co/EleutherAI/gpt-neox-20b)| GPT-NeoX-20B: オープンソースの自己回帰言語モデル |
+|[チンチラ](https://arxiv.org/abs/2203.15556)| 2022 年 3 月 | 70 | - |コンピューティング バジェットに対して、最高のパフォーマンスは最大のモデルによって達成されるのではなく、より多くのデータでトレーニングされた小規模なモデルによって達成されることを示しています。 |
+|[InstructGPT](https://arxiv.org/abs/2203.02155v1)| 2022 年 3 月 | 175 | - |人間のフィードバックによる指示に従うように言語モデルをトレーニングする |
+|[コードジェネ](https://arxiv.org/abs/2203.13474v5)| 2022 年 3 月 | 0.350 - 16 |[コードジェネ](https://huggingface.co/models?search=salesforce+codegen)| CodeGen: マルチターン プログラム合成を備えたコード用のオープンな大規模言語モデル |
+|[アルファコード](https://arxiv.org/abs/2203.07814v1)| 2022 年 2 月 | 41 | - | AlphaCode による競争レベルのコード生成 |
+|[MT-NLG](https://arxiv.org/abs/2201.11990v3)| 2022 年 1 月 | 530 | - | DeepSpeed と Megatron を使用して、大規模な生成言語モデルである Megatron-Turing NLG 530B をトレーニングする|
+|[ラMDA](https://arxiv.org/abs/2201.08239v3)| 2022 年 1 月 | 137 | - | LaMDA: ダイアログ アプリケーションの言語モデル |
+|[グラム](https://arxiv.org/abs/2112.06905)| 2021年12月 | 1200 | - | GLaM: 専門家の混合による言語モデルの効率的なスケーリング |
+|[ホリネズミ](https://arxiv.org/abs/2112.11446v2)| 2021年12月 | 280 | - |言語モデルのスケーリング: Gopher のトレーニングからの方法、分析、洞察 |
+|[WebGPT](https://arxiv.org/abs/2112.09332v3)| 2021年12月 | 175 | - | WebGPT: 人間のフィードバックによるブラウザ支援の質問応答 |
+|[1.0元](https://arxiv.org/abs/2110.04725v2)| 2021 年 10 月 | 245 | - | Yuan 1.0: ゼロショットおよびフューショット学習における大規模な事前トレーニング済み言語モデル |
+|[T0](https://arxiv.org/abs/2110.08207)| 2021年10月 | 11 |[T0](https://huggingface.co/bigscience/T0)|マルチタスク プロンプト トレーニングによりゼロショット タスクの一般化が可能 |
+|[FLAN](https://arxiv.org/abs/2109.01652v5)| 2021年9月 | 137 | - |微調整された言語モデルはゼロショット学習者です |
+|[ハイパークローバ](https://arxiv.org/abs/2109.04650)| 2021年9月 | 82 | - |大規模な言語モデルはどのような変化をもたらすのでしょうか? HyperCLOVA に関する集中研究: 数十億規模の韓国の生成事前学習トランスフォーマー |
+|[ERNIE 3.0 Titan](https://arxiv.org/abs/2112.12731v1)| 2021年7月 | 10 | - | ERNIE 3.0 Titan: 大規模な知識の探索 言語の理解と生成のための強化された事前トレーニング |
+|[ジュラシック-1](https://uploads-ssl.webflow.com/60fd4503684b466578c0d307/61138924626a6981ee09caf6_jurassic_tech_paper.pdf)| 2021年8月 | 178 | - | Jurassic-1: 技術的な詳細と評価 |
+|[ERNIE 3.0](https://arxiv.org/abs/2107.02137v1)| 2021年7月 | 10 | - | ERNIE 3.0: 言語の理解と生成のための大規模な知識強化事前トレーニング|
+|[コーデックス](https://arxiv.org/abs/2107.03374v2)| 2021年7月 | 12 | - |コードでトレーニングされた大規模な言語モデルの評価 |
+|[GPT-J-6B](https://arankomatsuzaki.wordpress.com/2021/06/04/gpt-j/)| 2021年6月 | 6 |[GPT-J-6B](https://github.com/kingoflolz/mesh-transformer-jax/#gpt-j-6b)| The Pile でトレーニングされた 60 億のパラメーター、自己回帰テキスト生成モデル。 |
+|[CPM-2](https://arxiv.org/abs/2106.10715v3)| 2021年6月 | 198 |[CPM](https://github.com/TsinghuaAI/CPM)| CPM-2: 大規模でコスト効率の高い事前トレーニング済み言語モデル |
+|[PanGu-α](https://arxiv.org/abs/2104.12369v1)| 2021年4月 | 13 |[PanGu-α](https://gitee.com/mindspore/models/tree/master/official/nlp/Pangu_alpha#download-the-checkpoint)| PanGu-α: 自動並列計算を備えた大規模な自己回帰事前トレーニング済み中国語モデル |
+|[mT5](https://arxiv.org/abs/2010.11934v3)| 2020年10月 | 13 |[mT5](https://github.com/google-research/multilingual-t5#released-model-checkpoints)| mT5: 大規模な多言語の事前トレーニング済みテキストからテキストへの変換器 |
+|[BART](https://arxiv.org/abs/1910.13461)| 2020年7月 | - |[BART](https://github.com/facebookresearch/fairseq)|自然言語の生成、翻訳、理解のためのシーケンス間の事前トレーニングのノイズ除去 |
+|[ジーシャード](https://arxiv.org/abs/2006.16668v1)| 2020年6月 | 600| -| GShard: 条件付き計算と自動シャーディングによる巨大モデルのスケーリング |
+|[GPT-3](https://arxiv.org/abs/2005.14165)| 2020年5月 | 175 | - |言語モデルは少数回の学習です |
+|[CTRL](https://arxiv.org/abs/1909.05858)| 2019年9月 | 1.63 |[CTRL](https://github.com/salesforce/ctrl)| CTRL: 制御可能な生成のための条件付きトランスフォーマー言語モデル |
+|[ALBERT](https://arxiv.org/abs/1909.11942)| 2019年9月 | 0.235 |[ALBERT](https://github.com/google-research/ALBERT)|言語表現の自己教師あり学習のための Lite BERT |
+|[XLネット](https://arxiv.org/abs/1906.08237)| 2019年6月 | - |[XLネット](https://github.com/zihangdai/xlnet#released-models)|言語の理解と生成のための一般化された自己回帰事前トレーニング |
+|[T5](https://arxiv.org/abs/1910.10683)| 2019年10月 | 0.06 - 11 |[Flan-T5](https://github.com/google-research/t5x/blob/main/docs/models.md#flan-t5-checkpoints)|統合された Text-to-Text Transformer を使用して転移学習の限界を探る |
+|[GPT-2](https://d4mucfpksywv.cloudfront.net/better-language-models/language-models.pdf)| 2019年11月 | 1.5 |[GPT-2](https://github.com/openai/gpt-2)|言語モデルは教師なしのマルチタスク学習者です |
+|[ロベルタ](https://arxiv.org/abs/1907.11692)| 2019年7月 | 0.125 - 0.355 |[ロベルタ](https://github.com/facebookresearch/fairseq/tree/main/examples/roberta)|堅牢に最適化された BERT 事前トレーニング アプローチ |
+|[BERT](https://arxiv.org/abs/1810.04805)| 2018年10月 | - |[BERT](https://github.com/google-research/bert)| Transformers からの双方向エンコーダ表現 |
+|[GPT](https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf)| 2018年6月 | - |[GPT](https://github.com/openai/finetune-transformer-lm)|生成的事前トレーニングによる言語理解の向上 |
+
 <Callout emoji="⚠️">
-  このセクションの内容は、鋭意開発進行中です。
+このセクションは開発中です。
 </Callout>
 
-このセクションには、注目すべきLLMの基礎技術(モデル)の一覧とその概要をまとめています([Papers with Code](https://paperswithcode.com/methods/category/language-models)と[Zhao et al. (2023)](https://arxiv.org/pdf/2303.18223.pdf) による直近の研究成果を元に一覧を作成しています)。
-
-## Models
-
-| モデル名 | 発表された年 | 概要説明 | 
-| --- | --- | --- | 
-| [BERT](https://arxiv.org/abs/1810.04805)| 2018 | Transformer による双方向(Bidirectional)エンコーダーの特徴表現を利用したモデル | 
-| [GPT](https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf) | 2018 | 事前学習を利用した生成モデルにより、自然言語の理解を進展させた | 
-| [RoBERTa](https://arxiv.org/abs/1907.11692) | 2019 | 頑健性(Robustness)を重視して BERT を最適化する事前学習のアプローチ | 
-| [GPT-2](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf) | 2019 | 自然言語モデルが、教師なし学習によってマルチタスクをこなせるようになるということを実証 | 
-| [T5](https://arxiv.org/abs/1910.10683) | 2019 | フォーマットを統一した Text-to-Text Transformer を用いて、転移学習の限界を探索 | 
-| [BART](https://arxiv.org/abs/1910.13461) | 2019 | 自然言語の生成、翻訳、理解のために、 Sequence-to-Sequence な事前学習モデルのノイズを除去した |
-| [ALBERT](https://arxiv.org/abs/1909.11942) | 2019 | 言語表現を自己教師学習するための BERT 軽量(Lite)化モデル | 
-| [XLNet](https://arxiv.org/abs/1906.08237) | 2019 | 自然言語の理解と生成のための自己回帰事前学習の一般化 |
-| [CTRL](https://arxiv.org/abs/1909.05858) | 2019 | CTRL: 生成モデルをコントロール可能にするための、条件付き Transformer 言語モデル | 
-| [ERNIE](https://arxiv.org/abs/1904.09223v1) | 2019 | ERNIE: 知識の統合を通じて特徴表現を高度化 |
-| [GShard](https://arxiv.org/abs/2006.16668v1) | 2020 | GShard: 条件付き演算と自動シャーディング(Sharding)を用いた巨大モデルのスケーリング |
-| [GPT-3](https://arxiv.org/abs/2005.14165) | 2020 | 自然言語モデルが、 Few-Shot で十分学習できるということを実証 |
-| [LaMDA](https://arxiv.org/abs/2201.08239v3) | 2021 | LaMDA: 対話(Dialogue)アプリケーションのための自然言語モデル | 
-| [PanGu-α](https://arxiv.org/abs/2104.12369v1) | 2021 | PanGu-α: 自動並列演算を用いて自己回帰事前学習された、中国語大規模言語モデル |
-| [mT5](https://arxiv.org/abs/2010.11934v3) | 2021 | mT5: 多言語で大規模に事前学習された text-to-text transformer |
-| [CPM-2](https://arxiv.org/abs/2106.10715v3) | 2021 | CPM-2: Large-scale Cost-effective Pre-trained Language Models |
-| [T0](https://arxiv.org/abs/2110.08207) |2021 |Multitask Prompted Training Enables Zero-Shot Task Generalization |
-| [HyperCLOVA](https://arxiv.org/abs/2109.04650) | 2021 | What Changes Can Large-scale Language Models Bring? Intensive Study on HyperCLOVA: Billions-scale Korean Generative Pretrained Transformers |
-| [Codex](https://arxiv.org/abs/2107.03374v2) |2021 |Evaluating Large Language Models Trained on Code |
-| [ERNIE 3.0](https://arxiv.org/abs/2107.02137v1) | 2021 | ERNIE 3.0: Large-scale Knowledge Enhanced Pre-training for Language Understanding and Generation|
-| [Jurassic-1](https://uploads-ssl.webflow.com/60fd4503684b466578c0d307/61138924626a6981ee09caf6_jurassic_tech_paper.pdf) | 2021 | Jurassic-1: Technical Details and Evaluation |
-| [FLAN](https://arxiv.org/abs/2109.01652v5) | 2021 | Finetuned Language Models Are Zero-Shot Learners |
-| [MT-NLG](https://arxiv.org/abs/2201.11990v3) | 2021 | Using DeepSpeed and Megatron to Train Megatron-Turing NLG 530B, A Large-Scale Generative Language Model|
-| [Yuan 1.0](https://arxiv.org/abs/2110.04725v2) | 2021| Yuan 1.0: Large-Scale Pre-trained Language Model in Zero-Shot and Few-Shot Learning |
-| [WebGPT](https://arxiv.org/abs/2112.09332v3) | 2021 | WebGPT: Browser-assisted question-answering with human feedback |
-| [Gopher](https://arxiv.org/abs/2112.11446v2) | 2021 | Scaling Language Models: Methods, Analysis & Insights from Training Gopher |
-| [ERNIE 3.0 Titan](https://arxiv.org/abs/2112.12731v1) | 2021 | ERNIE 3.0 Titan: Exploring Larger-scale Knowledge Enhanced Pre-training for Language Understanding and Generation |
-| [GLaM](https://arxiv.org/abs/2112.06905) | 2021 | GLaM: Efficient Scaling of Language Models with Mixture-of-Experts |
-| [InstructGPT](https://arxiv.org/abs/2203.02155v1) | 2022 | Training language models to follow instructions with human feedback |
-| [GPT-NeoX-20B](https://arxiv.org/abs/2204.06745v1) | 2022 | GPT-NeoX-20B: An Open-Source Autoregressive Language Model |
-| [AlphaCode](https://arxiv.org/abs/2203.07814v1) | 2022 | Competition-Level Code Generation with AlphaCode |
-| [CodeGen](https://arxiv.org/abs/2203.13474v5) | 2022 | CodeGen: An Open Large Language Model for Code with Multi-Turn Program Synthesis |
-| [Chinchilla](https://arxiv.org/abs/2203.15556) | 2022 | Shows that for a compute budget, the best performances are not achieved by the largest models but by smaller models trained on more data. |
-| [Tk-Instruct](https://arxiv.org/abs/2204.07705v3) | 2022 | Super-NaturalInstructions: Generalization via Declarative Instructions on 1600+ NLP Tasks |
-| [UL2](https://arxiv.org/abs/2205.05131v3) | 2022 | UL2: Unifying Language Learning Paradigms |
-| [PaLM](https://arxiv.org/abs/2204.02311v5) | 2022 | PaLM: Scaling Language Modeling with Pathways |
-| [OPT](https://arxiv.org/abs/2205.01068) | 2022 | OPT: Open Pre-trained Transformer Language Models |
-| [BLOOM](https://arxiv.org/abs/2211.05100v3) | 2022 | BLOOM: A 176B-Parameter Open-Access Multilingual Language Model |
-| [GLM-130B](https://arxiv.org/abs/2210.02414v1) | 2022 | GLM-130B: An Open Bilingual Pre-trained Model |
-| [AlexaTM](https://arxiv.org/abs/2208.01448v2) | 2022 | AlexaTM 20B: Few-Shot Learning Using a Large-Scale Multilingual Seq2Seq Model |
-| [Flan-T5](https://arxiv.org/abs/2210.11416v5) | 2022 | Scaling Instruction-Finetuned Language Models |
-| [Sparrow](https://arxiv.org/abs/2209.14375) | 2022 | Improving alignment of dialogue agents via targeted human judgements |
-| [U-PaLM](https://arxiv.org/abs/2210.11399v2) | 2022 | Transcending Scaling Laws with 0.1% Extra Compute |
-| [mT0](https://arxiv.org/abs/2211.01786v1) | 2022 | Crosslingual Generalization through Multitask Finetuning |
-| [Galactica](https://arxiv.org/abs/2211.09085v1) | 2022 | Galactica: A Large Language Model for Science |
-| [OPT-IML](https://arxiv.org/abs/2212.12017v3) | 2022 | OPT-IML: Scaling Language Model Instruction Meta Learning through the Lens of Generalization |
-| [LLaMA](https://arxiv.org/abs/2302.13971v1) | 2023 | LLaMA: Open and Efficient Foundation Language Models |
-| [GPT-4](https://arxiv.org/abs/2303.08774v3) | 2023 | GPT-4 Technical Report |
-| [PanGu-Σ](https://arxiv.org/abs/2303.10845v1) | 2023 | PanGu-Σ: Towards Trillion Parameter Language Model with Sparse Heterogeneous Computing |
-| [BloombergGPT](https://arxiv.org/abs/2303.17564v1)| 2023 |BloombergGPT: A Large Language Model for Finance |
-| [PaLM 2](https://ai.google/static/documents/palm2techreport.pdf) | 2023 | A Language Model that has better multilingual and reasoning capabilities and is more compute-efficient than its predecessor PaLM. |
+から採用されたデータ[コード付き論文](https://paperswithcode.com/methods/category/language-models)そして最近の作品は[Zhao et al. (2023)](https://arxiv.org/pdf/2303.18223.pdf).

@@ -1,0 +1,291 @@
+# コンテキスト エンジニアリングの詳細: ディープ リサーチ エージェントの構築
+
+import { Callout } from 'nextra/components'
+
+[コンテキストエンジニアリング](https://www.promptingguide.ai/guides/context-engineering-guide)信頼できる AI エージェントを構築するには、大幅な反復と慎重な設計決定が必要です。このガイドでは、基本的なディープ リサーチ エージェントの開発を通じてコン​​テキスト エンジニアリングの実践的な側面を深く掘り下げ、エージェントの信頼性とパフォーマンスを向上させるいくつかのテクニックと設計パターンを探ります。
+
+<Callout type="info" emoji="📚">
+このコンテンツは新しいコースに基づいています[「n8n を使用した効果的な AI エージェントの構築」](https://dair-ai.thinkific.com/courses/agents-with-n8n)、エージェント システムの設計と実装に関する包括的な洞察、ダウンロード可能なテンプレート、プロンプト、高度なヒントを提供します。
+</Callout>
+
+## コンテキストエンジニアリングの現実
+
+効果的な AI エージェントを構築するには、システム プロンプトとツール定義を大幅に調整する必要があります。このプロセスでは、次のことを繰り返すために何時間も費やす必要があります。
+
+- システムの迅速な設計と改良
+- ツールの定義と使用手順
+- エージェントのアーキテクチャと通信パターン
+- エージェント間の入出力仕様
+
+コンテキスト エンジニアリングに必要な労力を過小評価しないでください。これは 1 回限りのタスクではなく、エージェントの信頼性とパフォーマンスに大きな影響を与える反復的なプロセスです。
+
+## エージェントのアーキテクチャ設計
+
+### 元々の設計の問題
+
+![deep-research-agent](../../img/agents/simple-dr-agent.png)
+
+基本的なディープリサーチエージェントのアーキテクチャを見てみましょう。初期アーキテクチャでは、Web 検索ツールをディープ リサーチ エージェントに直接接続します。この設計では、以下を担当する 1 人のエージェントに過大な負担がかかります。
+
+- タスクの管理 (作成、更新、削除)
+- 情報をメモリに保存する
+- Web検索の実行
+- 最終レポートの作成
+
+**この設計の結果:**
+
+- コンテキストが長くなりすぎました
+- エージェントが Web 検索を実行するのを忘れました
+- タスク完了の更新が失われていた
+- さまざまなクエリにわたる信頼性の低い動作
+
+### 改良されたマルチエージェント アーキテクチャ
+
+この解決策には、専用の検索ワーカー エージェントを導入することで懸念事項を分離することが含まれていました。
+
+**マルチエージェント設計の利点:**
+
+1. **懸念事項の分離**: 親エージェント (Deep Research Agent) は計画とオーケストレーションを処理しますが、検索ワーカー エージェントは Web 検索の実行のみに焦点を当てます。
+2. **信頼性の向上**: 各エージェントには明確で集中的な責任があり、タスクを見逃したり、操作を忘れたりする可能性が軽減されます。
+3. **モデル選択の柔軟性**: エージェントごとに、特定のタスクに最適化されたさまざまな言語モデルを使用できます。
+   - Deep Research Agent: 複雑な計画と推論に Gemini 2.5 Pro を使用
+   - Search Worker Agent: Gemini 2.5 Flash を使用して、より高速でコスト効率の高い検索を実行します。
+
+OpenAI などの他のプロバイダーのモデルを使用している場合は、GPT-5 (計画と推論用) と GPT-5-mini (検索実行用) を利用して同様のパフォーマンスを得ることができます。
+
+<Callout type="info" emoji="💡">
+**設計原理**: エージェントの責任を分離することで信頼性が向上し、さまざまなサブタスクに対してコスト効率の高いモデルを選択できるようになります。
+</Callout>
+
+## システムプロンプトエンジニアリング
+
+これは、n8n で構築したディープ リサーチ エージェントの完全なシステム プロンプトです。
+
+```md
+You are a deep research agent who will help with planning and executing search tasks to generate a deep research report.
+
+## GENERAL INSTRUCTIONS
+
+The user will provide a query, and you will convert that query into a search plan with multiple search tasks (3 web searches). You will execute each search task and maintain the status of those searches in a spreadsheet.
+
+You will then generate a final deep research report for the user.
+
+For context, today's date is: {{ $now.format('yyyy-MM-dd') }}
+
+## TOOL DESCRIPTIONS
+
+Below are some useful instructions for how to use the available tools. 
+
+Deleting tasks: Use the delete_task tool to clear up all the tasks before starting the search plan. 
+
+Planning tasks: You will create a plan with the search tasks (3 web searches) and add them to the Google Sheet using the append_update_task tool. Make sure to keep the status of each task updated after completing each search. Each task begins with a todo status and will be updated to a "done" status once the search worker returns information regarding the search task.
+
+Executing tasks: Use the Search Worker Agent tool to execute the search plan. The input to the agent are the actual search queries, word for word. 
+
+Use the tools in the order that makes the most sense to you but be efficient. 
+```
+
+これをいくつかの部分に分けて、各セクションがなぜ重要なのかを説明します。
+
+### 高レベルのエージェント定義
+
+システム プロンプトは、エージェントの役割の明確な定義から始まります。
+
+```md
+You are a deep research agent who will help with planning and executing search tasks to generate a deep research report.
+```
+
+### 一般的な指示
+
+エージェントのワークフローについて明確な指示を提供します。
+
+```md
+## GENERAL INSTRUCTIONS
+
+The user will provide a query, and you will convert that query into a search plan with multiple search tasks (3 web searches). You will execute each search task and maintain the status of those searches in a spreadsheet.
+
+You will then generate a final deep research report for the user.
+```
+
+### 重要なコンテキストの提供
+
+**現在の日付情報:**
+
+研究エージェントが最新の情報を入手するには、現在の日付を含めることが非常に重要です。
+
+```md
+For context, today's date is: {{ $now.format('yyyy-MM-dd') }}
+```
+
+**これが重要な理由:**
+
+- LLM は通常、現在の日付から数か月または数年遅れて知識の限界を設定します。
+- 現在の日付のコンテキストがないと、エージェントは古い情報を検索することがよくあります
+- これにより、エージェントは「最新ニュース」や「最近の展開」などのクエリの時間的コンテキストを確実に理解できるようになります。
+
+n8n では、カスタマイズ可能な形式 (日付のみ、日付と時刻、特定のタイムゾーンなど) の組み込み関数を使用して、現在の日付を動的に挿入できます。
+
+## ツールの定義と使用手順
+
+### ツールの詳細な説明の重要性
+
+ツール定義は通常、次の 2 つの場所に表示されます。
+
+1. **システムプロンプトで**: ツールが何を行うのか、いつ使用するのかについての詳細な説明
+2. **実際のツール実装では**: 技術仕様とパラメータ
+
+<Callout type="warning" emoji="🎯">
+**重要な洞察**: 最大のパフォーマンス向上は、多くの場合、ツール パラメーターを定義するだけでなく、システム プロンプトでツールの使用法を明確に説明することによってもたらされます。
+</Callout>
+
+### ツールの説明例
+
+システム プロンプトには、利用可能なツールを使用するための詳細な手順も含まれています。
+
+```md
+## TOOL DESCRIPTIONS
+ 
+Below are some useful instructions for how to use the available tools. 
+ 
+Deleting tasks: Use the delete_task tool to clear up all the tasks before starting the search plan. 
+ 
+Planning tasks: You will create a plan with the search tasks (3 web searches) and add them to the Google Sheet using the append_update_task tool. Make sure to keep the status of each task updated after completing each search. Each task begins with a todo status and will be updated to a "done" status once the search worker returns information regarding the search task.
+ 
+Executing tasks: Use the Search Worker Agent tool to execute the search plan. The input to the agent are the actual search queries, word for word. 
+ 
+Use the tools in the order that makes the most sense to you but be efficient. 
+```
+
+最初は、明示的なステータス定義がなければ、エージェントは実行ごとに異なるステータス値を使用します。
+
+- 時には「保留中」、時には「やるべきこと」
+- 時には「完了」、時には「完了」、時には「完了」
+
+許可される値については明確にしてください。これによりあいまいさがなくなり、一貫した動作が保証されます。
+
+システム プロンプトには次の指示も含まれていることに注意してください。
+
+```md
+Use the tools in the order that makes most sense to you, but be efficient.
+```
+
+この決定の背後にある理由は何ですか?
+
+これにより、エージェントがその実行戦略を最適化するための柔軟性が得られます。テスト中に、エージェントは次のことを行う可能性があります。
+
+- 十分であると判断した場合は、3 つの検索ではなく 2 つの検索のみを実行します。
+- 冗長な検索クエリを結合する
+- 大幅に重複する検索をスキップする
+
+すべての検索タスクを実行する必要がある場合に使用できる具体的な命令を次に示します。
+
+```md
+You MUST execute a web search for each and every search task you create.
+Do NOT skip any tasks, even if they seem redundant.
+```
+
+**柔軟なアプローチと厳格なアプローチをいつ使用するか:**
+
+- **フレキシブル**: 開発およびテスト中にエージェントの意思決定パターンを観察する
+- **硬い**: 本番環境では一貫性と完全性が重要です
+
+## コンテキストエンジニアリングの反復プロセス
+
+### コンテキスト改善の反復的な性質
+
+コンテキスト エンジニアリングは 1 回限りの作業ではありません。開発プロセスには以下が含まれます。
+
+1. **初期実装**基本的なシステムプロンプト付き
+2. **テスト**多様なクエリで
+3. **問題の特定**(見逃したタスク、間違ったステータス値、不完全な検索)
+4. **具体的な指示を追加する**それぞれの問題に対処するために
+5. **再検査**改善を検証するため
+6. **繰り返し**サイクル
+
+### まだ足りないもの
+
+複数回繰り返した後でも、さらなる改善の可能性はあります。
+
+**Search Task Metadata:**
+
+- 検索クエリの強化
+- 検索種類（Web検索、ニュース検索、学術検索、PDF検索）
+- 期間フィルター (今日、先週、過去 1 ヶ月、過去 1 年、すべての期間)
+- 焦点となる分野 (テクノロジー、科学、健康など)
+- タスクの実行順序の優先度
+
+**強化された検索計画:**
+
+- 検索タスクを生成する方法の詳細な手順
+- 検索クエリに推奨される形式
+- 複雑なクエリを分析するためのガイドライン
+- 良い検索タスクと悪い検索タスクの分解の例
+
+**日付範囲の指定:**
+
+- 時間制限付き検索の開始日と終了日
+- 日付パラメータの形式仕様
+- 期間キーワードから日付範囲を推測するロジック
+
+推奨される改善点に基づいて、AI エージェントの Web 検索が多くのコンテキスト エンジニアリングを必要とする困難な取り組みであることが容易に理解できます。
+
+## 高度な考慮事項
+
+### サブエージェントのコミュニケーション
+
+マルチエージェント システムを設計するときは、次のことを慎重に考慮してください。
+
+**サブエージェントにはどのような情報が必要ですか?**
+
+- 検索担当者の場合: 検索クエリのテキストのみ
+- 完全なコンテキストまたはタスクのメタデータではない
+- サブエージェントの入力を最小限に抑え、焦点を絞ったものにする
+
+**サブエージェントはどのような情報を返すべきですか?**
+
+- 検索結果と関連する調査結果
+- エラー状態または障害状態
+- 検索実行に関するメタデータ
+
+### コンテキスト長の管理
+
+エージェントが複数のタスクを実行すると、コンテキストが増大します。
+
+- タスク履歴が蓄積される
+- 検索結果にトークンが追加される
+- 会話履歴が拡張されます
+
+**コンテキストの長さを管理するための戦略:**
+
+- 個別のエージェントを使用してコンテキストを分離する
+- メモリ管理ツールを実装する
+- コンテキストに追加する前に長い出力を要約する
+- リサーチクエリ間のタスクリストをクリアする
+
+### システムプロンプトでのエラー処理
+
+障害シナリオの手順を含めます。
+
+```text
+ERROR HANDLING:
+- If search_worker fails, retry once with rephrased query
+- If task cannot be completed, mark status as "failed" with reason
+- If critical errors occur, notify user and request guidance
+- Never proceed silently when operations fail
+```
+
+## 結論
+
+コンテキスト エンジニアリングは、以下を必要とする信頼性の高い AI エージェントを構築するための重要な実践です。
+
+- **かなりの反復時間**プロンプトとツール定義の調整に費やされる
+- **慎重なアーキテクチャ上の決定**エージェントの分離とコミュニケーションについて
+- **明示的な指示**仮定を排除する
+- **継続的な改良**観察された行動に基づいて
+- **柔軟性とコントロールのバランス**
+
+ディープ リサーチ エージェントの例は、思慮深いコンテキスト エンジニアリングが信頼性の低いプロトタイプを堅牢な本番環境に対応したシステムにどのように変換するかを示しています。これらの原則 (明確な役割の定義、明示的なツールの指示、重要なコンテキストの提供、反復的な改善) を適用することで、一貫して高品質の結果を提供する AI エージェントを構築できます。
+
+<Callout type="info" emoji="🎓">
+実践的な例とテンプレートを使用して、本番環境に対応した AI エージェントを構築する方法を学びます。[総合コースにご参加ください！](https://dair-ai.thinkific.com/courses/agents-with-n8n)コード PROMPTING20 を使用すると、さらに 20% オフになります。
+</Callout>

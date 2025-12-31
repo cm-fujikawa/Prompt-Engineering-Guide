@@ -1,0 +1,15 @@
+# RAG による構造化出力の幻覚の軽減
+
+import {Bleed} from 'nextra-theme-docs'
+
+<iframe width="100%" height="415px" src="https://www.youtube.com/embed/TUL5guqZejw?si=Doc7lzyAY-SKr21L" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
+
+ServiceNow の研究者が次のことを共有しました。[新しい紙](https://arxiv.org/abs/2404.08189)ここでは、構造化された出力タスク用に効率的な RAG システムを導入する方法について説明します。
+
+!["RAG Hallucination"](../../img/research/structured_outputs.png)
+
+RAG システムは、小さな言語モデルと非常に小さなレトリバーを組み合わせたものです。これは、RAG を使用すると、幻覚などの問題を軽減し、出力の信頼性を高めながら、限られたリソース設定で強力な LLM を利用したシステムを展開できることを示しています。
+
+この文書では、自然言語要件をワークフロー (JSON 形式) に変換する非常に便利なエンタープライズ アプリケーションについて説明します。このタスクにより非常に多くの生産性が得られますが、さらに多くの最適化を実現できます (投機的デコードの使用や、JSON の代わりに YAML の使用など)。
+
+この文書では、実世界向けの RAG システムを効果的に開発する方法について、いくつかの優れた洞察と実践的なヒントを提供します。

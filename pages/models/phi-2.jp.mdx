@@ -1,3 +1,130 @@
 # Phi-2
 
-This page needs a translation! Feel free to contribute a translation by clicking the `Edit this page` button on the right side.
+import {Screenshot} from 'components/screenshot'
+import PHI2 from '../../img/phi-2/phi-2-benchmark.png'
+import PHI2SAFETY from '../../img/phi-2/phi-2-safety.png'
+import PHI2PERFORMANCE from '../../img/phi-2/phi-2-performance.png'
+import PHI2PHYSICS from '../../img/phi-2/phi-2-physics.png'
+import PHI2CORRECTING from '../../img/phi-2/phi-2-correcting.png'
+
+このガイドでは、27 億パラメータの言語モデルである Phi-2 の概要、Phi-2 をプロンプトする方法、およびその機能について説明します。このガイドには、Phi-2 LLM に関連するヒント、アプリケーション、制限事項、重要な参考資料、追加の読み物も含まれています。
+
+## Phi-2 Introduction
+
+Phi-2 は、Microsoft Research によってリリースされた最新の小規模言語モデル (SLM) です。 Phi-2 は、以前の Phi-1 モデルと Phi-1.5 モデルに続きます。
+
+Phi-1 は、Web からの「教科書品質」データ (6B トークン) および GPT-3.5 (1B トークン) で合成的に生成された教科書と演習に基づいてトレーニングされた 13 億のパラメーター モデルです ([Gunasekar et al. 2023](https://arxiv.org/abs/2306.11644)）。 Python コード生成タスクでは良好に実行されます。
+
+[Phi-1.5](https://arxiv.org/abs/2309.05463)以前のモデルに基づいて構築されており、常識的な推論と言語理解機能に重点を置いています。 Phi-1.5 は、小学校の数学や基本的なコーディング タスクなどの複雑な推論タスクを実行でき、5 倍大きいモデルに匹敵します。
+
+Phi-2 は 27 億のパラメーター モデルであり、推論能力と言語理解能力を向上させます。 Phi-2 は、最大 25 倍大きいモデルよりも優れたパフォーマンスを発揮し、商用環境で使用できるようにする MIT ライセンスを取得しました。
+
+## Phi-2 の洞察と評価
+
+LLM の研究者は、小規模な言語モデルが大きな言語モデルと同様の創発的な機能を備えているかどうか、またこれを達成するのに役立つトレーニング手法があるかどうかを熱心に調査しています。
+
+このモデルは、モデルに常識的な推論と一般知識を教えるのに役立つ合成データセットを含む「教科書品質」のデータ (複数のパスを含む 1 兆 4,000 億のトークン) でトレーニングされます。データは、教育的で高品質な Web コンテンツで強化されています。 Phi-2 は 96 個の A100 GPU でのトレーニングに 14 日間かかりました。追加の RLHF や命令チューニングは適用されていません。
+
+Phi-1.5 の知識は Phi-2 に転送され、複数のベンチマークにわたるモデルの収束とパフォーマンスの向上に役立ちます。以下の図は、常識的推論、数学的推論、コード生成、およびその他の言語理解ベンチマークにおける Phi-2 (2.7B) と Phi-1.5 (1.3B) のパフォーマンスの比較を示しています。それぞれ 3 ショット CoT と 5 ショットを使用する BBH と MMLU を除き、すべてのタスクが 0 ショットを使用して評価されることに注意することが重要です。
+
+<Screenshot src={PHI2} alt="Phi-2 LLM Performance & Benchmarks" />
+
+このモデルは RLHF のような特別な技術と調整されていませんでしたが、調整されたオープンソースの Llama2-7b と比較して、毒性とバイアスの点でより安全であると報告されています。著者らは、これはデータキュレーションの取り組みによるものだと考えています。
+
+<Screenshot src={PHI2SAFETY} alt="Phi-2 Safety Performance" />
+
+以下の図に示すように、Phi-2 はさまざまなベンチマークで Mistral 7B および Llama 2 (13B) を上回っています。 Phi-2 は、複数ステップの推論において Llama-2-70B モデルよりも優れています。 Phi-2 も優れたパフォーマンスを発揮[Google's Gemini Nano 2](https://www.promptingguide.ai/models/gemini).
+
+<Screenshot src={PHI2PERFORMANCE} alt="Phi-2 Performance Comparison" />
+
+以下に、いくつかのタスクにおける Phi-2 モデルの機能を示すいくつかのプロンプトの例を示します。
+
+### 物理学の問題解決
+
+以下の例は、Phi-2 が物理学の文章問題を解く能力を示しています。
+
+<Screenshot src={PHI2PHYSICS} alt="Phi-2 Physics Problem Solving" />
+
+### エラーの特定
+
+以下の例は、物理文章題に対する生徒の計算の間違いを識別する Phi-2 の機能を示しています。
+
+<Screenshot src={PHI2CORRECTING} alt="Phi-2 Verifying and Correcting" />
+
+## Phi-2 Usage
+
+によると、[モデルページ](https://huggingface.co/microsoft/phi-2), Phi-2 は、QA 形式、チャット形式、コード形式を使用してプロンプトを表示できます。以下では、さまざまなシナリオを使用してこれらのプロンプト テンプレートを効果的に使用する方法を示しました。
+
+### QA Format
+
+QA 形式は、モデルに質問し、簡潔な回答が必要なシナリオに役立ちます。
+
+次のプロンプト テンプレートを使用できます。
+
+```markdown
+Instruct: {{prompt}}
+Output:
+```
+
+以下に例を示します。
+
+*プロンプト：*
+
+```
+Instruct: What is the difference between data and information?
+Output:
+```
+
+*出力：*
+
+```
+Great question! Data refers to raw facts, statistics, or numbers that have not been analyzed or processed into any meaningful context. On the other hand, information is data that has been organized, analyzed, and interpreted in a way that it can be used by humans to make informed decisions or take actions. In other words, data is raw material, while information is processed and useful knowledge.
+```
+
+### チャット形式
+
+Phi-2 で使用されるチャット形式は標準形式であり、簡単な例を次に示します。
+
+*プロンプト：*
+
+```
+Human: Hello, who are you?
+AI: Greetings! I am an AI research assistant. How can I help you today?
+Human: Can you tell me about the creation of black holes?
+AI:
+```
+
+*出力：*
+
+```
+Black holes form when a massive star runs out of fuel and collapses under its own gravitational pull. The resulting object is so dense that it distorts space-time around it, causing anything that comes too close to be pulled in by the immense gravity. This includes light, which cannot...
+```
+
+### コード形式
+
+以下は、モデルに関数の名前を提供するコード生成プロンプト テンプレートです。
+
+*プロンプト：*
+
+```
+def multiply(a,b):\n
+```
+
+モデルは限られた Python コード例とライブラリでトレーニングされているため、コード生成機能と言語サポートがかなり制限されていることに注意してください。
+
+## Phi-2 Limitations
+
+以下は、著者によって報告された Phi-2 の制限の概要です。
+
+- 他のモデルと同様に、Phi-2 は不正確なコードやステートメントを生成する可能性があります。
+- Phi-2 は他のモデルのように命令が調整されていないため、命令に従うのが難しい場合があります。
+- トレーニングは標準的な英語で構成されます。したがって、モデルはスラングに苦労し、他の言語からの命令を理解できない可能性があります。
+- Phi-2 は社会的な偏見や有害な内容を生み出す可能性もあります。
+- Phi-2 は調整されていないため、冗長な応答を生成する傾向があり、場合によっては無関係な余分なテキストが生成されることもあります。著者らは、これはおそらく主に教科書であるトレーニング データセットの性質によるものであると示唆しています。
+
+*図の出典:[マイクロソフトリサーチ](https://www.microsoft.com/en-us/research/blog/phi-2-the-surprising-power-of-small-language-models/)*
+
+## 参考文献
+
+- [必要なのは教科書だけ](https://arxiv.org/abs/2306.11644)
+- [Phi-1.5](https://arxiv.org/abs/2309.05463)

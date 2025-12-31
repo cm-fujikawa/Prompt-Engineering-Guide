@@ -1,0 +1,28 @@
+# Mixtral 8x22B
+
+Mixtral 8x22B は、Mistral AI によってリリースされた新しいオープン大規模言語モデル (LLM) です。 Mixtral 8x22B は、合計 141B のパラメータのうち 39B のアクティブなパラメータを備えた疎な専門家混合モデルとして特徴付けられます。
+
+## 能力
+
+Mixtral 8x22B は、多言語理解、数学的推論、コード生成、ネイティブ関数呼び出しサポート、制約付き出力サポートなどの機能を備えたコスト効率の高いモデルになるようにトレーニングされています。このモデルは、64K トークンのコンテキスト ウィンドウ サイズをサポートしており、大規模なドキュメントでの高パフォーマンスの情報呼び出しが可能です。
+
+Mistral AI は、Mistral 8x22B は最高のパフォーマンス対コスト比のコミュニティ モデルの 1 つを提供し、そのまばらなアクティベーションにより大幅に高速であると主張しています。
+
+!["Mixtral 8x22B Performance"](../../img/mixtral/mixtral-8-cost.png)
+*ソース：[Mistral AI Blog](https://mistral.ai/news/mixtral-8x22b/)*
+
+## 結果
+
+によると、[公式に報告された結果](https://mistral.ai/news/mixtral-8x22b/), Mixtral 8x22B (39B のアクティブ パラメーター付き) は、MMLU、HellaS、TriQA、NaturalQA などのいくつかの推論および知識ベンチマークにおいて、Command R+ や Llama 2 70B などの最先端のオープン モデルよりも優れたパフォーマンスを発揮します。
+
+!["Mixtral 8x22B Reasoning and Knowledge Performance"](../../img/mixtral/mixtral-8-reasoning.png)
+*ソース：[Mistral AI Blog](https://mistral.ai/news/mixtral-8x22b/)*
+
+Mixtral 8x22B は、GSM8K、HumanEval、Math などのベンチマークで評価した場合、コーディングおよび数学タスクにおいてすべてのオープン モデルよりも優れたパフォーマンスを示します。 Mixtral 8x22B Instruct は GSM8K (maj@8) で 90% のスコアを達成したと報告されています。
+
+!["Mixtral 8x22B Reasoning and Knowledge Performance"](../../img/mixtral/mixtral-8-maths.png)
+*ソース：[Mistral AI Blog](https://mistral.ai/news/mixtral-8x22b/)*
+
+Mixtral 8x22B とその使用方法の詳細については、こちらをご覧ください: https://docs.mistral.ai/getting-started/open\_weight\_models/#operation/listModels
+
+このモデルは、Apache 2.0 ライセンスに基づいてリリースされています。

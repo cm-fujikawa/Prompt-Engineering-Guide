@@ -1,4 +1,4 @@
-# スケーリングされた指示によるファインチューニングされた言語モデル
+# スケーリング命令 - 微調整された言語モデル
 
 import {Screenshot} from 'components/screenshot'
 import FLAN1 from '../../img/flan-1.png'
@@ -13,71 +13,80 @@ import FLAN9 from '../../img/flan-9.png'
 import FLAN10 from '../../img/flan-10.png'
 import FLAN11 from '../../img/flan-11.png'
 
-## What's new?
+## 新着情報？
 
 <Screenshot src={FLAN1} alt="FLAN1" />
-Image Source: [Scaling Instruction-Finetuned Language Models](https://arxiv.org/abs/2210.11416)
 
-本論文は、[指示によるファインチューニング](https://arxiv.org/pdf/2109.01652.pdf)のスケーリングの利点を探求し、PaLM、T5などのさまざまなモデル、プロンプトセットアップ（ゼロショット、フューショット、CoT）、およびベンチマーク（MMLU、TyDiQA）でのパフォーマンスの向上について説明しています。これには、以下の側面が探究されます：タスク数のスケーリング（1.8Kタスク）、モデルサイズのスケーリング、および思考連鎖データのファインチューニング（9つのデータセットを使用）。
+画像出典:[スケーリング命令 - 微調整された言語モデル](https://arxiv.org/abs/2210.11416)
 
-**ファインチューニング手順：**
-- 1.8Kタスクが指示文としてフレーズ化され、モデルのファインチューニングに使用されます。
-- 実例あり・なし、CoTあり・なしの両方を使用します。
+このペーパーでは、メリットのスケーリングについて検討します。[命令の微調整](https://arxiv.org/pdf/2109.01652.pdf)そして、さまざまなモデル (PaLM、T5)、プロンプト設定 (ゼロショット、少数ショット、CoT)、およびベンチマーク (MMLU、TyDiQA) でのパフォーマンスがどのように向上するかについて説明します。これは、タスク数のスケーリング (1.8K タスク)、モデル サイズのスケーリング、および思考連鎖データの微調整 (9 つのデータセットを使用) の側面で検討されます。
 
-ファインチューニングタスクと保持タスクは以下に示されています。
+**微調整手順:**
+
+- 1.8K のタスクが指示として表現され、モデルの微調整に使用されました
+- イグザンプラありとなし、および CoT ありとなしの両方を使用します
+
+以下に示す微調整タスクと保留タスク:
 
 <Screenshot src={FLAN11} alt="FLAN11" />
 
-## 機能と主要結果
+## 機能と主な結果
 
-- 指示によるファインチューニングは、タスク数とモデルサイズの両方にスケーリングすることができます。これは、タスク数とモデルサイズのスケーリングがさらなるパフォーマンス向上の必要性を示唆しています。
-- CoTデータセットをファインチューニングに追加することで、推論タスクにおいて良好なパフォーマンスを発揮することができます。
-- Flan-PaLMは、多言語能力が向上しており、ワンショットTyDiQAで14.9％、未代表言語の算術推論で8.1％の改善が見られます。
-- Plan-PaLMは、オープンエンドの生成問題に対しても良好なパフォーマンスを発揮するため、改善された利用性の指標となります。
-- 責任あるAI（RAI）ベンチマーク全体でパフォーマンスが向上しています。
-- Flan-T5の指示によるチューニングモデルは、強力なフューショット能力を示し、T5のパブリックチェックポイントなどを上回ります。
+- 命令の微調整は、タスクの数とモデルのサイズに合わせて適切に調整できます。これは、タスクの数とモデルのサイズをさらに拡張する必要があることを示唆しています。
+- CoT データセットを微調整に追加すると、推論タスクで優れたパフォーマンスが可能になります
+- Flan-PaLM は多言語能力を向上させました。ワンショット TyDiQA より 14.9% 改善。過小評価されている言語の算術推論が 8.1% 改善
+- Plan-PaLM は自由回答形式の質問でも優れたパフォーマンスを発揮し、使いやすさの向上を示す良い指標となります。
+- Responsible AI (RAI) ベンチマーク全体のパフォーマンスを向上
+- Flan-T5 命令調整モデルは強力な少数ショット機能を実証し、T5 などのパブリック チェックポイントを上回るパフォーマンスを発揮します
 
-
-**ファインチューニングタスク数とモデルサイズをスケーリングした場合の結果：** モデルサイズとファインチューニングタスク数の両方をスケーリングすることにより、パフォーマンスが継続的に改善されると予想されますが、タスク数をスケーリングすることは収益が減少することがわかっています。
+**微調整タスクの数とモデル サイズをスケーリングした場合の結果は次のとおりです。**&#x30E2;デルのサイズと微調整タスクの数の両方をスケーリングすると、引き続きパフォーマンスが向上すると期待されますが、タスクの数をスケーリングすると利益は減少します。
 
 <Screenshot src={FLAN2} alt="FLAN2" />
-Image Source: [Scaling Instruction-Finetuned Language Models](https://arxiv.org/abs/2210.11416)
 
-**非CoTとCoTのデータでファインチューニングした場合の結果：** 非CoTとCoTのデータの両方でファインチューニングを行うことで、単一の評価の場合よりも両方でパフォーマンスが向上します。
+画像出典:[スケーリング命令 - 微調整された言語モデル](https://arxiv.org/abs/2210.11416)
+
+**非 CoT データと CoT データを使用して微調整した結果:**&#x975E; CoT データと CoT データを一緒に微調整すると、どちらか一方のみを微調整する場合と比較して、両方の評価のパフォーマンスが向上します。
 
 <Screenshot src={FLAN3} alt="FLAN3" />
-Image Source: [Scaling Instruction-Finetuned Language Models](https://arxiv.org/abs/2210.11416)
 
-さらに、CoTと自己整合性を組み合わせることで、いくつかのベンチマークで最先端の結果を達成しています。 CoT +自己整合性は、数学問題を含むベンチマークにおいても結果を大幅に改善します（例：MGSM、GSM8K）。
+画像出典:[スケーリング命令 - 微調整された言語モデル](https://arxiv.org/abs/2210.11416)
+
+さらに、自己一貫性と CoT の組み合わせにより、いくつかのベンチマークで SoTA の結果が得られます。 CoT + 自己一貫性により、数学問題 (MGSM、GSM8K など) を含むベンチマークの結果も大幅に向上します。
 
 <Screenshot src={FLAN4} alt="FLAN4" />
-Image Source: [Scaling Instruction-Finetuned Language Models](https://arxiv.org/abs/2210.11416)
 
-CoTファインチューニングは、BIG-Benchタスクの「一歩一歩考えてみましょう」というフレーズにより、ゼロショット推論が可能になります。一般的に、ファインチューニングなしのゼロショットCoT PaLMよりも、ゼロショットCoT Flan-PaLMの方が優れたパフォーマンスを発揮します。
+画像出典:[スケーリング命令 - 微調整された言語モデル](https://arxiv.org/abs/2210.11416)
+
+CoT 微調整により、BIG-Bench タスクで「ステップバイステップで考えましょう」というフレーズによって活性化されるゼロショット推論が可能になります。一般に、微調整を行わない場合、ゼロショット CoT Flan-PaLM はゼロショット CoT PaLM よりも優れたパフォーマンスを発揮します。
 
 <Screenshot src={FLAN6} alt="FLAN6" />
-Image Source: [Scaling Instruction-Finetuned Language Models](https://arxiv.org/abs/2210.11416)
 
-以下は、PaLMとFlan-PaLMのゼロショットCoTの見本です。
+画像出典:[スケーリング命令 - 微調整された言語モデル](https://arxiv.org/abs/2210.11416)
+
+以下は、目に見えないタスクにおける PaLM および Flan-PaLM のゼロショット CoT のデモンストレーションです。
 
 <Screenshot src={FLAN5} alt="FLAN5" />
-Image Source: [Scaling Instruction-Finetuned Language Models](https://arxiv.org/abs/2210.11416)
 
-以下は、ゼロショットでのプロンプトの例です。PaLMモデルが、Flan-PaLMが良好なパフォーマンスを発揮できるZero-shot設定において、繰り返しに苦戦し、指示に対して返答しない様子を示しています。Few-shotの模範解答は、これらのエラーを軽減することができます。
+画像出典:[スケーリング命令 - 微調整された言語モデル](https://arxiv.org/abs/2210.11416)
+
+以下に、ゼロショット プロンプトのその他の例を示します。これは、Flan-PaLM が良好なパフォーマンスを発揮できるゼロショット設定で、PaLM モデルが繰り返しと指示に応答しないことにどのように苦戦しているかを示しています。少数のショットのサンプルを使用すると、これらのエラーを軽減できます。
 
 <Screenshot src={FLAN7} alt="FLAN7" />
-Image Source: [Scaling Instruction-Finetuned Language Models](https://arxiv.org/abs/2210.11416)
 
-以下は、Flan-PALMモデルのゼロショット能力を、いくつかの異なるタイプの難しい自由形式の質問で実証した例です：
+画像出典:[スケーリング命令 - 微調整された言語モデル](https://arxiv.org/abs/2210.11416)
 
+以下は、いくつかの異なるタイプの挑戦的な自由回答形式の質問に対する Flan-PALM モデルのよりゼロショット機能を示すいくつかの例です。
 
 <Screenshot src={FLAN8} alt="FLAN8" />
-Image Source: [Scaling Instruction-Finetuned Language Models](https://arxiv.org/abs/2210.11416)
+
+画像出典:[スケーリング命令 - 微調整された言語モデル](https://arxiv.org/abs/2210.11416)
 
 <Screenshot src={FLAN9} alt="FLAN9" />
-Image Source: [Scaling Instruction-Finetuned Language Models](https://arxiv.org/abs/2210.11416)
+
+画像出典:[スケーリング命令 - 微調整された言語モデル](https://arxiv.org/abs/2210.11416)
 
 <Screenshot src={FLAN10} alt="FLAN10" />
-Image Source: [Scaling Instruction-Finetuned Language Models](https://arxiv.org/abs/2210.11416)
 
-[Hugging Face HubのFlan-T5モデル](https://huggingface.co/google/flan-t5-xxl)を試すことができます。
+画像出典:[スケーリング命令 - 微調整された言語モデル](https://arxiv.org/abs/2210.11416)
+
+試してみることができます[ハグフェイスハブのFlan-T5モデル](https://huggingface.co/google/flan-t5-xxl).

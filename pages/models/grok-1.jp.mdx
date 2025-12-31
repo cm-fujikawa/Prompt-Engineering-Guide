@@ -1,0 +1,28 @@
+# Grok-1
+
+Grok-1 は、基本モデルの重みとネットワーク アーキテクチャのオープン リリースを含む、314B パラメーターを備えた専門家混合 (MoE) 大規模言語モデル (LLM) です。
+
+Grok-1 は xAI によってトレーニングされ、推論時に特定のトークンの重みの 25% をアクティブにする MoE モデルで構成されています。 Grok-1 の事前トレーニングの締め切り日は 2023 年 10 月です。
+
+に記載されているように、[公式発表](https://x.ai/blog/grok-os), Grok-1 は、トレーニング前フェーズからの生の基本モデル チェックポイントです。これは、会話エージェントなどの特定のアプリケーション向けに微調整されていないことを意味します。
+
+モデルは[解放された](https://github.com/xai-org/grok-1)Apache 2.0 ライセンスに基づいています。
+
+## 実績と能力
+
+初期によると[発表](https://x.ai/blog/grok), Grok-1 は、推論タスクとコーディング タスクにわたって強力な機能を実証しました。最後に公開された結果は、Grok-1 が HumanEval コーディング タスクで 63.2%、MMLU で 73% を達成したことを示しています。一般に、ChatGPT-3.5 や Inflection-1 よりも優れたパフォーマンスを示しますが、それでも GPT-4 のような改良されたモデルには及ばません。
+
+!["Grok-1 Benchmark Results"](../../img/grok/grok-reasoning.png)
+
+Grok-1 は、ハンガリー全国高校の数学決勝戦で GPT-4 の B (68%) と比較して C (59%) の得点を獲得したとも報告されました。
+
+!["Grok-1 Benchmark Results"](../../img/grok/grok-math.png)
+
+ここでモデルをチェックしてください: https://github.com/xai-org/grok-1
+
+Grok-1 のサイズ (314B パラメーター) のため、xAI はモデルをテストするためにマルチ GPU マシンを推奨します。
+
+## 参考文献
+
+- [Grok-1 のオープンリリース](https://x.ai/blog/grok-os)
+- [Announcing Grok](https://x.ai/blog/grok)

@@ -1,0 +1,48 @@
+# Mistral Large
+
+Mistral AI は、強力な多言語、推論、数学、コード生成機能を備えた最先端の大規模言語モデル (LLM) である Mistral をリリースします。 Mistral Large は、la Plataforme と呼ばれる Mistral プラットフォームと Microsoft Azure を通じて利用できます。新しいチャット アプリでテストすることもできます。[ル・シャ](https://chat.mistral.ai/).
+
+以下は、Mistral Large が GPT-4 や Gemini Pro などの他の強力な LLM とどのように比較されるかを示すグラフです。 MMLU ベンチマークでは 81.2% のスコアで GPT-4 に次いで 2 位にランクされています。
+
+!["Mistral Large Performance"](../../img/mistral-l/ml-performance.png)
+
+## Mistral Large Capabilities
+
+ミストラル ラージの機能と強みは次のとおりです。
+
+- 32K tokens context window
+- ネイティブの多言語能力を持っている（英語、フランス語、スペイン語、ドイツ語、イタリア語に堪能）
+- 推論、知識、数学、コーディングベンチマークにおける強力な能力
+- 関数呼び出しと JSON 形式がネイティブにサポートされています
+- Mistral Smallという低遅延モデルもリリースされました
+- 開発者は正確な指示に従ってモデレーション ポリシーを設計できます。
+
+### 推論と知識
+
+以下の表は、Mistral Large が一般的な推論と知識のベンチマークでどのように機能するかを示しています。 GPT-4 には大きく劣りますが、Claude 2 や Gemini Pro 1.0 などの他の LLM と比較すると優れたモデルです。
+
+!["Mistral Large Performance"](../../img/mistral-l/performance-3.png)
+
+### 数学とコード生成
+
+以下の表は、一般的な数学およびコーディングのベンチマークでの Mistral Large のパフォーマンスを示しています。 Mistral Large は、Math および GSM8K ベンチマークでは優れたパフォーマンスを示しますが、コーディング ベンチマークでは、Gemini Pro や GPT-4 などのモデルのパフォーマンスを大幅に上回ります。
+
+!["Mistral Large Performance"](../../img/mistral-l/performance-1.png)
+
+### 多言語性
+
+以下の表は、多言語推論ベンチマークにおける Mistral Large のパフォーマンスを示しています。 Mistral Large は、フランス語、ドイツ語、スペイン語、イタリア語を含むすべての言語で Mixtral 8x7B および Llama 2 70B を上回ります。
+
+!["Mistral Large Performance"](../../img/mistral-l/performance-2.png)
+
+## Mistral Small
+
+Mistral Large のリリースに加えて、Mistral Small と呼ばれる小型モデルと最適化されたモデルも発表されました。 Mistral Small は、低レイテンシーのワークロード向けに最適化されており、Mistral 8x7B よりも優れたパフォーマンスを発揮します。 Mistral AI は、このモデルが RAG 対応、関数呼び出し、JSON 形式に関して強力な機能を備えていると報告しています。
+
+## ミストラルのエンドポイントとモデルの選択
+
+[ここ](https://docs.mistral.ai/platform/endpoints/)は、Mistral AI によって提供されるすべてのエンドポイントのリストです。
+
+Mistral AI はまた、包括的な[ガイド](https://docs.mistral.ai/guides/model-selection/)パフォーマンスとコストのトレードオフを考慮した場合、より適切なモデルを選択できます。
+
+*数字の出典: https://mistral.ai/news/mistral-large/*
